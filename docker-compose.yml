@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    web:
+        build: docker/web/
+        image: matthiasnoback/hexagonal-architecture-workshop-web
+        volumes:
+            - ./:/app
+        ports:
+            - 8000:8080
+        expose:
+            - 8080
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+
+    php:
+        build: docker/php/
+        image: matthiasnoback/hexagonal-architecture-workshop-php
+        volumes:
+            - ./:/app
+        environment:
+            WEB_HOSTNAME: web
+        depends_on:
+            - web
+        working_dir: /app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+
+    composer:
+        image: composer:latest
+        volumes:
+            - ./:/app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+        entrypoint: composer
+
+#    mailhog:
+#        image: mailhog/mailhog:v1.0.1
+#        ports:
+#            - "8025:8025"
