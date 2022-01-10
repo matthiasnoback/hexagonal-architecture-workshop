@@ -32,14 +32,14 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="{{ url('list_meetups') }}" class="nav-link">List meetups</a>
+                            <a href="{{ path('list_meetups') }}" class="nav-link">List meetups</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ url('schedule_meetup') }}" class="nav-link">Schedule a meetup</a>
+                            <a href="{{ path('schedule_meetup') }}" class="nav-link">Schedule a meetup</a>
                         </li>
                     </ul>
 
-                    <form class="form-inline my-2 my-lg-0" action="{{ url('switch_user') }}" method="post" enctype="multipart/form-data">
+                    <form class="form-inline my-2 my-lg-0" action="{{ path('switch_user') }}" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <select name="userId" id="userId" class="form-control mx-2" aria-label="Switch user">
                                 {% for user in allUsers %}

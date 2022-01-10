@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Schedule a meetup</h1>
 
-    <form method="post" action="{{ url('schedule_meetup') }}">
+    <form method="post" action="{{ path('schedule_meetup') }}">
         <div class="form-group{% if formErrors["name"] is defined %} has-error{% endif %}">
             <label for="name">Name:</label>
             <input class="form-control{% if formErrors["name"] is defined %} is-invalid{% endif %}" id="name" name="name" type="text"
