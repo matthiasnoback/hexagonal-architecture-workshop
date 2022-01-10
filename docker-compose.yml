@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
     web:
@@ -27,6 +27,7 @@ services:
         user: ${HOST_UID}:${HOST_GID}
         env_file:
             - .env
+        init: true
 
     composer:
         image: composer:latest
