@@ -1,5 +1,7 @@
 {% extends "@layout/default.html.twig" %}
 
+{% block title %}{{ meetup.name }}{% endblock %}
+
 {% block content %}
     <h2>{{ organizer.name }} presents: {{ meetup.name }}</h2>
 

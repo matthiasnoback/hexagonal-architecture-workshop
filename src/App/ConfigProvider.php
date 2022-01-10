@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\RsvpRepository;
+use App\Entity\UserHasRsvpd;
 use App\Handler\CancelMeetupHandler;
-use App\Handler\HomePageHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\MeetupDetailsHandler;
+use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
+use App\Handler\SwitchUserHandler;
 use App\Twig\FlashExtension;
 use App\Twig\UserExtension;
 use Doctrine\DBAL\Connection;
@@ -19,19 +21,8 @@ use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 
-/**
- * The configuration provider for the App module
- *
- * @see https://docs.laminas.dev/laminas-component-installer/
- */
 class ConfigProvider
 {
-    /**
-     * Returns the configuration array
-     *
-     * To add a bit of a structure, each section is defined in a separate
-     * method which returns an array with its configuration.
-     */
     public function __invoke(): array
     {
         return [
@@ -46,19 +37,12 @@ class ConfigProvider
         ];
     }
 
-    /**
-     * Returns the container dependencies
-     */
     public function getDependencies(): array
     {
         return [
             'invokables' => [
-                Handler\PingHandler::class => Handler\PingHandler::class,
             ],
             'factories' => [
-                Handler\HomePageHandler::class => function (ContainerInterface $container) {
-                    return new HomePageHandler($container->get(TemplateRendererInterface::class));
-                },
                 ScheduleMeetupHandler::class => function (ContainerInterface $container) {
                     return new ScheduleMeetupHandler(
                         $container->get(Session::class),
@@ -87,6 +71,36 @@ class ConfigProvider
                         $container->get(Connection::class),
                         $container->get(TemplateRendererInterface::class)
                     );
+                },
+                SwitchUserHandler::class => function (ContainerInterface $container) {
+                    return new SwitchUserHandler(
+                        $container->get(UserRepository::class),
+                        $container->get(Session::class)
+                    );
+                },
+                RsvpForMeetupHandler::class => function (ContainerInterface $container) {
+                    return new RsvpForMeetupHandler(
+                        $container->get(Connection::class),
+                        $container->get(Session::class),
+                        $container->get(RsvpRepository::class),
+                        $container->get(RouterInterface::class),
+                        $container->get(EventDispatcher::class),
+                    );
+                },
+                EventDispatcher::class => function (ContainerInterface $container) {
+                    $eventDispatcher = new ConfigurableEventDispatcher();
+
+                    $eventDispatcher->registerSpecificListener(
+                        UserHasRsvpd::class,
+                        function () use ($container) {
+                            /** @var Session $session */
+                            $session = $container->get(Session::class);
+
+                            $session->addSuccessFlash('You have successfully RSVP-ed to this meetup');
+                        }
+                    );
+
+                    return $eventDispatcher;
                 },
                 Session::class => function (ContainerInterface $container) {
                     return new Session($container->get(UserRepository::class));
@@ -118,9 +132,6 @@ class ConfigProvider
         ];
     }
 
-    /**
-     * Returns the templates configuration
-     */
     public function getTemplates(): array
     {
         return [

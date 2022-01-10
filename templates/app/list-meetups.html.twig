@@ -1,6 +1,10 @@
 {% extends "@layout/default.html.twig" %}
 
+{% block title %}Meetups{% endblock %}
+
 {% block content %}
+    <p><a href="{{ path("schedule_meetup") }}" class="btn btn-success">Schedule meetup</a></p>
+
     <h1>Upcoming meetups</h1>
 
     {% for meetup in upcomingMeetups %}

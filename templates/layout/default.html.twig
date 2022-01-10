@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>{% block title %}{% endblock %} - mezzio</title>
-    <link rel="shortcut icon" href="https://getlaminas.org/images/favicon/favicon.ico" />
+    <title>{% block title %}{% endblock %} - Bunchup; get together!</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
     <link href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" rel="stylesheet" />
     <style>
-        body { padding-top: 70px; }
+        body { padding-top: 140px; }
         .app { min-height: 100vh; }
         .app-footer { padding-bottom: 1em; }
-        .mezzio-green, h2 a, h2 a:hover { color: #009655; }
-        .navbar-brand { padding: 0; }
-        .navbar-brand img { margin: -.5rem 0; filter: brightness(0) invert(1); }
+        .navbar-brand img { height: 100px; }
     </style>
     {% block stylesheets %}{% endblock %}
 </head>
@@ -27,29 +24,31 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <!-- Brand -->
-                    <a class="navbar-brand" href="{{ path('home') }}">
-                        <img src="https://docs.laminas.dev/img/laminas-mezzio-rgb.svg" alt="Laminas Mezzio" height="56" />
+                    <a class="navbar-brand" href="{{ path('list_meetups') }}">
+                        <img src="/img/logo.png" alt="Bunchup logo" />
                     </a>
                 </div>
                 <!-- Links -->
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="https://docs.mezzio.dev/mezzio" target="_blank" class="nav-link">
-                                <i class="fa fa-book"></i> Docs
-                            </a>
+                            <a href="{{ url('list_meetups') }}" class="nav-link">List meetups</a>
                         </li>
                         <li class="nav-item">
-                            <a href="https://github.com/mezzio/mezzio" target="_blank" class="nav-link">
-                                <i class="fa fa-wrench"></i> Contribute
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ path('api.ping') }}" class="nav-link">
-                                Ping Test
-                            </a>
+                            <a href="{{ url('schedule_meetup') }}" class="nav-link">Schedule a meetup</a>
                         </li>
                     </ul>
+
+                    <form class="form-inline my-2 my-lg-0" action="{{ url('switch_user') }}" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <select name="userId" id="userId" class="form-control mx-2" aria-label="Switch user">
+                                {% for user in allUsers %}
+                                    <option value="{{ user.userId.asInt }}"{% if loggedInUser.userId.asInt == user.userId.asInt %} selected{% endif %}>{{ user.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-info">Switch</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </nav>
@@ -57,6 +56,8 @@
 
     <div class="app-content">
         <main class="container">
+            {% include "@layout/_flashes.html.twig" %}
+
             {% block content %}{% endblock %}
         </main>
     </div>
