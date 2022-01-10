@@ -81,9 +81,7 @@ abstract class AbstractBrowserTest extends TestCase
 
     protected function loginPage(): LoginPage
     {
-        $crawler = $this->browser->request('GET', '/');
-        echo $this->browser->getInternalResponse()->getContent();
-        return new LoginPage($crawler);
+        return new LoginPage($this->browser->request('GET', '/'));
     }
 
     protected function flashMessagesShouldContain(string $expectedMessage): void
