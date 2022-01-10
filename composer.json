@@ -23,8 +23,10 @@
         "ramsey/uuid": "^4.2"
     },
     "require-dev": {
+        "ext-dom": "*",
         "filp/whoops": "^2.7.1",
         "mezzio/mezzio-tooling": "^2.1",
+        "phil-nelson/phpstan-container-extension": "^0.1.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.3",
         "phpstan/phpstan-beberlei-assert": "^1.0",
@@ -36,8 +38,7 @@
         "symfony/mime": "^6.0",
         "symfony/panther": "^2.0",
         "symplify/coding-standard": "^10.0",
-        "symplify/easy-coding-standard": "^10.0",
-        "ext-dom": "*"
+        "symplify/easy-coding-standard": "^10.0"
     },
     "autoload": {
         "psr-4": {
@@ -46,8 +47,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "AppTest\\": "test/AppTest/",
-            "Utils\\PHPStan\\": "utils/PHPStan/src"
+            "AppTest\\": "test/AppTest/"
         }
     }
 }

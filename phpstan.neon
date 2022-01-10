@@ -5,14 +5,9 @@ parameters:
         - public/
         - src/
         - test/
-        - utils/
+        - ecs.php
+        - rector.php
     checkMissingIterableValueType: false
-
-services:
-	-
-		class: "Utils\\PHPStan\\ContainerGetReturnTypeExtension"
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
 
 includes:
     - phpstan-baseline.neon

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "de01c2129acdb7c432edd28340b72e69",
+    "content-hash": "9eb2addce61962b8f8e46c2e6999bba3",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -3961,6 +3961,58 @@
                 "source": "https://github.com/phar-io/version/tree/3.1.0"
             },
             "time": "2021-02-23T14:00:09+00:00"
+        },
+        {
+            "name": "phil-nelson/phpstan-container-extension",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phil-nelson/phpstan-container-extension.git",
+                "reference": "04a3d922544cc797299886152e456f41631f3ea7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phil-nelson/phpstan-container-extension/zipball/04a3d922544cc797299886152e456f41631f3ea7",
+                "reference": "04a3d922544cc797299886152e456f41631f3ea7",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0 || ^8.0",
+                "phpstan/phpstan": "^1.0",
+                "psr/container": "^1.0 || ^2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhilNelson\\PHPStanContainerExtension\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Philip Nelson",
+                    "email": "philip@whatsbeef.net"
+                }
+            ],
+            "description": "PHPStan extension to resolve return type for PSR-11 container",
+            "support": {
+                "issues": "https://github.com/phil-nelson/phpstan-container-extension/issues",
+                "source": "https://github.com/phil-nelson/phpstan-container-extension/tree/0.1.0"
+            },
+            "time": "2021-12-16T08:41:02+00:00"
         },
         {
             "name": "php-cs-fixer/diff",
@@ -9545,6 +9597,8 @@
     "platform": {
         "php": "~8.1.0"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-dom": "*"
+    },
     "plugin-api-version": "2.2.0"
 }
