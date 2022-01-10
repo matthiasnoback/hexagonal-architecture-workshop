@@ -1,0 +1,32 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block content %}
+    <h2>{{ organizer.name }} presents: {{ meetup.name }}</h2>
+
+    <p><small>{{ meetup.scheduledFor|date() }}</small></p>
+    <p>{{ meetup.description }}</p>
+
+    <h3>Attendees</h3>
+    {% if attendees|length > 0 %}
+        <ul class="attendees">
+        {% for user in attendees %}
+            <li>{{ user.name }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No attendees yet.</p>
+    {% endif %}
+
+    {% if loggedInUser.userId.asInt == meetup.organizerId %}
+        <form action="{{ url('cancel_meetup') }}" method="post">
+            <input type="hidden" name="meetupId" value="{{ meetup.meetupId }}">
+            <button class="btn btn-danger">Cancel this meetup</button>
+        </form>
+    {% else %}
+        <form action="{{ url('rsvp_for_meetup') }}" method="post">
+            <input type="hidden" name="meetupId" value="{{ meetup.meetupId }}">
+            <button class="btn btn-success">RSVP</button>
+        </form>
+    {% endif %}
+
+{% endblock %}

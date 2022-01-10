@@ -1,0 +1,68 @@
+<?php
+declare(strict_types=1);
+
+namespace App\Handler;
+
+use Assert\Assert;
+use DateTimeImmutable;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
+use App\Entity\ScheduledDate;
+use Laminas\Diactoros\Response\HtmlResponse;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface;
+use Mezzio\Template\TemplateRendererInterface;
+
+final class ListMeetupsHandler implements RequestHandlerInterface
+{
+    private Connection $connection;
+
+    private TemplateRendererInterface $renderer;
+
+    public function __construct(
+        Connection $connection,
+        TemplateRendererInterface $renderer
+    ) {
+        $this->connection = $connection;
+        $this->renderer = $renderer;
+    }
+
+    public function handle(Request $request): ResponseInterface
+    {
+        $now = new DateTimeImmutable();
+
+        $statement = $this->connection->createQueryBuilder()
+            ->select('*')
+            ->from('meetups')
+            ->where('scheduledFor >= :now')
+            ->setParameter('now', $now->format(ScheduledDate::DATE_TIME_FORMAT))
+            ->andWhere('wasCancelled = :wasNotCancelled')
+            ->setParameter('wasNotCancelled', 0)
+            ->execute();
+        Assert::that($statement)->isInstanceOf(Statement::class);
+
+        $upcomingMeetups = $statement->fetchAllAssociative();
+
+        $statement = $this->connection->createQueryBuilder()
+            ->select('*')
+            ->from('meetups')
+            ->where('scheduledFor < :now')
+            ->setParameter('now', $now->format(ScheduledDate::DATE_TIME_FORMAT))
+            ->andWhere('wasCancelled = :wasNotCancelled')
+            ->setParameter('wasNotCancelled', 0)
+            ->execute();
+        Assert::that($statement)->isInstanceOf(Statement::class);
+
+        $pastMeetups = $statement->fetchAllAssociative();
+
+        return new HtmlResponse(
+            $this->renderer->render(
+                'app::list-meetups.html.twig',
+                [
+                    'upcomingMeetups' => $upcomingMeetups,
+                    'pastMeetups' => $pastMeetups
+                ])
+        );
+    }
+}
