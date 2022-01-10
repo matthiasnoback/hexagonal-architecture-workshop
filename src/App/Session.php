@@ -70,7 +70,8 @@ final class Session
 
     public function getFlashes(): array
     {
-        $flashes = is_array($this->sessionData['flashes']) ? $this->sessionData['flashes'] : [];
+        $flashes = $this->sessionData['flashes'] ?? [];
+        $flashes = is_array($flashes) ? $flashes : [];
 
         $this->sessionData['flashes'] = [];
 

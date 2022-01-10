@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eu
+
 docker-compose run --rm php vendor/bin/rector process --ansi
 
 docker-compose run --rm php vendor/bin/ecs check --fix --ansi

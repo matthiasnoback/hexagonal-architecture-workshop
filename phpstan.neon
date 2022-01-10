@@ -4,8 +4,8 @@ parameters:
         - config/
         - public/
         - src/
+        - test/
         - utils/
-        - update-schema.php
     checkMissingIterableValueType: false
 
 services:
@@ -13,3 +13,6 @@ services:
 		class: "Utils\\PHPStan\\ContainerGetReturnTypeExtension"
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+includes:
+    - phpstan-baseline.neon

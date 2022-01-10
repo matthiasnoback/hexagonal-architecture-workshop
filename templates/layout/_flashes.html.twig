@@ -1,7 +1,9 @@
 {% for type, flashes in allFlashes %}
+    <div class="flash-messages">
     {% for message in flashes %}
-        <div class="alert alert-{{ type }}">
+        <div class="alert alert-{{ type }} flash-message">
             {{ message }}
         </div>
     {%  endfor %}
+    </div>
 {% endfor %}

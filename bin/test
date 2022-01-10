@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
+set -eu
+
 docker-compose run --rm php vendor/bin/phpstan analyze --ansi
+
+docker-compose run --rm php vendor/bin/phpunit --colors

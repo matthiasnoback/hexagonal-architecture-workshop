@@ -15,9 +15,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             __DIR__ . '/config',
             __DIR__ . '/public',
             __DIR__ . '/src',
+            __DIR__ . '/test',
             __DIR__ . '/utils',
-            __DIR__ . '/update-schema.php',
             __DIR__ . '/ecs.php',
+            __DIR__ . '/rector.php',
         ]
     );
 

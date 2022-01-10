@@ -8,9 +8,9 @@ use RuntimeException;
 
 final class UserRepository
 {
-    private const ORGANIZER_ID = 1;
+    final public const ORGANIZER_ID = 1;
 
-    private const REGULAR_USER_ID = 2;
+    final public const REGULAR_USER_ID = 2;
 
     /**
      * @var array<int,array{userId:int,name:string}>

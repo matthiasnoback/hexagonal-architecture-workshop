@@ -12,10 +12,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         __DIR__ . '/config',
         __DIR__ . '/public',
         __DIR__ . '/src',
+        // No /test unfortunately, because Panther declares traits in a quasi-dynamic way
         __DIR__ . '/utils',
         __DIR__ . '/ecs.php',
         __DIR__ . '/rector.php',
-        __DIR__ . '/update-schema.php',
     ]);
 
     $parameters->set(Option::AUTO_IMPORT_NAMES, true);

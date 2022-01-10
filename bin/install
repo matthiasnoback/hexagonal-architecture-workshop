@@ -11,9 +11,6 @@ docker-compose pull
 echo "Installing Composer dependencies"
 docker-compose run --rm composer install
 
-echo "Set up Sqlite database"
-docker-compose run --rm php php update-schema.php
-
 echo "Starting all services in docker-compose.yml"
 docker-compose up -d
 

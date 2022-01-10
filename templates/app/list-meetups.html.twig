@@ -7,17 +7,21 @@
 
     <h1>Upcoming meetups</h1>
 
+    <div class="upcoming-meetups">
     {% for meetup in upcomingMeetups %}
         {% include "@app/_meetup.html.twig" with { meetup: meetup } %}
     {% else %}
         <p>No upcoming meetups</p>
     {% endfor %}
+    </div>
 
     <h1>Past meetups</h1>
 
+    <div class="past-meetups">
     {% for meetup in pastMeetups %}
         {% include "@app/_meetup.html.twig" with { meetup: meetup } %}
     {% else %}
         <p>No past meetups</p>
     {% endfor %}
+    </div>
 {% endblock %}
