@@ -39,50 +39,38 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
-                ScheduleMeetupHandler::class => function (ContainerInterface $container) {
-                    return new ScheduleMeetupHandler(
-                        $container->get(Session::class),
-                        $container->get(TemplateRendererInterface::class),
-                        $container->get(RouterInterface::class),
-                        $container->get(Connection::class)
-                    );
-                },
-                MeetupDetailsHandler::class => function (ContainerInterface $container) {
-                    return new MeetupDetailsHandler(
-                        $container->get(Connection::class),
-                        $container->get(UserRepository::class),
-                        $container->get(RsvpRepository::class),
-                        $container->get(TemplateRendererInterface::class)
-                    );
-                },
-                CancelMeetupHandler::class => function (ContainerInterface $container) {
-                    return new CancelMeetupHandler(
-                        $container->get(Connection::class),
-                        $container->get(Session::class),
-                        $container->get(RouterInterface::class)
-                    );
-                },
-                ListMeetupsHandler::class => function (ContainerInterface $container) {
-                    return new ListMeetupsHandler(
-                        $container->get(Connection::class),
-                        $container->get(TemplateRendererInterface::class)
-                    );
-                },
-                SwitchUserHandler::class => function (ContainerInterface $container) {
-                    return new SwitchUserHandler(
-                        $container->get(UserRepository::class),
-                        $container->get(Session::class)
-                    );
-                },
-                RsvpForMeetupHandler::class => function (ContainerInterface $container) {
-                    return new RsvpForMeetupHandler(
-                        $container->get(Connection::class),
-                        $container->get(Session::class),
-                        $container->get(RsvpRepository::class),
-                        $container->get(RouterInterface::class),
-                        $container->get(EventDispatcher::class),
-                    );
-                },
+                ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
+                    $container->get(Session::class),
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(Connection::class)
+                ),
+                MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
+                    $container->get(Connection::class),
+                    $container->get(UserRepository::class),
+                    $container->get(RsvpRepository::class),
+                    $container->get(TemplateRendererInterface::class)
+                ),
+                CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
+                    $container->get(Connection::class),
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class)
+                ),
+                ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
+                    $container->get(Connection::class),
+                    $container->get(TemplateRendererInterface::class)
+                ),
+                SwitchUserHandler::class => fn (ContainerInterface $container) => new SwitchUserHandler(
+                    $container->get(UserRepository::class),
+                    $container->get(Session::class)
+                ),
+                RsvpForMeetupHandler::class => fn (ContainerInterface $container) => new RsvpForMeetupHandler(
+                    $container->get(Connection::class),
+                    $container->get(Session::class),
+                    $container->get(RsvpRepository::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(EventDispatcher::class),
+                ),
                 EventDispatcher::class => function (ContainerInterface $container) {
                     $eventDispatcher = new ConfigurableEventDispatcher();
 
@@ -98,32 +86,28 @@ class ConfigProvider
 
                     return $eventDispatcher;
                 },
-                Session::class => function (ContainerInterface $container) {
-                    return new Session($container->get(UserRepository::class));
-                },
-                UserRepository::class => function () {
-                    return new UserRepository();
-                },
-                RsvpRepository::class => function (ContainerInterface $container) {
-                    return new RsvpRepository($container->get(Connection::class));
-                },
-                Connection::class => function () {
-                    return DriverManager::getConnection(
-                        [
-                            'driver' => 'pdo_sqlite',
-                            'path' => __DIR__ . '/../../var/app.sqlite',
-                        ]
-                    );
-                },
-                SchemaManager::class => function (ContainerInterface $container) {
-                    return new SchemaManager($container->get(Connection::class));
-                },
-                UserExtension::class => function (ContainerInterface $container) {
-                    return new UserExtension($container->get(Session::class), $container->get(UserRepository::class));
-                },
-                FlashExtension::class => function (ContainerInterface $container) {
-                    return new FlashExtension($container->get(Session::class));
-                },
+                Session::class => fn (ContainerInterface $container) => new Session($container->get(
+                    UserRepository::class
+                )),
+                UserRepository::class => fn () => new UserRepository(),
+                RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
+                    Connection::class
+                )),
+                Connection::class => fn () => DriverManager::getConnection(
+                    [
+                        'driver' => 'pdo_sqlite',
+                        'path' => __DIR__ . '/../../var/app.sqlite',
+                    ]
+                ),
+                SchemaManager::class => fn (ContainerInterface $container) => new SchemaManager($container->get(
+                    Connection::class
+                )),
+                UserExtension::class => fn (ContainerInterface $container) => new UserExtension($container->get(
+                    Session::class
+                ), $container->get(UserRepository::class)),
+                FlashExtension::class => fn (ContainerInterface $container) => new FlashExtension($container->get(
+                    Session::class
+                )),
             ],
         ];
     }

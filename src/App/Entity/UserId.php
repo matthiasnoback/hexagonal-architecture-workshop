@@ -6,11 +6,9 @@ namespace App\Entity;
 
 final class UserId
 {
-    private int $id;
-
-    private function __construct(int $id)
-    {
-        $this->id = $id;
+    private function __construct(
+        private readonly int $id
+    ) {
     }
 
     public static function fromInt(int $id): self

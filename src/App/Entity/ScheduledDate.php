@@ -12,13 +12,11 @@ use Throwable;
 
 final class ScheduledDate
 {
-    public const DATE_TIME_FORMAT = 'Y-m-d H:i';
+    final public const DATE_TIME_FORMAT = 'Y-m-d H:i';
 
-    private string $dateTime;
-
-    private function __construct(string $dateTime)
-    {
-        $this->dateTime = $dateTime;
+    private function __construct(
+        private readonly string $dateTime
+    ) {
     }
 
     public static function fromString(string $dateTime): self

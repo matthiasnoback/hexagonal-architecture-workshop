@@ -20,24 +20,12 @@ use RuntimeException;
 
 final class MeetupDetailsHandler implements RequestHandlerInterface
 {
-    private Connection $connection;
-
-    private UserRepository $userRepository;
-
-    private TemplateRendererInterface $renderer;
-
-    private RsvpRepository $rsvpRepository;
-
     public function __construct(
-        Connection $connection,
-        UserRepository $userRepository,
-        RsvpRepository $rsvpRepository,
-        TemplateRendererInterface $renderer
+        private readonly Connection $connection,
+        private readonly UserRepository $userRepository,
+        private readonly RsvpRepository $rsvpRepository,
+        private readonly TemplateRendererInterface $renderer
     ) {
-        $this->connection = $connection;
-        $this->renderer = $renderer;
-        $this->userRepository = $userRepository;
-        $this->rsvpRepository = $rsvpRepository;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -60,12 +48,7 @@ final class MeetupDetailsHandler implements RequestHandlerInterface
         $organizer = $this->userRepository->getById(UserId::fromInt($meetup['organizerId']));
         Assert::that($meetup['meetupId'])->integer();
         $rsvps = $this->rsvpRepository->getByMeetupId((string) $meetup['meetupId']);
-        $users = array_map(
-            function (Rsvp $rsvp) {
-                return $this->userRepository->getById($rsvp->userId());
-            },
-            $rsvps
-        );
+        $users = array_map(fn (Rsvp $rsvp) => $this->userRepository->getById($rsvp->userId()), $rsvps);
 
         return new HtmlResponse(
             $this->renderer->render(

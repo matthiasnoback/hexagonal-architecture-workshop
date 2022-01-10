@@ -15,23 +15,20 @@ final class Session
 
     private const LOGGED_IN_USER_ID = 'logged_in_userId';
 
-    private UserRepository $userRepository;
-
     /**
      * @var array<string,mixed>
      */
     private array $sessionData;
 
-    public function __construct(UserRepository $userRepository)
-    {
+    public function __construct(
+        private readonly UserRepository $userRepository
+    ) {
         if (PHP_SAPI === 'cli') {
             $this->sessionData = [];
         } else {
             session_start();
             $this->sessionData = &$_SESSION;
         }
-
-        $this->userRepository = $userRepository;
     }
 
     public function getLoggedInUser(): User

@@ -19,24 +19,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class ScheduleMeetupHandler implements RequestHandlerInterface
 {
-    private Session $session;
-
-    private TemplateRendererInterface $renderer;
-
-    private RouterInterface $router;
-
-    private Connection $connection;
-
     public function __construct(
-        Session $session,
-        TemplateRendererInterface $renderer,
-        RouterInterface $router,
-        Connection $connection
+        private readonly Session $session,
+        private readonly TemplateRendererInterface $renderer,
+        private readonly RouterInterface $router,
+        private readonly Connection $connection
     ) {
-        $this->session = $session;
-        $this->renderer = $renderer;
-        $this->router = $router;
-        $this->connection = $connection;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -59,7 +47,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
             }
             try {
                 ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
-            } catch (Exception $exception) {
+            } catch (Exception) {
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 

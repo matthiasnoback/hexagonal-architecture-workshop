@@ -9,7 +9,7 @@ use Mezzio\Helper\ConfigProvider;
 $aggregator = new ConfigAggregator([
     \Mezzio\Twig\ConfigProvider::class,
     \Mezzio\Tooling\ConfigProvider::class,
-    \Mezzio\Helper\ConfigProvider::class,
+    ConfigProvider::class,
     \Mezzio\Router\FastRouteRouter\ConfigProvider::class,
     \Laminas\HttpHandlerRunner\ConfigProvider::class,
     ConfigProvider::class,

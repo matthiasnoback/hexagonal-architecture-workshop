@@ -16,17 +16,11 @@ use RuntimeException;
 
 final class CancelMeetupHandler implements RequestHandlerInterface
 {
-    private Connection $connection;
-
-    private Session $session;
-
-    private RouterInterface $router;
-
-    public function __construct(Connection $connection, Session $session, RouterInterface $router)
-    {
-        $this->connection = $connection;
-        $this->session = $session;
-        $this->router = $router;
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly Session $session,
+        private readonly RouterInterface $router
+    ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

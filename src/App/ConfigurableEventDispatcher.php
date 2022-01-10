@@ -49,7 +49,7 @@ final class ConfigurableEventDispatcher implements EventDispatcher
             $this->notifyListener($listener, $event);
         }
 
-        foreach ($this->listenersPerEvent[get_class($event)] ?? [] as $listener) {
+        foreach ($this->listenersPerEvent[$event::class] ?? [] as $listener) {
             $this->notifyListener($listener, $event);
         }
     }

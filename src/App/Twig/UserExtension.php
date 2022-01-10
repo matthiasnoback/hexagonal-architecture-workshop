@@ -11,14 +11,10 @@ use Twig\Extension\GlobalsInterface;
 
 final class UserExtension extends AbstractExtension implements GlobalsInterface
 {
-    private Session $session;
-
-    private UserRepository $userRepository;
-
-    public function __construct(Session $session, UserRepository $userRepository)
-    {
-        $this->session = $session;
-        $this->userRepository = $userRepository;
+    public function __construct(
+        private readonly Session $session,
+        private readonly UserRepository $userRepository
+    ) {
     }
 
     public function getGlobals(): array

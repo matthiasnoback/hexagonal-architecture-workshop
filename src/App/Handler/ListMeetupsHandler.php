@@ -17,14 +17,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class ListMeetupsHandler implements RequestHandlerInterface
 {
-    private Connection $connection;
-
-    private TemplateRendererInterface $renderer;
-
-    public function __construct(Connection $connection, TemplateRendererInterface $renderer)
-    {
-        $this->connection = $connection;
-        $this->renderer = $renderer;
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly TemplateRendererInterface $renderer
+    ) {
     }
 
     public function handle(Request $request): ResponseInterface

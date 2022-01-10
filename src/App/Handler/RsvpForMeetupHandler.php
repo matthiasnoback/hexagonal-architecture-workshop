@@ -21,28 +21,13 @@ use RuntimeException;
 
 final class RsvpForMeetupHandler implements RequestHandlerInterface
 {
-    private Connection $connection;
-
-    private Session $session;
-
-    private RsvpRepository $rsvpRepository;
-
-    private RouterInterface $router;
-
-    private EventDispatcher $eventDispatcher;
-
     public function __construct(
-        Connection $connection,
-        Session $session,
-        RsvpRepository $rsvpRepository,
-        RouterInterface $router,
-        EventDispatcher $eventDispatcher
+        private readonly Connection $connection,
+        private readonly Session $session,
+        private readonly RsvpRepository $rsvpRepository,
+        private readonly RouterInterface $router,
+        private readonly EventDispatcher $eventDispatcher
     ) {
-        $this->connection = $connection;
-        $this->session = $session;
-        $this->rsvpRepository = $rsvpRepository;
-        $this->router = $router;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

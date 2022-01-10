@@ -10,11 +10,9 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 final class SchemaManager
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private readonly Connection $connection
+    ) {
     }
 
     public function updateSchema(): void

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-use Mezzio\Container;
+use Mezzio\Container\WhoopsErrorResponseGeneratorFactory;
+use Mezzio\Container\WhoopsFactory;
+use Mezzio\Container\WhoopsPageHandlerFactory;
+
 use Mezzio\Middleware\ErrorResponseGenerator;
 
 return [
@@ -23,9 +26,9 @@ return [
         ],
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [
-            ErrorResponseGenerator::class => Container\WhoopsErrorResponseGeneratorFactory::class,
-            'Mezzio\Whoops' => Container\WhoopsFactory::class,
-            'Mezzio\WhoopsPageHandler' => Container\WhoopsPageHandlerFactory::class,
+            ErrorResponseGenerator::class => WhoopsErrorResponseGeneratorFactory::class,
+            'Mezzio\Whoops' => WhoopsFactory::class,
+            'Mezzio\WhoopsPageHandler' => WhoopsPageHandlerFactory::class,
         ],
         // Fully\Qualified\ClassName::class => Fully\Qualified\FactoryName::class,
     ],

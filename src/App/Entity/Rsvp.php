@@ -9,17 +9,11 @@ use Ramsey\Uuid\UuidInterface;
 
 final class Rsvp
 {
-    private UuidInterface $rsvpId;
-
-    private string $meetupId;
-
-    private UserId $userId;
-
-    private function __construct(UuidInterface $rsvpId, string $meetupId, UserId $userId)
-    {
-        $this->rsvpId = $rsvpId;
-        $this->meetupId = $meetupId;
-        $this->userId = $userId;
+    private function __construct(
+        private readonly UuidInterface $rsvpId,
+        private readonly string $meetupId,
+        private readonly UserId $userId
+    ) {
     }
 
     public static function create(string $meetupId, UserId $userId): self

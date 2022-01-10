@@ -10,11 +10,9 @@ use Twig\Extension\GlobalsInterface;
 
 final class FlashExtension extends AbstractExtension implements GlobalsInterface
 {
-    private Session $session;
-
-    public function __construct(Session $session)
-    {
-        $this->session = $session;
+    public function __construct(
+        private readonly Session $session
+    ) {
     }
 
     public function getGlobals(): array

@@ -10,11 +10,9 @@ use Doctrine\DBAL\Driver\Statement;
 
 final class RsvpRepository
 {
-    private Connection $connection;
-
-    public function __construct(Connection $connection)
-    {
-        $this->connection = $connection;
+    public function __construct(
+        private readonly Connection $connection
+    ) {
     }
 
     public function save(Rsvp $rsvp): void
@@ -47,8 +45,6 @@ final class RsvpRepository
         Assert::that($statement)->isInstanceOf(Statement::class);
         $records = $statement->fetchAllAssociative();
 
-        return array_map(function (array $record) {
-            return Rsvp::fromDatabaseRecord($record);
-        }, $records);
+        return array_map(fn (array $record) => Rsvp::fromDatabaseRecord($record), $records);
     }
 }

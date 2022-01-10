@@ -16,14 +16,10 @@ use RuntimeException;
 
 final class SwitchUserHandler implements RequestHandlerInterface
 {
-    private UserRepository $userRepository;
-
-    private Session $session;
-
-    public function __construct(UserRepository $userRepository, Session $session)
-    {
-        $this->session = $session;
-        $this->userRepository = $userRepository;
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly Session $session
+    ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

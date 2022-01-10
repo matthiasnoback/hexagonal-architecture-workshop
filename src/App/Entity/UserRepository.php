@@ -42,9 +42,7 @@ final class UserRepository
      */
     public function findAll(): array
     {
-        return array_map(function (array $record) {
-            return User::fromDatabaseRecord($record);
-        }, $this->records);
+        return array_map(fn (array $record) => User::fromDatabaseRecord($record), $this->records);
     }
 
     public function getOrganizerId(): UserId
