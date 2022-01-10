@@ -6,6 +6,7 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
+use Assert\Assert;
 
 final class Session
 {
@@ -33,9 +34,12 @@ final class Session
 
     public function getLoggedInUser(): User
     {
+        $loggedInUserId = $this->get(self::LOGGED_IN_USER_ID, self::DEFAULT_USER_ID);
+        Assert::that($loggedInUserId)->integerish();
+
         return $this->userRepository->getById(
             UserId::fromInt(
-                (int)$this->get(self::LOGGED_IN_USER_ID, self::DEFAULT_USER_ID)
+                (int)$loggedInUserId
             )
         );
     }
@@ -45,11 +49,7 @@ final class Session
         $this->set(self::LOGGED_IN_USER_ID, $id->asInt());
     }
 
-    /**
-     * @return string|bool|int|null
-     * @param string|bool|int|null $defaultValue
-     */
-    public function get(string $key, $defaultValue = null)
+    public function get(string $key, mixed $defaultValue = null): mixed
     {
         if (isset($this->sessionData[$key])) {
             return $this->sessionData[$key];
@@ -58,10 +58,7 @@ final class Session
         return $defaultValue;
     }
 
-    /**
-     * @param string|bool|int|null $value
-     */
-    public function set(string $key, $value): void
+    public function set(string $key, mixed $value): void
     {
         $this->sessionData[$key] = $value;
     }
@@ -78,12 +75,16 @@ final class Session
 
     private function addFlash(string $type, string $message): void
     {
+        if (!is_array($this->sessionData['flashes'])) {
+            $this->sessionData['flashes'] = [];
+        }
+
         $this->sessionData['flashes'][$type][] = $message;
     }
 
     public function getFlashes(): array
     {
-        $flashes = $this->sessionData['flashes'] ?? [];
+        $flashes = is_array($this->sessionData['flashes']) ? $this->sessionData['flashes'] : [];
 
         $this->sessionData['flashes'] = [];
 

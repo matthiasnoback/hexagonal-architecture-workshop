@@ -1,0 +1,13 @@
+parameters:
+    level: max
+    paths:
+        - config/
+        - src/
+        - utils/
+    checkMissingIterableValueType: false
+
+services:
+	-
+		class: "Utils\\PHPStan\\ContainerGetReturnTypeExtension"
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
