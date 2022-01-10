@@ -2,8 +2,10 @@ parameters:
     level: max
     paths:
         - config/
+        - public/
         - src/
         - utils/
+        - update-schema.php
     checkMissingIterableValueType: false
 
 services:

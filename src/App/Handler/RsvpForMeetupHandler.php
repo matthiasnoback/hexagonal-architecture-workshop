@@ -1,22 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Handler;
 
-use Assert\Assert;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
 use App\Entity\Rsvp;
 use App\Entity\RsvpRepository;
 use App\Entity\UserHasRsvpd;
 use App\EventDispatcher;
 use App\Session;
+use Assert\Assert;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Laminas\Diactoros\Response\RedirectResponse;
-use Mezzio\Router\RouterInterface;
 
 final class RsvpForMeetupHandler implements RequestHandlerInterface
 {
@@ -27,6 +28,7 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
     private RsvpRepository $rsvpRepository;
 
     private RouterInterface $router;
+
     private EventDispatcher $eventDispatcher;
 
     public function __construct(
@@ -48,7 +50,7 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
         $postData = $request->getParsedBody();
         Assert::that($postData)->isArray();
 
-        if (!isset($postData['meetupId'])) {
+        if (! isset($postData['meetupId'])) {
             throw new RuntimeException('Bad request');
         }
 
@@ -67,10 +69,7 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
             throw new RuntimeException('Meetup not found');
         }
 
-        $rsvp = Rsvp::create(
-            $postData['meetupId'],
-            $this->session->getLoggedInUser()->userId()
-        );
+        $rsvp = Rsvp::create($postData['meetupId'], $this->session->getLoggedInUser() ->userId());
         $this->rsvpRepository->save($rsvp);
 
         $this->eventDispatcher->dispatch(
@@ -78,12 +77,9 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
         );
 
         return new RedirectResponse(
-            $this->router->generateUri(
-                'meetup_details',
-                [
-                    'id' => $postData['meetupId']
-                ]
-            )
+            $this->router->generateUri('meetup_details', [
+                'id' => $postData['meetupId'],
+            ])
         );
     }
 }

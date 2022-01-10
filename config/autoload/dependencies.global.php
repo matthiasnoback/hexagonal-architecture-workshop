@@ -17,23 +17,23 @@ return [
         ],
         // Use 'invokables' for constructor-less services, or services that do
         // not require arguments to the constructor. Map a service name to the
-        // class name.
+
         'invokables' => [
             // Fully\Qualified\InterfaceName::class => Fully\Qualified\ClassName::class,
         ],
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [
             ErrorResponseGenerator::class => Container\WhoopsErrorResponseGeneratorFactory::class,
-            'Mezzio\Whoops'               => Container\WhoopsFactory::class,
-            'Mezzio\WhoopsPageHandler'    => Container\WhoopsPageHandlerFactory::class,
+            'Mezzio\Whoops' => Container\WhoopsFactory::class,
+            'Mezzio\WhoopsPageHandler' => Container\WhoopsPageHandlerFactory::class,
         ],
         // Fully\Qualified\ClassName::class => Fully\Qualified\FactoryName::class,
     ],
-    'whoops'       => [
+    'whoops' => [
         'json_exceptions' => [
-            'display'    => true,
+            'display' => true,
             'show_trace' => true,
-            'ajax_only'  => true,
+            'ajax_only' => true,
         ],
     ],
 ];

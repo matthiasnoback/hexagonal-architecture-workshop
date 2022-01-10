@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -21,9 +22,11 @@ final class RsvpRepository
         $this->connection->insert(
             'rsvps',
             [
-                'rsvpId' => $rsvp->rsvpId()->toString(),
+                'rsvpId' => $rsvp->rsvpId()
+                    ->toString(),
                 'meetupId' => $rsvp->meetupId(),
-                'userId' => $rsvp->userId()->asInt()
+                'userId' => $rsvp->userId()
+                    ->asInt(),
             ]
         );
     }
@@ -44,11 +47,8 @@ final class RsvpRepository
         Assert::that($statement)->isInstanceOf(Statement::class);
         $records = $statement->fetchAllAssociative();
 
-        return array_map(
-            function (array $record) {
-                return Rsvp::fromDatabaseRecord($record);
-            },
-            $records
-        );
+        return array_map(function (array $record) {
+            return Rsvp::fromDatabaseRecord($record);
+        }, $records);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -15,11 +16,11 @@ final class User
     {
     }
 
-    public static function fromDatabaseRecord(array $record): User
+    public static function fromDatabaseRecord(array $record): self
     {
         $user = new self();
 
-        $user->userId = (int)$record['userId'];
+        $user->userId = (int) $record['userId'];
         $user->name = $record['name'];
         $user->emailAddress = $record['emailAddress'];
 

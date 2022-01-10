@@ -1,19 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Entity\ScheduledDate;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Exception;
-use App\Entity\ScheduledDate;
 use Laminas\Diactoros\Response\HtmlResponse;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 final class ScheduleMeetupHandler implements RequestHandlerInterface
@@ -43,7 +44,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         $formErrors = [];
         $formData = [
             // This is a nice place to set some defaults
-            'scheduleForTime' => '20:00'
+            'scheduleForTime' => '20:00',
         ];
 
         if ($request->getMethod() === 'POST') {
@@ -57,34 +58,31 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $formErrors['description'][] = 'Provide a description';
             }
             try {
-                ScheduledDate::fromString(
-                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-                );
+                ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
             } catch (Exception $exception) {
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 
             if (empty($formErrors)) {
                 $record = [
-                    'organizerId' => $this->session->getLoggedInUser()->userId()->asInt(),
+                    'organizerId' => $this->session->getLoggedInUser()
+                        ->userId()
+                        ->asInt(),
                     'name' => $formData['name'],
                     'description' => $formData['description'],
                     'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    'wasCancelled' => 0
+                    'wasCancelled' => 0,
                 ];
                 $this->connection->insert('meetups', $record);
 
-                $meetupId = (int)$this->connection->lastInsertId();
+                $meetupId = (int) $this->connection->lastInsertId();
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 
                 return new RedirectResponse(
-                    $this->router->generateUri(
-                        'meetup_details',
-                        [
-                            'id' => $meetupId
-                        ]
-                    )
+                    $this->router->generateUri('meetup_details', [
+                        'id' => $meetupId,
+                    ])
                 );
             }
         }
@@ -94,7 +92,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 'app::schedule-meetup.html.twig',
                 [
                     'formData' => $formData,
-                    'formErrors' => $formErrors
+                    'formErrors' => $formErrors,
                 ]
             )
         );

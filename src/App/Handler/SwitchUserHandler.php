@@ -1,17 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Handler;
 
-use Assert\Assert;
 use App\Entity\UserId;
-use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 use App\Entity\UserRepository;
 use App\Session;
+use Assert\Assert;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Laminas\Diactoros\Response\RedirectResponse;
+use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 final class SwitchUserHandler implements RequestHandlerInterface
 {
@@ -19,10 +20,8 @@ final class SwitchUserHandler implements RequestHandlerInterface
 
     private Session $session;
 
-    public function __construct(
-        UserRepository $userRepository,
-        Session $session
-    ) {
+    public function __construct(UserRepository $userRepository, Session $session)
+    {
         $this->session = $session;
         $this->userRepository = $userRepository;
     }
@@ -32,13 +31,11 @@ final class SwitchUserHandler implements RequestHandlerInterface
         $postData = $request->getParsedBody();
         Assert::that($postData)->isArray();
 
-        if (!isset($postData['userId'])) {
+        if (! isset($postData['userId'])) {
             throw new RuntimeException('Bad request');
         }
 
-        $user = $this->userRepository->getById(
-            UserId::fromInt((int)$postData['userId'])
-        );
+        $user = $this->userRepository->getById(UserId::fromInt((int) $postData['userId']));
         $this->session->setLoggedInUserId($user->userId());
 
         return new RedirectResponse('/');

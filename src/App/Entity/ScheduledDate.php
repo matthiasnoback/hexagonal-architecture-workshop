@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -20,7 +21,7 @@ final class ScheduledDate
         $this->dateTime = $dateTime;
     }
 
-    public static function fromString(string $dateTime): ScheduledDate
+    public static function fromString(string $dateTime): self
     {
         try {
             $dateTimeImmutable = DateTimeImmutable::createFromFormat(self::DATE_TIME_FORMAT, $dateTime);
@@ -42,7 +43,7 @@ final class ScheduledDate
         return self::fromDateTime($dateTimeImmutable);
     }
 
-    public static function fromDateTime(DateTimeImmutable $dateTime): ScheduledDate
+    public static function fromDateTime(DateTimeImmutable $dateTime): self
     {
         return new self($dateTime->format(self::DATE_TIME_FORMAT));
     }

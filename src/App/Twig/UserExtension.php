@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Twig;
@@ -24,7 +25,7 @@ final class UserExtension extends AbstractExtension implements GlobalsInterface
     {
         return [
             'loggedInUser' => $this->session->getLoggedInUser(),
-            'allUsers' => $this->userRepository->findAll()
+            'allUsers' => $this->userRepository->findAll(),
         ];
     }
 }

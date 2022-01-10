@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -8,6 +9,7 @@ use RuntimeException;
 final class UserRepository
 {
     private const ORGANIZER_ID = 1;
+
     private const REGULAR_USER_ID = 2;
 
     /**
@@ -17,18 +19,18 @@ final class UserRepository
         self::ORGANIZER_ID => [
             'userId' => self::ORGANIZER_ID,
             'name' => 'Organizer',
-            'emailAddress' => 'organizer@example.com'
+            'emailAddress' => 'organizer@example.com',
         ],
         self::REGULAR_USER_ID => [
             'userId' => self::REGULAR_USER_ID,
             'name' => 'Regular user',
-            'emailAddress' => 'user@example.com'
-        ]
+            'emailAddress' => 'user@example.com',
+        ],
     ];
 
     public function getById(UserId $id): User
     {
-        if (!isset($this->records[$id->asInt()])) {
+        if (! isset($this->records[$id->asInt()])) {
             throw new RuntimeException('User not found');
         }
 
@@ -40,11 +42,9 @@ final class UserRepository
      */
     public function findAll(): array
     {
-        return array_map(
-            function (array $record) {
-                return User::fromDatabaseRecord($record);
-            },
-            $this->records);
+        return array_map(function (array $record) {
+            return User::fromDatabaseRecord($record);
+        }, $this->records);
     }
 
     public function getOrganizerId(): UserId

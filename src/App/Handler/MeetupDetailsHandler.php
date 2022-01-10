@@ -1,21 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Handler;
 
-use Assert\Assert;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement;
 use App\Entity\Rsvp;
 use App\Entity\RsvpRepository;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
+use Assert\Assert;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Mezzio\Template\TemplateRendererInterface;
 
 final class MeetupDetailsHandler implements RequestHandlerInterface
 {
@@ -58,7 +59,7 @@ final class MeetupDetailsHandler implements RequestHandlerInterface
         Assert::that($meetup['organizerId'])->integer();
         $organizer = $this->userRepository->getById(UserId::fromInt($meetup['organizerId']));
         Assert::that($meetup['meetupId'])->integer();
-        $rsvps = $this->rsvpRepository->getByMeetupId((string)$meetup['meetupId']);
+        $rsvps = $this->rsvpRepository->getByMeetupId((string) $meetup['meetupId']);
         $users = array_map(
             function (Rsvp $rsvp) {
                 return $this->userRepository->getById($rsvp->userId());
@@ -72,8 +73,9 @@ final class MeetupDetailsHandler implements RequestHandlerInterface
                 [
                     'meetup' => $meetup,
                     'organizer' => $organizer,
-                    'attendees' => $users
-                ])
+                    'attendees' => $users,
+                ]
+            )
         );
     }
 }

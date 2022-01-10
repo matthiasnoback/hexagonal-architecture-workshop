@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App;
@@ -26,7 +27,8 @@ final class SchemaManager
     {
         foreach ($this->provideSchema()->getTables() as $table) {
             $this->connection->exec(
-                $this->connection->getDatabasePlatform()->getTruncateTableSQL($table->getName())
+                $this->connection->getDatabasePlatform()
+                    ->getTruncateTableSQL($table->getName())
             );
         }
     }
@@ -36,12 +38,16 @@ final class SchemaManager
         $schema = new Schema();
 
         $meetupsTable = $schema->createTable('meetups');
-        $meetupsTable->addColumn('meetupId', 'integer', ['autoincrement' => true]);
+        $meetupsTable->addColumn('meetupId', 'integer', [
+            'autoincrement' => true,
+        ]);
         $meetupsTable->addColumn('organizerId', 'integer');
         $meetupsTable->addColumn('name', 'string');
         $meetupsTable->addColumn('description', 'string');
         $meetupsTable->addColumn('scheduledFor', 'string');
-        $meetupsTable->addColumn('wasCancelled', 'integer', ['default' => 0]);
+        $meetupsTable->addColumn('wasCancelled', 'integer', [
+            'default' => 0,
+        ]);
         $meetupsTable->setPrimaryKey(['meetupId']);
 
         $rsvpsTable = $schema->createTable('rsvps');

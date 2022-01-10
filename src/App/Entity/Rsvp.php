@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -14,27 +15,24 @@ final class Rsvp
 
     private UserId $userId;
 
-    private function __construct(
-        UuidInterface $rsvpId,
-        string $meetupId,
-        UserId $userId
-    ) {
+    private function __construct(UuidInterface $rsvpId, string $meetupId, UserId $userId)
+    {
         $this->rsvpId = $rsvpId;
         $this->meetupId = $meetupId;
         $this->userId = $userId;
     }
 
-    public static function create(string $meetupId, UserId $userId): Rsvp
+    public static function create(string $meetupId, UserId $userId): self
     {
         return new self(Uuid::uuid4(), $meetupId, $userId);
     }
 
-    public static function fromDatabaseRecord(array $record): Rsvp
+    public static function fromDatabaseRecord(array $record): self
     {
         return new self(
             Uuid::fromString($record['rsvpId']),
             $record['meetupId'],
-            UserId::fromInt((int)$record['userId'])
+            UserId::fromInt((int) $record['userId'])
         );
     }
 

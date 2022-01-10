@@ -6,6 +6,7 @@ namespace App;
 
 use App\Entity\RsvpRepository;
 use App\Entity\UserHasRsvpd;
+use App\Entity\UserRepository;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\MeetupDetailsHandler;
@@ -16,7 +17,6 @@ use App\Twig\FlashExtension;
 use App\Twig\UserExtension;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use App\Entity\UserRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -29,19 +29,15 @@ class ConfigProvider
             'dependencies' => $this->getDependencies(),
             'templates' => $this->getTemplates(),
             'twig' => [
-                'extensions' => [
-                    UserExtension::class,
-                    FlashExtension::class
-                ]
-            ]
+                'extensions' => [UserExtension::class, FlashExtension::class],
+            ],
         ];
     }
 
     public function getDependencies(): array
     {
         return [
-            'invokables' => [
-            ],
+            'invokables' => [],
             'factories' => [
                 ScheduleMeetupHandler::class => function (ContainerInterface $container) {
                     return new ScheduleMeetupHandler(
@@ -115,7 +111,7 @@ class ConfigProvider
                     return DriverManager::getConnection(
                         [
                             'driver' => 'pdo_sqlite',
-                            'path' => __DIR__ . '/../../var/app.sqlite'
+                            'path' => __DIR__ . '/../../var/app.sqlite',
                         ]
                     );
                 },
@@ -127,7 +123,7 @@ class ConfigProvider
                 },
                 FlashExtension::class => function (ContainerInterface $container) {
                     return new FlashExtension($container->get(Session::class));
-                }
+                },
             ],
         ];
     }

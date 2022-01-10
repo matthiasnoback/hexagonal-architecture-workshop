@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App;
@@ -11,6 +12,7 @@ use Assert\Assert;
 final class Session
 {
     private const DEFAULT_USER_ID = 1;
+
     private const LOGGED_IN_USER_ID = 'logged_in_userId';
 
     private UserRepository $userRepository;
@@ -22,7 +24,7 @@ final class Session
 
     public function __construct(UserRepository $userRepository)
     {
-        if (php_sapi_name() === 'cli') {
+        if (PHP_SAPI === 'cli') {
             $this->sessionData = [];
         } else {
             session_start();
@@ -37,11 +39,7 @@ final class Session
         $loggedInUserId = $this->get(self::LOGGED_IN_USER_ID, self::DEFAULT_USER_ID);
         Assert::that($loggedInUserId)->integerish();
 
-        return $this->userRepository->getById(
-            UserId::fromInt(
-                (int)$loggedInUserId
-            )
-        );
+        return $this->userRepository->getById(UserId::fromInt((int) $loggedInUserId));
     }
 
     public function setLoggedInUserId(UserId $id): void
@@ -73,15 +71,6 @@ final class Session
         $this->addFlash('success', $message);
     }
 
-    private function addFlash(string $type, string $message): void
-    {
-        if (!is_array($this->sessionData['flashes'])) {
-            $this->sessionData['flashes'] = [];
-        }
-
-        $this->sessionData['flashes'][$type][] = $message;
-    }
-
     public function getFlashes(): array
     {
         $flashes = is_array($this->sessionData['flashes']) ? $this->sessionData['flashes'] : [];
@@ -89,5 +78,14 @@ final class Session
         $this->sessionData['flashes'] = [];
 
         return $flashes;
+    }
+
+    private function addFlash(string $type, string $message): void
+    {
+        if (! is_array($this->sessionData['flashes'])) {
+            $this->sessionData['flashes'] = [];
+        }
+
+        $this->sessionData['flashes'][$type][] = $message;
     }
 }

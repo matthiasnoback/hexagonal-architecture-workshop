@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Twig;
@@ -19,7 +20,7 @@ final class FlashExtension extends AbstractExtension implements GlobalsInterface
     public function getGlobals(): array
     {
         return [
-            'allFlashes' => $this->session->getFlashes()
+            'allFlashes' => $this->session->getFlashes(),
         ];
     }
 }

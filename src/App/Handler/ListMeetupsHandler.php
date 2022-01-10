@@ -1,18 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Entity\ScheduledDate;
 use Assert\Assert;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
-use App\Entity\ScheduledDate;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
-use Mezzio\Template\TemplateRendererInterface;
 
 final class ListMeetupsHandler implements RequestHandlerInterface
 {
@@ -20,10 +21,8 @@ final class ListMeetupsHandler implements RequestHandlerInterface
 
     private TemplateRendererInterface $renderer;
 
-    public function __construct(
-        Connection $connection,
-        TemplateRendererInterface $renderer
-    ) {
+    public function __construct(Connection $connection, TemplateRendererInterface $renderer)
+    {
         $this->connection = $connection;
         $this->renderer = $renderer;
     }
@@ -61,8 +60,9 @@ final class ListMeetupsHandler implements RequestHandlerInterface
                 'app::list-meetups.html.twig',
                 [
                     'upcomingMeetups' => $upcomingMeetups,
-                    'pastMeetups' => $pastMeetups
-                ])
+                    'pastMeetups' => $pastMeetups,
+                ]
+            )
         );
     }
 }
