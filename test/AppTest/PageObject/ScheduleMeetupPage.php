@@ -15,14 +15,11 @@ final class ScheduleMeetupPage extends AbstractPageObject
         string $date,
         string $time
     ): void {
-        $form = $this->crawler->selectButton('Schedule this meetup')
-            ->form();
-
-        $form['name']->setValue($name);
-        $form['description']->setValue($description);
-        $form['scheduleForDate']->setValue($date);
-        $form['scheduleForTime']->setValue($time);
-
-        $browser->submit($form);
+        $browser->submitForm('Schedule this meetup', [
+            'name' => $name,
+            'description' => $description,
+            'scheduleForDate' => $date,
+            'scheduleForTime' => $time,
+        ]);
     }
 }

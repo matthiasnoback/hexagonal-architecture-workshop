@@ -8,12 +8,13 @@ final class CancelMeetupTest extends AbstractBrowserTest
 {
     public function testCancelMeetup(): void
     {
-        $this->iAmLoggedInAsOrganizer();
+        $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
+        $this->login('organizer@gmail.com');
 
-        $this->iScheduleAMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
 
-        $this->iCancelMeetup('Coding Dojo');
+        $this->cancelMeetup('Coding Dojo');
 
-        $this->iShouldNotSeeUpcomingMeetup('Coding Dojo');
+        $this->assertUpcomingMeetupDoesNotExist('Coding Dojo');
     }
 }

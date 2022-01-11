@@ -33,35 +33,13 @@ abstract class AbstractBrowserTest extends TestCase
         ]);
     }
 
-    protected function iAmLoggedInAsOrganizer(): void
-    {
-        $this->logout();
-
-        $this->signUpPage()
-            ->signUp($this->browser, 'Organizer', 'organizer@gmail.com', 'Organizer');
-
-        $this->loginPage()
-            ->logIn($this->browser, 'organizer@gmail.com');
-    }
-
-    protected function iAmLoggedInAsRegularUser(): void
-    {
-        $this->logout();
-
-        $this->signUpPage()
-            ->signUp($this->browser, 'Regular user', 'user@gmail.com', 'RegularUser');
-
-        $this->loginPage()
-            ->logIn($this->browser, 'user@gmail.com');
-    }
-
-    protected function iScheduleAMeetup(string $name, string $description, string $date, string $time): void
+    protected function scheduleMeetup(string $name, string $description, string $date, string $time): void
     {
         (new ScheduleMeetupPage($this->browser->request('GET', '/schedule-meetup')))
             ->scheduleMeetup($this->browser, $name, $description, $date, $time);
     }
 
-    protected function iCancelMeetup(string $name): void
+    protected function cancelMeetup(string $name): void
     {
         $this->listMeetupsPage()
             ->upcomingMeetup($name)
@@ -69,7 +47,7 @@ abstract class AbstractBrowserTest extends TestCase
             ->cancelMeetup($this->browser);
     }
 
-    protected function iShouldSeeUpcomingMeetup(string $expectedName): void
+    protected function assertUpcomingMeetupExists(string $expectedName): void
     {
         self::assertContains(
             $expectedName,
@@ -77,7 +55,7 @@ abstract class AbstractBrowserTest extends TestCase
         );
     }
 
-    protected function iShouldNotSeeUpcomingMeetup(string $expectedName): void
+    protected function assertUpcomingMeetupDoesNotExist(string $expectedName): void
     {
         self::assertNotContains(
             $expectedName,
@@ -90,22 +68,24 @@ abstract class AbstractBrowserTest extends TestCase
         return new ListMeetupsPage($this->browser->request('GET', '/'));
     }
 
-    protected function loginPage(): LoginPage
-    {
-        return new LoginPage($this->browser->request('GET', '/login'));
-    }
-
     protected function flashMessagesShouldContain(string $expectedMessage): void
     {
         self::assertContains($expectedMessage, (new GenericPage($this->browser->getCrawler()))->getFlashMessages());
     }
 
-    private function signUpPage(): SignUpPage
+    protected function signUp(string $name, string $emailAddress, string $userType): void
     {
-        return new SignUpPage($this->browser->request('GET', '/sign-up'));
+        (new SignUpPage($this->browser->request('GET', '/sign-up')))
+            ->signUp($this->browser, $name, $emailAddress, $userType);
     }
 
-    private function logout(): void
+    protected function login(string $emailAddress): void
+    {
+        (new LoginPage($this->browser->request('GET', '/login')))
+            ->logIn($this->browser, $emailAddress);
+    }
+
+    protected function logout(): void
     {
         $this->browser->request('POST', '/logout');
     }

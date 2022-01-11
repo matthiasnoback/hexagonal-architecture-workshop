@@ -8,19 +8,24 @@ final class RsvpForMeetupTest extends AbstractBrowserTest
 {
     public function testRsvp(): void
     {
-        $this->iAmLoggedInAsOrganizer();
-        $this->iScheduleAMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
+        $this->login('organizer@gmail.com');
 
-        $this->iAmLoggedInAsRegularUser();
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
 
-        $this->iRsvpForMeetup('Coding Dojo');
+        $this->logout();
+
+        $this->signUp('Regular user', 'user@gmail.com', 'RegularUser');
+        $this->login('user@gmail.com');
+
+        $this->rsvpForMeetup('Coding Dojo');
 
         $this->flashMessagesShouldContain('You have successfully RSVP-ed to this meetup');
 
         $this->listOfAttendeesShouldContain('Coding Dojo', 'Regular user');
     }
 
-    private function iRsvpForMeetup(string $name): void
+    private function rsvpForMeetup(string $name): void
     {
         $this->listMeetupsPage()
             ->upcomingMeetup($name)

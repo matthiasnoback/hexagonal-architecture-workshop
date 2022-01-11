@@ -8,6 +8,3 @@ parameters:
         - ecs.php
         - rector.php
     checkMissingIterableValueType: false
-
-includes:
-    - phpstan-baseline.neon
