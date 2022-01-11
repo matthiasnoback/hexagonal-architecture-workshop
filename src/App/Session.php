@@ -51,6 +51,18 @@ final class Session
         return isset($this->sessionData[self::LOGGED_IN_USER_ID]);
     }
 
+    public function isLoggedInUser(int $userId): bool
+    {
+        if (! isset($this->sessionData[self::LOGGED_IN_USER_ID])) {
+            return false;
+        }
+
+        $loggedInUserId = $this->sessionData[self::LOGGED_IN_USER_ID];
+        Assert::that($loggedInUserId)->integerish();
+
+        return (int) $loggedInUserId === $userId;
+    }
+
     public function username(): string
     {
         return ($user = $this->getLoggedInUser()) ? $user->name() : 'Anonymous';

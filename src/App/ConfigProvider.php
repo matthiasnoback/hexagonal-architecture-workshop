@@ -17,8 +17,7 @@ use App\Handler\MeetupDetailsHandler;
 use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
-use App\Twig\FlashExtension;
-use App\Twig\UserExtension;
+use App\Twig\SessionExtension;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -34,7 +33,7 @@ class ConfigProvider
             'dependencies' => $this->getDependencies(),
             'templates' => $this->getTemplates(),
             'twig' => [
-                'extensions' => [UserExtension::class, FlashExtension::class],
+                'extensions' => [SessionExtension::class],
             ],
         ];
     }
@@ -127,10 +126,7 @@ class ConfigProvider
 
                     return $connection;
                 },
-                UserExtension::class => fn (ContainerInterface $container) => new UserExtension($container->get(
-                    Session::class
-                ), $container->get(UserRepository::class)),
-                FlashExtension::class => fn (ContainerInterface $container) => new FlashExtension($container->get(
+                SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension($container->get(
                     Session::class
                 )),
                 ConsoleApplication::class => fn (ContainerInterface $container) => new ConsoleApplication(

@@ -19,7 +19,7 @@
         <p>No attendees yet.</p>
     {% endif %}
 
-    {% if loggedInUser.userId.asInt == meetup.organizerId %}
+    {% if session.isLoggedInUser(meetup.organizerId) %}
         <form action="{{ path('cancel_meetup') }}" method="post">
             <input type="hidden" name="meetupId" value="{{ meetup.meetupId }}">
             <button class="btn btn-danger">Cancel this meetup</button>

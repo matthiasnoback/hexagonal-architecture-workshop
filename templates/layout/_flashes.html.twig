@@ -1,4 +1,4 @@
-{% for type, flashes in allFlashes %}
+{% for type, flashes in session.getFlashes() %}
     <div class="flash-messages">
     {% for message in flashes %}
         <div class="alert alert-{{ type }} flash-message">
