@@ -74,7 +74,7 @@ class ConfigProvider
                 ),
                 SignUpHandler::class => fn (ContainerInterface $container) => new SignUpHandler(
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(RouterInterface::class),
                     $container->get(Session::class),
                 ),
@@ -84,6 +84,9 @@ class ConfigProvider
                     $container->get(RsvpRepository::class),
                     $container->get(RouterInterface::class),
                     $container->get(EventDispatcher::class),
+                ),
+                ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
+                    $container->get(Connection::class)
                 ),
                 EventDispatcher::class => function (ContainerInterface $container) {
                     $eventDispatcher = new ConfigurableEventDispatcher();

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\ApplicationInterface;
 use App\Entity\UserType;
 use App\Session;
+use App\SignUp;
 use Assert\Assert;
-use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
@@ -20,7 +21,7 @@ final class SignUpHandler implements RequestHandlerInterface
 {
     public function __construct(
         private readonly TemplateRendererInterface $renderer,
-        private readonly Connection $connection,
+        private readonly ApplicationInterface $application,
         private readonly RouterInterface $router,
         private readonly Session $session
     ) {
@@ -53,13 +54,8 @@ final class SignUpHandler implements RequestHandlerInterface
             }
 
             if ($formErrors === []) {
-                $this->connection->insert(
-                    'users',
-                    [
-                        'name' => $formData['name'],
-                        'emailAddress' => $formData['emailAddress'],
-                        'userType' => UserType::from($formData['userType'])->name,
-                    ]
+                $this->application->signUp(
+                    new SignUp($formData['name'], $formData['emailAddress'], $formData['userType'])
                 );
 
                 $this->session->addSuccessFlash('You have been registered as a user');
