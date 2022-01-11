@@ -20,7 +20,8 @@
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
         "mezzio/mezzio-twigrenderer": "^2.6",
-        "ramsey/uuid": "^4.2"
+        "ramsey/uuid": "^4.2",
+        "symfony/console": "^6.0"
     },
     "require-dev": {
         "ext-dom": "*",

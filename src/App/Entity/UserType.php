@@ -10,6 +10,18 @@ enum UserType: string
     case Organizer = 'Organizer';
     case Administrator = 'Administrator';
 
+    /**
+     * @return array<string,string>
+     */
+    public static function namesAndLabels(): array
+    {
+        $namesAndLabels = [];
+        foreach (self::cases() as $case) {
+            $namesAndLabels[$case->name] = $case->label();
+        }
+        return $namesAndLabels;
+    }
+
     public function label(): string
     {
         return match ($this) {

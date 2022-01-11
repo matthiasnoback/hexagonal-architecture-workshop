@@ -7,4 +7,5 @@ parameters:
         - test/
         - ecs.php
         - rector.php
+        - console.php
     checkMissingIterableValueType: false

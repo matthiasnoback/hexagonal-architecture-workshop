@@ -18,6 +18,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             __DIR__ . '/test',
             __DIR__ . '/ecs.php',
             __DIR__ . '/rector.php',
+            __DIR__ . '/console.php',
         ]
     );
 

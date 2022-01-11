@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Cli\ConsoleApplication;
+use App\Cli\SignUpCommand;
 use App\Entity\RsvpRepository;
 use App\Entity\UserHasRsvpd;
 use App\Entity\UserRepository;
@@ -130,6 +132,12 @@ class ConfigProvider
                 ), $container->get(UserRepository::class)),
                 FlashExtension::class => fn (ContainerInterface $container) => new FlashExtension($container->get(
                     Session::class
+                )),
+                ConsoleApplication::class => fn (ContainerInterface $container) => new ConsoleApplication(
+                    $container
+                ),
+                SignUpCommand::class => fn (ContainerInterface $container) => new SignUpCommand($container->get(
+                    ApplicationInterface::class
                 )),
             ],
         ];
