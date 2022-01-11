@@ -11,8 +11,6 @@ use Assert\Assert;
 
 final class Session
 {
-    private const DEFAULT_USER_ID = 1;
-
     private const LOGGED_IN_USER_ID = 'logged_in_userId';
 
     /**
@@ -31,9 +29,13 @@ final class Session
         }
     }
 
-    public function getLoggedInUser(): User
+    public function getLoggedInUser(): ?User
     {
-        $loggedInUserId = $this->get(self::LOGGED_IN_USER_ID, self::DEFAULT_USER_ID);
+        if (! isset($this->sessionData[self::LOGGED_IN_USER_ID])) {
+            return null;
+        }
+
+        $loggedInUserId = $this->sessionData[self::LOGGED_IN_USER_ID];
         Assert::that($loggedInUserId)->integerish();
 
         return $this->userRepository->getById(UserId::fromInt((int) $loggedInUserId));
@@ -41,21 +43,22 @@ final class Session
 
     public function setLoggedInUserId(UserId $id): void
     {
-        $this->set(self::LOGGED_IN_USER_ID, $id->asInt());
+        $this->sessionData[self::LOGGED_IN_USER_ID] = $id->asInt();
     }
 
-    public function get(string $key, mixed $defaultValue = null): mixed
+    public function isUserLoggedIn(): bool
     {
-        if (isset($this->sessionData[$key])) {
-            return $this->sessionData[$key];
-        }
-
-        return $defaultValue;
+        return isset($this->sessionData[self::LOGGED_IN_USER_ID]);
     }
 
-    public function set(string $key, mixed $value): void
+    public function username(): string
     {
-        $this->sessionData[$key] = $value;
+        return ($user = $this->getLoggedInUser()) ? $user->name() : 'Anonymous';
+    }
+
+    public function logout(): void
+    {
+        unset($this->sessionData[self::LOGGED_IN_USER_ID]);
     }
 
     public function addErrorFlash(string $message): void

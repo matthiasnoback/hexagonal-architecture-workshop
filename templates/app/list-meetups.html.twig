@@ -3,7 +3,9 @@
 {% block title %}Meetups{% endblock %}
 
 {% block content %}
-    <p><a href="{{ path("schedule_meetup") }}" class="btn btn-success">Schedule meetup</a></p>
+    {% if session.isUserLoggedIn() %}
+        <p><a href="{{ path("schedule_meetup") }}" class="btn btn-success">Schedule meetup</a></p>
+    {% endif %}
 
     <h1>Upcoming meetups</h1>
 

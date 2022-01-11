@@ -52,8 +52,11 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
             }
 
             if (empty($formErrors)) {
+                $user = $this->session->getLoggedInUser();
+                Assert::that($user)->notNull();
+
                 $record = [
-                    'organizerId' => $this->session->getLoggedInUser()
+                    'organizerId' => $user
                         ->userId()
                         ->asInt(),
                     'name' => $formData['name'],

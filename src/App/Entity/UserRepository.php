@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use RuntimeException;
+use Assert\Assert;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ForwardCompatibility\DriverResultStatement;
 
 final class UserRepository
 {
@@ -28,13 +30,31 @@ final class UserRepository
         ],
     ];
 
+    public function __construct(
+        private readonly Connection $connection
+    ) {
+    }
+
     public function getById(UserId $id): User
     {
-        if (! isset($this->records[$id->asInt()])) {
-            throw new RuntimeException('User not found');
-        }
+        $result = $this->connection->executeQuery('SELECT * FROM users WHERE userId = ?', [$id->asInt()]);
+        Assert::that($result)->isInstanceOf(DriverResultStatement::class, 'User not found');
 
-        return User::fromDatabaseRecord($this->records[$id->asInt()]);
+        $record = $result->fetchAssociative();
+        Assert::that($record)->isArray();
+
+        return User::fromDatabaseRecord($record);
+    }
+
+    public function getByEmailAddress(string $emailAddress): User
+    {
+        $result = $this->connection->executeQuery('SELECT * FROM users WHERE emailAddress = ?', [$emailAddress]);
+        Assert::that($result)->isInstanceOf(DriverResultStatement::class, 'User not found');
+
+        $record = $result->fetchAssociative();
+        Assert::that($record)->isArray();
+
+        return User::fromDatabaseRecord($record);
     }
 
     /**

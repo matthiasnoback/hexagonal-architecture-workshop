@@ -54,11 +54,14 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
             throw new RuntimeException('Meetup not found');
         }
 
-        $rsvp = Rsvp::create($postData['meetupId'], $this->session->getLoggedInUser() ->userId());
+        $user = $this->session->getLoggedInUser();
+        Assert::that($user)->notNull();
+
+        $rsvp = Rsvp::create($postData['meetupId'], $user->userId());
         $this->rsvpRepository->save($rsvp);
 
         $this->eventDispatcher->dispatch(
-            new UserHasRsvpd($postData['meetupId'], $this->session->getLoggedInUser()->userId(), $rsvp->rsvpId())
+            new UserHasRsvpd($postData['meetupId'], $user->userId(), $rsvp->rsvpId())
         );
 
         return new RedirectResponse(

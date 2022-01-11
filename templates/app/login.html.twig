@@ -1,0 +1,19 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h1>Log in</h1>
+
+    <form method="post" action="{{ path('login') }}">
+        <div class="form-group{% if formErrors["emailAddress"] is defined %} has-error{% endif %}">
+            <label for="emailAddress">Your email address:</label>
+            <input class="form-control{% if formErrors["emailAddress"] is defined %} is-invalid{% endif %}" id="emailAddress" name="emailAddress" type="email"
+                   value="{{ formData["emailAddress"] }}"/>
+            {% for error in formErrors["emailAddress"]|default({}) %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Log in</button>
+    </form>
+{% endblock %}

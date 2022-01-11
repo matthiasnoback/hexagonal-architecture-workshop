@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 use App\Handler\CancelMeetupHandler;
 use App\Handler\ListMeetupsHandler;
+use App\Handler\LoginHandler;
+use App\Handler\LogoutHandler;
 use App\Handler\MeetupDetailsHandler;
 use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
-use App\Handler\SwitchUserHandler;
+use App\Handler\SignUpHandler;
 use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
@@ -18,5 +20,7 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/rsvp-for-meetup', RsvpForMeetupHandler::class, ['POST'], 'rsvp_for_meetup');
     $app->route('/cancel-meetup', CancelMeetupHandler::class, ['POST'], 'cancel_meetup');
     $app->route('/', ListMeetupsHandler::class, ['GET'], 'list_meetups');
-    $app->route('/switch-user', SwitchUserHandler::class, ['POST'], 'switch_user');
+    $app->route('/sign-up', SignUpHandler::class, ['GET', 'POST'], 'sign_up');
+    $app->route('/login', LoginHandler::class, ['GET', 'POST'], 'login');
+    $app->route('/logout', LogoutHandler::class, ['POST'], 'logout');
 };

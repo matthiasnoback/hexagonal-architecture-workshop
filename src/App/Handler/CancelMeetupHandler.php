@@ -25,6 +25,9 @@ final class CancelMeetupHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $loggedInUser = $this->session->getLoggedInUser();
+        Assert::that($loggedInUser)->notNull();
+
         $parsedBody = $request->getParsedBody();
         Assert::that($parsedBody)->isArray();
 
@@ -40,8 +43,7 @@ final class CancelMeetupHandler implements RequestHandlerInterface
             ],
             [
                 'meetupId' => $meetupId,
-                'organizerId' => $this->session->getLoggedInUser()
-                    ->userId()
+                'organizerId' => $loggedInUser->userId()
                     ->asInt(),
             ]
         );

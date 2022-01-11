@@ -9,14 +9,16 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 
 final class LoginPage extends AbstractPageObject
 {
+    public function logIn(HttpBrowser $browser, string $emailAddress): void
+    {
+        $browser->submitForm('Log in', [
+            'emailAddress' => $emailAddress,
+        ]);
+    }
+
     public function logInAsRegularUser(HttpBrowser $browser): void
     {
         $this->logInAs($browser, UserRepository::REGULAR_USER_ID);
-    }
-
-    public function logInAsOrganizer(HttpBrowser $browser): void
-    {
-        $this->logInAs($browser, UserRepository::ORGANIZER_ID);
     }
 
     private function logInAs(HttpBrowser $browser, int $userId): void

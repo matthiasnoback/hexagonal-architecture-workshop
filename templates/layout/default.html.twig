@@ -34,21 +34,28 @@
                         <li class="nav-item">
                             <a href="{{ path('list_meetups') }}" class="nav-link">List meetups</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ path('schedule_meetup') }}" class="nav-link">Schedule a meetup</a>
-                        </li>
+                        {% if session.isUserLoggedIn() %}
+                            <li class="nav-item">
+                                <a href="{{ path('schedule_meetup') }}" class="nav-link">Schedule a meetup</a>
+                            </li>
+                            <li class="nav-item">
+                                <form class="form-inline" action="{{ path('logout') }}" method="post">
+                                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                                </form>
+                            </li>
+                        {% endif %}
+                        {% if not session.isUserLoggedIn() %}
+                            <li class="nav-item">
+                                <a href="{{ path('sign_up') }}" class="nav-link">Sign up</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ path('login') }}" class="nav-link">Log in</a>
+                            </li>
+                        {% endif %}
                     </ul>
-
-                    <form class="form-inline my-2 my-lg-0" action="{{ path('switch_user') }}" method="post" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <select name="userId" id="userId" class="form-control mx-2" aria-label="Switch user">
-                                {% for user in allUsers %}
-                                    <option value="{{ user.userId.asInt }}"{% if loggedInUser.userId.asInt == user.userId.asInt %} selected{% endif %}>{{ user.name }}</option>
-                                {% endfor %}
-                            </select>
-                            <button class="btn btn-info">Switch</button>
-                        </div>
-                    </form>
+                    {% if session.isUserLoggedIn() %}
+                        <span class="navbar-text">Logged in as: {{ session.username() }}</span>
+                    {% endif %}
                 </div>
             </div>
         </nav>

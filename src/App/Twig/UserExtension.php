@@ -20,6 +20,7 @@ final class UserExtension extends AbstractExtension implements GlobalsInterface
     public function getGlobals(): array
     {
         return [
+            'session' => $this->session,
             'loggedInUser' => $this->session->getLoggedInUser(),
             'allUsers' => $this->userRepository->findAll(),
         ];

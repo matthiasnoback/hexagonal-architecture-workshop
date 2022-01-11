@@ -21,19 +21,19 @@ final class SchemaManager
         $synchronizer->updateSchema($this->provideSchema(), true);
     }
 
-    public function truncateTables(): void
-    {
-        foreach ($this->provideSchema()->getTables() as $table) {
-            $this->connection->exec(
-                $this->connection->getDatabasePlatform()
-                    ->getTruncateTableSQL($table->getName())
-            );
-        }
-    }
-
     private function provideSchema(): Schema
     {
         $schema = new Schema();
+
+        $accountsTable = $schema->createTable('users');
+        $accountsTable->addColumn('userId', 'integer', [
+            'autoincrement' => true,
+        ]);
+        $accountsTable->addColumn('name', 'string');
+        $accountsTable->addColumn('emailAddress', 'string');
+        $accountsTable->addColumn('userType', 'string');
+        $accountsTable->setPrimaryKey(['userId']);
+        $accountsTable->addUniqueIndex(['emailAddress']);
 
         $meetupsTable = $schema->createTable('meetups');
         $meetupsTable->addColumn('meetupId', 'integer', [

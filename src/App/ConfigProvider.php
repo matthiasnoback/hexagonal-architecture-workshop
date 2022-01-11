@@ -9,10 +9,12 @@ use App\Entity\UserHasRsvpd;
 use App\Entity\UserRepository;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\ListMeetupsHandler;
+use App\Handler\LoginHandler;
+use App\Handler\LogoutHandler;
 use App\Handler\MeetupDetailsHandler;
 use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
-use App\Handler\SwitchUserHandler;
+use App\Handler\SignUpHandler;
 use App\Twig\FlashExtension;
 use App\Twig\UserExtension;
 use Assert\Assert;
@@ -61,9 +63,20 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
-                SwitchUserHandler::class => fn (ContainerInterface $container) => new SwitchUserHandler(
+                LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
                     $container->get(UserRepository::class),
-                    $container->get(Session::class)
+                    $container->get(Session::class),
+                    $container->get(TemplateRendererInterface::class)
+                ),
+                LogoutHandler::class => fn (ContainerInterface $container) => new LogoutHandler(
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class)
+                ),
+                SignUpHandler::class => fn (ContainerInterface $container) => new SignUpHandler(
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(Connection::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(Session::class),
                 ),
                 RsvpForMeetupHandler::class => fn (ContainerInterface $container) => new RsvpForMeetupHandler(
                     $container->get(Connection::class),
@@ -90,7 +103,9 @@ class ConfigProvider
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class
                 )),
-                UserRepository::class => fn () => new UserRepository(),
+                UserRepository::class => fn (ContainerInterface $container) => new UserRepository($container->get(
+                    Connection::class
+                )),
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
                     Connection::class
                 )),
