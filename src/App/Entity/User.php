@@ -12,6 +12,8 @@ final class User
 
     private string $emailAddress;
 
+    private UserType $userType;
+
     private function __construct()
     {
     }
@@ -23,6 +25,7 @@ final class User
         $user->userId = (int) $record['userId'];
         $user->name = $record['name'];
         $user->emailAddress = $record['emailAddress'];
+        $user->userType = UserType::from($record['userType']);
 
         return $user;
     }
@@ -40,5 +43,10 @@ final class User
     public function emailAddress(): string
     {
         return $this->emailAddress;
+    }
+
+    public function userTypeIs(UserType $userType): bool
+    {
+        return $this->userType === $userType;
     }
 }

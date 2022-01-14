@@ -3,7 +3,7 @@
 {% block title %}Meetups{% endblock %}
 
 {% block content %}
-    {% if session.isUserLoggedIn() %}
+    {% if session.isLoggedInUserOrganizer() %}
         <p><a href="{{ path("schedule_meetup") }}" class="btn btn-success">Schedule meetup</a></p>
     {% endif %}
 

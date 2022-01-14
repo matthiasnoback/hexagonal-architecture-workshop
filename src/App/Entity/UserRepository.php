@@ -39,4 +39,14 @@ final class UserRepository
 
         return User::fromDatabaseRecord($record);
     }
+
+    /**
+     * @return array<int,string>
+     */
+    public function findAll(): array
+    {
+        $records = $this->connection->fetchAllAssociative('SELECT userId, name FROM users');
+
+        return array_combine(array_column($records, 'userId'), array_column($records, 'name'),);
+    }
 }

@@ -19,6 +19,7 @@ use App\Handler\MeetupDetailsHandler;
 use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
+use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
 use Doctrine\DBAL\Connection;
 use Mezzio\Router\RouterInterface;
@@ -77,6 +78,11 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class)
                 ),
+                SwitchUserHandler::class => fn (ContainerInterface $container) => new SwitchUserHandler(
+                    $container->get(UserRepository::class),
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class)
+                ),
                 SignUpHandler::class => fn (ContainerInterface $container) => new SignUpHandler(
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ApplicationInterface::class),
@@ -117,9 +123,10 @@ class ConfigProvider
                     Connection::class
                 )),
                 Connection::class => ConnectionFactory::class,
-                SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension($container->get(
-                    Session::class
-                )),
+                SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension(
+                    $container->get(Session::class),
+                    $container->get(UserRepository::class)
+                ),
                 ConsoleApplication::class => fn (ContainerInterface $container) => new ConsoleApplication(
                     $container
                 ),

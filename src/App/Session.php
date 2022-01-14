@@ -7,6 +7,7 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
+use App\Entity\UserType;
 use Assert\Assert;
 
 final class Session
@@ -41,6 +42,31 @@ final class Session
         return $this->userRepository->getById(UserId::fromInt((int) $loggedInUserId));
     }
 
+    public function isLoggedInUserAdmin(): bool
+    {
+        return $this->isLoggedInUserType(UserType::Administrator);
+    }
+
+    public function isLoggedInUserOrganizer(): bool
+    {
+        return $this->isLoggedInUserType(UserType::Organizer);
+    }
+
+    public function isLoggedInUserRegular(): bool
+    {
+        return $this->isLoggedInUserType(UserType::RegularUser);
+    }
+
+    public function isLoggedInUserType(UserType $userType): bool
+    {
+        $user = $this->getLoggedInUser();
+        if ($user === null) {
+            return false;
+        }
+
+        return $user->userTypeIs($userType);
+    }
+
     public function setLoggedInUserId(UserId $id): void
     {
         $this->sessionData[self::LOGGED_IN_USER_ID] = $id->asInt();
@@ -61,11 +87,6 @@ final class Session
         Assert::that($loggedInUserId)->integerish();
 
         return (int) $loggedInUserId === $userId;
-    }
-
-    public function username(): string
-    {
-        return ($user = $this->getLoggedInUser()) ? $user->name() : 'Anonymous';
     }
 
     public function logout(): void
