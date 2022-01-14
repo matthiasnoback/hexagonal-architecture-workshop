@@ -6,7 +6,7 @@ namespace App\Cli;
 
 use App\ApplicationInterface;
 use App\Entity\UserType;
-use App\SignUp;
+use App\Handler\SignUp;
 use Assert\Assert;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;

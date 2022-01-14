@@ -6,6 +6,7 @@ namespace App;
 
 use App\Entity\User;
 use App\Entity\UserRepository;
+use App\Handler\SignUp;
 
 final class Application implements ApplicationInterface
 {

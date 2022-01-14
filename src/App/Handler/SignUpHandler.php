@@ -7,7 +7,6 @@ namespace App\Handler;
 use App\ApplicationInterface;
 use App\Entity\UserType;
 use App\Session;
-use App\SignUp;
 use Assert\Assert;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
