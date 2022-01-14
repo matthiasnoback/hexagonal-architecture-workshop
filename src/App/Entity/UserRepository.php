@@ -32,6 +32,9 @@ final class UserRepository
         Assert::that($result)->isInstanceOf(DriverResultStatement::class, 'User not found');
 
         $record = $result->fetchAssociative();
+        if ($record === false) {
+            throw CouldNotFindUser::withEmailAddress($emailAddress);
+        }
         Assert::that($record)->isArray();
 
         return User::fromDatabaseRecord($record);

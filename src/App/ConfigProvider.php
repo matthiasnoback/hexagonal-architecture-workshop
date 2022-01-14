@@ -33,7 +33,10 @@ class ConfigProvider
             'twig' => [
                 'extensions' => [SessionExtension::class],
             ],
-            'project_root_dir' => realpath(__DIR__ . '/../../')
+            'project_root_dir' => realpath(__DIR__ . '/../../'),
+            'event_listeners' => [
+                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+            ],
         ];
     }
 
@@ -85,24 +88,13 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(EventDispatcher::class),
                 ),
+                AddFlashMessage::class => fn (ContainerInterface $container) => new AddFlashMessage($container->get(
+                    Session::class
+                )),
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
                     $container->get(Connection::class)
                 ),
-                EventDispatcher::class => function (ContainerInterface $container) {
-                    $eventDispatcher = new ConfigurableEventDispatcher();
-
-                    $eventDispatcher->registerSpecificListener(
-                        UserHasRsvpd::class,
-                        function () use ($container) {
-                            /** @var Session $session */
-                            $session = $container->get(Session::class);
-
-                            $session->addSuccessFlash('You have successfully RSVP-ed to this meetup');
-                        }
-                    );
-
-                    return $eventDispatcher;
-                },
+                EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class
                 )),

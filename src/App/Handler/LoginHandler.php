@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use App\Entity\CouldNotFindUser;
 use App\Entity\UserRepository;
 use App\Session;
 use Assert\Assert;
@@ -44,13 +45,16 @@ final class LoginHandler implements RequestHandlerInterface
                 $formErrors['emailAddress'][] = 'Please provide an email address';
             }
 
-            if ($formErrors === []) {
+            try {
                 $user = $this->userRepository->getByEmailAddress($formData['emailAddress']);
+
                 $this->session->setLoggedInUserId($user->userId());
 
                 $this->session->addSuccessFlash('You have successfully logged in');
 
                 return new RedirectResponse('/');
+            } catch (CouldNotFindUser) {
+                $formErrors['emailAddress'][] = 'Unknown email address';
             }
         }
 
