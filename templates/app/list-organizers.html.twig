@@ -1,0 +1,26 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block title %}Organizers{% endblock %}
+
+{% block content %}
+    <h1>Organizers</h1>
+
+    {% if organizers is empty %}
+    <p>There are no organizers</p>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+            <tr><th>Name</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+        {% for organizer in organizers %}
+            <tr>
+                <td>{{ organizer.name }}</td>
+                <td><a class="btn btn-primary" href="{{ path('create_invoice', { organizerId: organizer.userId }) }}">Create invoice</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

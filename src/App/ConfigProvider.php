@@ -10,7 +10,9 @@ use App\Entity\RsvpRepository;
 use App\Entity\UserHasRsvpd;
 use App\Entity\UserRepository;
 use App\Handler\CancelMeetupHandler;
+use App\Handler\CreateInvoiceHandler;
 use App\Handler\ListMeetupsHandler;
+use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
 use App\Handler\MeetupDetailsHandler;
@@ -87,6 +89,16 @@ class ConfigProvider
                     $container->get(RsvpRepository::class),
                     $container->get(RouterInterface::class),
                     $container->get(EventDispatcher::class),
+                ),
+                ListOrganizersHandler::class => fn (ContainerInterface $container) => new ListOrganizersHandler(
+                    $container->get(Connection::class),
+                    $container->get(TemplateRendererInterface::class)
+                ),
+                CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
+                    $container->get(Connection::class),
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(TemplateRendererInterface::class),
                 ),
                 AddFlashMessage::class => fn (ContainerInterface $container) => new AddFlashMessage($container->get(
                     Session::class

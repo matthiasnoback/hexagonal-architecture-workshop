@@ -48,6 +48,17 @@ final class SchemaManager
         ]);
         $meetupsTable->setPrimaryKey(['meetupId']);
 
+        $invoicesTable = $schema->createTable('invoices');
+        $invoicesTable->addColumn('invoiceId', 'integer', [
+            'autoincrement' => true,
+        ]);
+        $invoicesTable->addColumn('organizerId', 'integer');
+        $invoicesTable->addColumn('amount', 'string');
+        $invoicesTable->addColumn('year', 'integer');
+        $invoicesTable->addColumn('month', 'integer');
+        $invoicesTable->setPrimaryKey(['invoiceId']);
+        $invoicesTable->addUniqueIndex(['organizerId', 'year', 'month']);
+
         $rsvpsTable = $schema->createTable('rsvps');
         $rsvpsTable->addColumn('rsvpId', 'string');
         $rsvpsTable->addColumn('meetupId', 'string');

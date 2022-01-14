@@ -1,0 +1,35 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block title %}Create invoice{% endblock %}
+
+{% block content %}
+    <h1>Create invoice</h1>
+
+    <form method="post" action="{{ path('create_invoice') }}">
+        <input type="hidden" name="organizerId" value="{{ formData['organizerId'] }}">
+        <div class="form-group{% if formErrors["year"] is defined %} has-error{% endif %}">
+            <label for="year">Year:</label>
+            <select class="form-control{% if formErrors["year"] is defined %} is-invalid{% endif %}" id="year" name="year">
+                {% for year in years %}
+                    <option value="{{ year }}"{% if formData['year'] == year %} selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            {% for error in formErrors["year"]|default({}) %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group{% if formErrors["month"] is defined %} has-error{% endif %}">
+            <label for="month">Month:</label>
+            <select class="form-control{% if formErrors["year"] is defined %} is-invalid{% endif %}" id="month" name="month">
+                {% for month in months %}
+                    <option value="{{ month }}"{% if formData['month'] == month %} selected{% endif %}>{{ month }}</option>
+                {% endfor %}
+            </select>
+            {% for error in formErrors["month"]|default({}) %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create invoice</button>
+    </form>
+{% endblock %}
