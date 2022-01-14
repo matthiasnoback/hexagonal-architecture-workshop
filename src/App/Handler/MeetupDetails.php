@@ -4,49 +4,50 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use App\Entity\User;
+use App\Mapping;
 
 final class MeetupDetails
 {
+    /**
+     * @param array<string> $attendeeNames
+     */
     public function __construct(
-        private readonly array $meetupRecord,
-        private readonly User $organizer,
-        private readonly array $attendeeRecords
+        private int $meetupId,
+        private string $name,
+        private string $description,
+        private string $scheduledFor,
+        private Organizer $organizer,
+        private array $attendeeNames
     ) {
     }
 
     public function name(): string
     {
-        return $this->meetupRecord['name'];
+        return $this->name;
     }
 
     public function scheduledFor(): string
     {
-        return $this->meetupRecord['scheduledFor'];
+        return $this->scheduledFor;
     }
 
     public function description(): string
     {
-        return $this->meetupRecord['description'];
+        return $this->description;
     }
 
-    public function organizerId(): string
-    {
-        return $this->meetupRecord['organizerId'];
-    }
-
-    public function meetupId(): int
-    {
-        return $this->meetupRecord['meetupId'];
-    }
-
-    public function organizer(): User
+    public function organizer(): Organizer
     {
         return $this->organizer;
     }
 
-    public function attendees(): array
+    public function meetupId(): int
     {
-        return $this->attendeeRecords;
+        return $this->meetupId;
+    }
+
+    public function attendeeNames(): array
+    {
+        return $this->attendeeNames;
     }
 }

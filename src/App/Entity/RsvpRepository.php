@@ -28,23 +28,4 @@ final class RsvpRepository
             ]
         );
     }
-
-    /**
-     * @return array<Rsvp>
-     */
-    public function getByMeetupId(string $meetupId): array
-    {
-        $statement = $this->connection
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('rsvps')
-            ->where('meetupId = :meetupId')
-            ->setParameter('meetupId', $meetupId)
-            ->execute();
-
-        Assert::that($statement)->isInstanceOf(Statement::class);
-        $records = $statement->fetchAllAssociative();
-
-        return array_map(fn (array $record) => Rsvp::fromDatabaseRecord($record), $records);
-    }
 }

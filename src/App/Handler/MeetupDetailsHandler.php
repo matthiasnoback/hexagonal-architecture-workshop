@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use Assert\Assert;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,7 +21,10 @@ final class MeetupDetailsHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $meetupDetails = $this->meetupDetailsRepository->getById($request->getAttribute('id'));
+        $meetupId = $request->getAttribute('id');
+        Assert::that($meetupId)->string();
+
+        $meetupDetails = $this->meetupDetailsRepository->getById($meetupId);
 
         return new HtmlResponse(
             $this->renderer->render('app::meetup-details.html.twig', [

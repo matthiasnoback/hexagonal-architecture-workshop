@@ -9,17 +9,17 @@
     <p>{{ meetupDetails.description }}</p>
 
     <h3>Attendees</h3>
-    {% if meetupDetails.attendees|length > 0 %}
+    {% if meetupDetails.attendeeNames|length > 0 %}
         <ul class="attendees">
-        {% for user in meetupDetails.attendees %}
-            <li>{{ user.name }}</li>
+        {% for attendeeName in meetupDetails.attendeeNames %}
+            <li>{{ attendeeName }}</li>
         {% endfor %}
         </ul>
     {% else %}
         <p>No attendees yet.</p>
     {% endif %}
 
-    {% if session.isLoggedInUser(meetupDetails.organizerId) %}
+    {% if session.isLoggedInUser(meetupDetails.organizer.organizerId) %}
         <form action="{{ path('cancel_meetup') }}" method="post">
             <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">
             <button class="btn btn-danger">Cancel this meetup</button>

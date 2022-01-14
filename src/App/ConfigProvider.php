@@ -109,7 +109,8 @@ class ConfigProvider
                     Session::class
                 )),
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
-                    $container->get(UserRepository::class)
+                    $container->get(UserRepository::class),
+                    $container->get(MeetupDetailsRepository::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
@@ -122,9 +123,7 @@ class ConfigProvider
                     Connection::class
                 )),
                 MeetupDetailsRepository::class => fn (ContainerInterface $container) => new MeetupDetailsRepository(
-                    $container->get(Connection::class),
-                    $container->get(UserRepository::class),
-                    $container->get(RsvpRepository::class),
+                    $container->get(Connection::class)
                 ),
                 Connection::class => ConnectionFactory::class,
                 SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension(
