@@ -1,17 +1,17 @@
 {% extends "@layout/default.html.twig" %}
 
-{% block title %}{{ meetup.name }}{% endblock %}
+{% block title %}{{ meetupDetails.name }}{% endblock %}
 
 {% block content %}
-    <h2>{{ organizer.name }} presents: {{ meetup.name }}</h2>
+    <h2>{{ meetupDetails.organizer.name }} presents: {{ meetupDetails.name }}</h2>
 
-    <p><small>{{ meetup.scheduledFor|date() }}</small></p>
-    <p>{{ meetup.description }}</p>
+    <p><small>{{ meetupDetails.scheduledFor|date() }}</small></p>
+    <p>{{ meetupDetails.description }}</p>
 
     <h3>Attendees</h3>
-    {% if attendees|length > 0 %}
+    {% if meetupDetails.attendees|length > 0 %}
         <ul class="attendees">
-        {% for user in attendees %}
+        {% for user in meetupDetails.attendees %}
             <li>{{ user.name }}</li>
         {% endfor %}
         </ul>
@@ -19,14 +19,14 @@
         <p>No attendees yet.</p>
     {% endif %}
 
-    {% if session.isLoggedInUser(meetup.organizerId) %}
+    {% if session.isLoggedInUser(meetupDetails.organizerId) %}
         <form action="{{ path('cancel_meetup') }}" method="post">
-            <input type="hidden" name="meetupId" value="{{ meetup.meetupId }}">
+            <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">
             <button class="btn btn-danger">Cancel this meetup</button>
         </form>
     {% else %}
         <form action="{{ path('rsvp_for_meetup') }}" method="post">
-            <input type="hidden" name="meetupId" value="{{ meetup.meetupId }}">
+            <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">
             <button class="btn btn-success">RSVP</button>
         </form>
     {% endif %}

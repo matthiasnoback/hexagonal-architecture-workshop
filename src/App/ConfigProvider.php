@@ -16,6 +16,7 @@ use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
 use App\Handler\MeetupDetailsHandler;
+use App\Handler\MeetupDetailsRepository;
 use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
@@ -55,9 +56,7 @@ class ConfigProvider
                     $container->get(Connection::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
-                    $container->get(Connection::class),
-                    $container->get(UserRepository::class),
-                    $container->get(RsvpRepository::class),
+                    $container->get(MeetupDetailsRepository::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
@@ -122,6 +121,11 @@ class ConfigProvider
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
                     Connection::class
                 )),
+                MeetupDetailsRepository::class => fn (ContainerInterface $container) => new MeetupDetailsRepository(
+                    $container->get(Connection::class),
+                    $container->get(UserRepository::class),
+                    $container->get(RsvpRepository::class),
+                ),
                 Connection::class => ConnectionFactory::class,
                 SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension(
                     $container->get(Session::class),
