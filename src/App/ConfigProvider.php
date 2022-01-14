@@ -18,9 +18,7 @@ use App\Handler\RsvpForMeetupHandler;
 use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
 use App\Twig\SessionExtension;
-use Assert\Assert;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -35,6 +33,7 @@ class ConfigProvider
             'twig' => [
                 'extensions' => [SessionExtension::class],
             ],
+            'project_root_dir' => realpath(__DIR__ . '/../../')
         ];
     }
 
@@ -113,19 +112,7 @@ class ConfigProvider
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
                     Connection::class
                 )),
-                Connection::class => function (ContainerInterface $container) {
-                    $config = $container->get('config');
-                    Assert::that($config)->isArray();
-
-                    $dbFile = __DIR__ . '/../../var/app-' . ($config['environment'] ?? 'development') . '.sqlite';
-                    $connection = DriverManager::getConnection([
-                        'driver' => 'pdo_sqlite',
-                        'path' => $dbFile,
-                    ]);
-                    (new SchemaManager($connection))->updateSchema();
-
-                    return $connection;
-                },
+                Connection::class => ConnectionFactory::class,
                 SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension($container->get(
                     Session::class
                 )),
