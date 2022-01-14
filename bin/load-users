@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eu
+
+echo "Sign up: Administrator"
+bin/console sign-up Administrator administrator@gmail.com Administrator
+
+echo "Sign up: Organizer"
+bin/console sign-up Organizer organizer@gmail.com Organizer
+
+echo "Sign up: Regular user"
+bin/console sign-up User user@gmail.com RegularUser
