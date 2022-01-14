@@ -44,7 +44,7 @@ final class CancelMeetupHandler implements RequestHandlerInterface
             [
                 'meetupId' => $meetupId,
                 'organizerId' => $loggedInUser->userId()
-                    ->asInt(),
+                    ->asString(),
             ]
         );
 

@@ -6,7 +6,7 @@ namespace App\Entity;
 
 final class User
 {
-    private int $userId;
+    private UserId $userId;
 
     private string $name;
 
@@ -22,7 +22,7 @@ final class User
     {
         $user = new self();
 
-        $user->userId = (int) $record['userId'];
+        $user->userId = UserId::fromString($record['userId']);
         $user->name = $record['name'];
         $user->emailAddress = $record['emailAddress'];
         $user->userType = UserType::from($record['userType']);
@@ -30,9 +30,21 @@ final class User
         return $user;
     }
 
+    public static function create(UserId $userId, string $name, string $emailAddress, UserType $userType): self
+    {
+        $user = new self();
+
+        $user->userId = $userId;
+        $user->name = $name;
+        $user->emailAddress = $emailAddress;
+        $user->userType = $userType;
+
+        return $user;
+    }
+
     public function userId(): UserId
     {
-        return UserId::fromInt($this->userId);
+        return $this->userId;
     }
 
     public function name(): string
@@ -48,5 +60,18 @@ final class User
     public function userTypeIs(UserType $userType): bool
     {
         return $this->userType === $userType;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function asDatabaseRecord(): array
+    {
+        return [
+            'userId' => $this->userId->asString(),
+            'name' => $this->name,
+            'emailAddress' => $this->emailAddress,
+            'userType' => $this->userType->name,
+        ];
     }
 }

@@ -32,7 +32,7 @@ final class SwitchUserHandler implements RequestHandlerInterface
         if ($userId === '') {
             $this->session->logout();
         } else {
-            $user = $this->userRepository->getById(UserId::fromInt((int) $userId));
+            $user = $this->userRepository->getById(UserId::fromString($userId));
 
             $this->session->setLoggedInUserId($user->userId());
         }

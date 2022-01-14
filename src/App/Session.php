@@ -37,9 +37,9 @@ final class Session
         }
 
         $loggedInUserId = $this->sessionData[self::LOGGED_IN_USER_ID];
-        Assert::that($loggedInUserId)->integerish();
+        Assert::that($loggedInUserId)->string();
 
-        return $this->userRepository->getById(UserId::fromInt((int) $loggedInUserId));
+        return $this->userRepository->getById(UserId::fromString($loggedInUserId));
     }
 
     public function isLoggedInUserAdmin(): bool
@@ -69,7 +69,7 @@ final class Session
 
     public function setLoggedInUserId(UserId $id): void
     {
-        $this->sessionData[self::LOGGED_IN_USER_ID] = $id->asInt();
+        $this->sessionData[self::LOGGED_IN_USER_ID] = $id->asString();
     }
 
     public function isUserLoggedIn(): bool
@@ -77,16 +77,15 @@ final class Session
         return isset($this->sessionData[self::LOGGED_IN_USER_ID]);
     }
 
-    public function isLoggedInUser(int $userId): bool
+    public function isLoggedInUser(string $userId): bool
     {
         if (! isset($this->sessionData[self::LOGGED_IN_USER_ID])) {
             return false;
         }
 
         $loggedInUserId = $this->sessionData[self::LOGGED_IN_USER_ID];
-        Assert::that($loggedInUserId)->integerish();
 
-        return (int) $loggedInUserId === $userId;
+        return $loggedInUserId === $userId;
     }
 
     public function logout(): void

@@ -26,7 +26,7 @@ final class Rsvp
         return new self(
             Uuid::fromString($record['rsvpId']),
             $record['meetupId'],
-            UserId::fromInt((int) $record['userId'])
+            UserId::fromString($record['userId'])
         );
     }
 

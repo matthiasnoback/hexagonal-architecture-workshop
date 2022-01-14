@@ -44,8 +44,8 @@ final class MeetupDetailsHandler implements RequestHandlerInterface
             throw new RuntimeException('Meetup not found');
         }
 
-        Assert::that($meetup['organizerId'])->integer();
-        $organizer = $this->userRepository->getById(UserId::fromInt($meetup['organizerId']));
+        Assert::that($meetup['organizerId'])->string();
+        $organizer = $this->userRepository->getById(UserId::fromString($meetup['organizerId']));
         Assert::that($meetup['meetupId'])->integer();
         $rsvps = $this->rsvpRepository->getByMeetupId((string) $meetup['meetupId']);
         $users = array_map(fn (Rsvp $rsvp) => $this->userRepository->getById($rsvp->userId()), $rsvps);

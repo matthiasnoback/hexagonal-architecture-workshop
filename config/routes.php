@@ -27,6 +27,11 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/login', LoginHandler::class, ['GET', 'POST'], 'login');
     $app->route('/logout', LogoutHandler::class, ['POST'], 'logout');
     $app->route('/switch-user', SwitchUserHandler::class, ['POST'], 'switch_user');
-    $app->route('/list-organizers', ListOrganizersHandler::class, ['GET'], 'list_organizers');
-    $app->route('/create-invoice/{organizerId:.+}', CreateInvoiceHandler::class, ['GET', 'POST'], 'create_invoice');
+    $app->route('/admin/list-organizers', ListOrganizersHandler::class, ['GET'], 'list_organizers');
+    $app->route(
+        '/admin/create-invoice/{organizerId:.+}',
+        CreateInvoiceHandler::class,
+        ['GET', 'POST'],
+        'create_invoice'
+    );
 };

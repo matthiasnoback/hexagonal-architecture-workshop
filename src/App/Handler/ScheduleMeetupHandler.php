@@ -31,6 +31,9 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
     {
         $formErrors = [];
         $formData = [
+            'name' => '',
+            'description' => '',
+            'scheduleForDate' => '',
             // This is a nice place to set some defaults
             'scheduleForTime' => '20:00',
         ];
@@ -39,10 +42,10 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
             $formData = $request->getParsedBody();
             Assert::that($formData)->isArray();
 
-            if (empty($formData['name'])) {
+            if ($formData['name'] === '') {
                 $formErrors['name'][] = 'Provide a name';
             }
-            if (empty($formData['description'])) {
+            if ($formData['description'] === '') {
                 $formErrors['description'][] = 'Provide a description';
             }
             try {
@@ -51,14 +54,14 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 
-            if (empty($formErrors)) {
+            if ($formErrors === []) {
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull();
 
                 $record = [
                     'organizerId' => $user
                         ->userId()
-                        ->asInt(),
+                        ->asString(),
                     'name' => $formData['name'],
                     'description' => $formData['description'],
                     'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],

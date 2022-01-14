@@ -26,9 +26,7 @@ final class SchemaManager
         $schema = new Schema();
 
         $accountsTable = $schema->createTable('users');
-        $accountsTable->addColumn('userId', 'integer', [
-            'autoincrement' => true,
-        ]);
+        $accountsTable->addColumn('userId', 'string');
         $accountsTable->addColumn('name', 'string');
         $accountsTable->addColumn('emailAddress', 'string');
         $accountsTable->addColumn('userType', 'string');
@@ -39,7 +37,7 @@ final class SchemaManager
         $meetupsTable->addColumn('meetupId', 'integer', [
             'autoincrement' => true,
         ]);
-        $meetupsTable->addColumn('organizerId', 'integer');
+        $meetupsTable->addColumn('organizerId', 'string');
         $meetupsTable->addColumn('name', 'string');
         $meetupsTable->addColumn('description', 'string');
         $meetupsTable->addColumn('scheduledFor', 'string');
@@ -52,7 +50,7 @@ final class SchemaManager
         $invoicesTable->addColumn('invoiceId', 'integer', [
             'autoincrement' => true,
         ]);
-        $invoicesTable->addColumn('organizerId', 'integer');
+        $invoicesTable->addColumn('organizerId', 'string');
         $invoicesTable->addColumn('amount', 'string');
         $invoicesTable->addColumn('year', 'integer');
         $invoicesTable->addColumn('month', 'integer');
@@ -62,7 +60,7 @@ final class SchemaManager
         $rsvpsTable = $schema->createTable('rsvps');
         $rsvpsTable->addColumn('rsvpId', 'string');
         $rsvpsTable->addColumn('meetupId', 'string');
-        $rsvpsTable->addColumn('userId', 'integer');
+        $rsvpsTable->addColumn('userId', 'string');
         $rsvpsTable->setPrimaryKey(['rsvpId']);
         $rsvpsTable->addUniqueIndex(['meetupId', 'userId']);
 

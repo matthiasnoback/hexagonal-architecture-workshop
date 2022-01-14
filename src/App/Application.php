@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App;
 
-use Doctrine\DBAL\Connection;
+use App\Entity\User;
+use App\Entity\UserRepository;
 
 final class Application implements ApplicationInterface
 {
     public function __construct(
-        private readonly Connection $connection
+        private readonly UserRepository $userRepository
     ) {
     }
 
     public function signUp(SignUp $command): void
     {
-        $this->connection->insert(
-            'users',
-            [
-                'name' => $command->name(),
-                'emailAddress' => $command->emailAddress(),
-                'userType' => $command->userType()
-                    ->name,
-            ]
+        $user = User::create(
+            $this->userRepository->nextIdentity(),
+            $command->name(),
+            $command->emailAddress(),
+            $command->userType()
         );
+
+        $this->userRepository->save($user);
     }
 }

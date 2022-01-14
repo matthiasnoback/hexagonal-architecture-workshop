@@ -24,7 +24,7 @@ final class RsvpRepository
                     ->toString(),
                 'meetupId' => $rsvp->meetupId(),
                 'userId' => $rsvp->userId()
-                    ->asInt(),
+                    ->asString(),
             ]
         );
     }

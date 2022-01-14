@@ -110,7 +110,7 @@ class ConfigProvider
                     Session::class
                 )),
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
-                    $container->get(Connection::class)
+                    $container->get(UserRepository::class)
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(

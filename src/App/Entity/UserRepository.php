@@ -7,6 +7,7 @@ namespace App\Entity;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ForwardCompatibility\DriverResultStatement;
+use Ramsey\Uuid\Uuid;
 
 final class UserRepository
 {
@@ -15,9 +16,19 @@ final class UserRepository
     ) {
     }
 
+    public function save(User $user): void
+    {
+        $this->connection->insert('users', $user->asDatabaseRecord());
+    }
+
+    public function nextIdentity(): UserId
+    {
+        return UserId::fromString(Uuid::uuid4()->toString());
+    }
+
     public function getById(UserId $id): User
     {
-        $result = $this->connection->executeQuery('SELECT * FROM users WHERE userId = ?', [$id->asInt()]);
+        $result = $this->connection->executeQuery('SELECT * FROM users WHERE userId = ?', [$id->asString()]);
         Assert::that($result)->isInstanceOf(DriverResultStatement::class, 'User not found');
 
         $record = $result->fetchAssociative();
