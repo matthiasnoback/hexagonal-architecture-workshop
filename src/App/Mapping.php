@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use Assert\Assert;
@@ -25,6 +27,6 @@ final class Mapping
         Assert::that($data)->keyExists($key);
         Assert::that($data[$key])->integerish();
 
-        return (int)$data[$key];
+        return (int) $data[$key];
     }
 }

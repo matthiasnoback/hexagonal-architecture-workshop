@@ -9,6 +9,7 @@ use App\Cli\SignUpCommand;
 use App\Entity\RsvpRepository;
 use App\Entity\UserHasRsvpd;
 use App\Entity\UserRepository;
+use App\Entity\UserRepositoryUsingDbal;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
 use App\Handler\ListMeetupsHandler;
@@ -116,9 +117,11 @@ class ConfigProvider
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class
                 )),
-                UserRepository::class => fn (ContainerInterface $container) => new UserRepository($container->get(
+                UserRepository::class => fn (ContainerInterface $container) => new UserRepositoryUsingDbal(
+                    $container->get(
                     Connection::class
-                )),
+                )
+                ),
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
                     Connection::class
                 )),

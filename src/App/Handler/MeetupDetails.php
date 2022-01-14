@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use App\Mapping;
-
 final class MeetupDetails
 {
     /**
      * @param array<string> $attendeeNames
      */
     public function __construct(
-        private int $meetupId,
-        private string $name,
-        private string $description,
-        private string $scheduledFor,
-        private Organizer $organizer,
-        private array $attendeeNames
+        private readonly int $meetupId,
+        private readonly string $name,
+        private readonly string $description,
+        private readonly string $scheduledFor,
+        private readonly Organizer $organizer,
+        private readonly array $attendeeNames
     ) {
     }
 

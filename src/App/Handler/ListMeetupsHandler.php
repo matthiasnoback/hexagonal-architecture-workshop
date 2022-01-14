@@ -40,12 +40,9 @@ final class ListMeetupsHandler implements RequestHandlerInterface
         $upcomingMeetups = $statement->fetchAllAssociative();
 
         return new HtmlResponse(
-            $this->renderer->render(
-                'app::list-meetups.html.twig',
-                [
-                    'upcomingMeetups' => $upcomingMeetups
-                ]
-            )
+            $this->renderer->render('app::list-meetups.html.twig', [
+                'upcomingMeetups' => $upcomingMeetups,
+            ])
         );
     }
 }
