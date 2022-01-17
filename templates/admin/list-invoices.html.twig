@@ -1,0 +1,26 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block title %}Invoices{% endblock %}
+
+{% block content %}
+    <h1>Invoices</h1>
+
+    {% if invoices is empty %}
+        <p>There are no invoices</p>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+            <tr><th>Period</th><th>Amount</th>  </tr>
+            </thead>
+            <tbody>
+            {% for invoice in invoices %}
+                <tr>
+                    <td>{{ invoice.month }}/{{ invoice.year }}</td>
+                    <td>{{ invoice.amount|number_format(2) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endblock %}

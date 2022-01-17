@@ -12,6 +12,7 @@ use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
+use App\Handler\ListInvoicesHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
@@ -100,6 +101,10 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
+                ListInvoicesHandler::class => fn (ContainerInterface $container) => new ListInvoicesHandler(
+                    $container->get(Connection::class),
+                    $container->get(TemplateRendererInterface::class)
+                ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(Session::class),
@@ -118,9 +123,7 @@ class ConfigProvider
                     UserRepository::class
                 )),
                 UserRepository::class => fn (ContainerInterface $container) => new UserRepositoryUsingDbal(
-                    $container->get(
-                    Connection::class
-                )
+                    $container->get(Connection::class)
                 ),
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
                     Connection::class
@@ -148,6 +151,7 @@ class ConfigProvider
         return [
             'paths' => [
                 'app' => ['templates/app'],
+                'admin' => ['templates/admin'],
                 'error' => ['templates/error'],
                 'layout' => ['templates/layout'],
             ],

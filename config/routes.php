@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
+use App\Handler\ListInvoicesHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
@@ -28,6 +29,7 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/logout', LogoutHandler::class, ['POST'], 'logout');
     $app->route('/switch-user', SwitchUserHandler::class, ['POST'], 'switch_user');
     $app->route('/admin/list-organizers', ListOrganizersHandler::class, ['GET'], 'list_organizers');
+    $app->route('/admin/list-invoices/{organizerId:.+}', ListInvoicesHandler::class, ['GET'], 'list_invoices');
     $app->route(
         '/admin/create-invoice/{organizerId:.+}',
         CreateInvoiceHandler::class,

@@ -45,7 +45,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $month = $formData['month'];
             Assert::that($month)->integerish();
             $organizerId = $formData['organizerId'];
-            Assert::that($organizerId)->integerish();
+            Assert::that($organizerId)->string();
 
             $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
             Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
@@ -83,7 +83,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             ]));
         }
 
-        return new HtmlResponse($this->renderer->render('app::create-invoice.html.twig', [
+        return new HtmlResponse($this->renderer->render('admin::create-invoice.html.twig', [
             'formData' => $formData,
             'years' => range(date('Y') - 1, date('Y')),
             'months' => range(1, 12),

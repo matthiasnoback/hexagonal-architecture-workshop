@@ -12,4 +12,9 @@ final class CouldNotFindUser extends RuntimeException
     {
         return new self(sprintf('Could not find user with email address "%s"', $emailAddress));
     }
+
+    public static function withId(UserId $id): self
+    {
+        return new self(sprintf('Could not find user with ID "%s"', $id->asString()));
+    }
 }

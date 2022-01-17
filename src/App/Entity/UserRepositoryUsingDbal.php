@@ -32,7 +32,9 @@ final class UserRepositoryUsingDbal implements UserRepository
         Assert::that($result)->isInstanceOf(DriverResultStatement::class, 'User not found');
 
         $record = $result->fetchAssociative();
-        Assert::that($record)->isArray();
+        if ($record === false) {
+            throw CouldNotFindUser::withId($id);
+        }
 
         return User::fromDatabaseRecord($record);
     }
