@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -eu
+
+echo "Stopping services and removing their images and volumes"
+docker-compose down --rmi all -v --remove-orphans
+
+echo ""
+echo "Now delete the project folder"
+echo ""

@@ -39,15 +39,15 @@ final class SignUpCommand extends Command
         $questionHelper = $this->getHelper('question');
 
         if ($input->getArgument('name') === null) {
-            $input->setArgument('name', $questionHelper->ask($input, $output, new Question('Name')));
+            $input->setArgument('name', $questionHelper->ask($input, $output, new Question('Name: ')));
         }
         if ($input->getArgument('emailAddress') === null) {
-            $input->setArgument('emailAddress', $questionHelper->ask($input, $output, new Question('Email address')));
+            $input->setArgument('emailAddress', $questionHelper->ask($input, $output, new Question('Email address: ')));
         }
         if ($input->getArgument('userType') === null) {
             $input->setArgument(
                 'userType',
-                $questionHelper->ask($input, $output, new ChoiceQuestion('User type', UserType::namesAndLabels()))
+                $questionHelper->ask($input, $output, new ChoiceQuestion('User type: ', UserType::namesAndLabels()))
             );
         }
     }
