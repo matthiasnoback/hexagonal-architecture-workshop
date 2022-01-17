@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Handler\MeetupDetails;
-use App\Handler\SignUp;
+use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\ViewModel\MeetupDetails;
 
 interface ApplicationInterface
 {

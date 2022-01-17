@@ -6,28 +6,28 @@ namespace App;
 
 use App\Cli\ConsoleApplication;
 use App\Cli\SignUpCommand;
-use App\Entity\RsvpRepository;
-use App\Entity\UserHasRsvpd;
 use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
-use App\Handler\CancelMeetupHandler;
-use App\Handler\CreateInvoiceHandler;
-use App\Handler\DeleteInvoiceHandler;
-use App\Handler\ListInvoicesHandler;
-use App\Handler\ListMeetupsHandler;
-use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
-use App\Handler\MeetupDetailsHandler;
-use App\Handler\MeetupDetailsRepository;
-use App\Handler\RsvpForMeetupHandler;
-use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
+use Billing\Handler\CreateInvoiceHandler;
+use Billing\Handler\DeleteInvoiceHandler;
+use Billing\Handler\ListInvoicesHandler;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
+use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\UserHasRsvpd;
+use MeetupOrganizing\Handler\CancelMeetupHandler;
+use MeetupOrganizing\Handler\ListMeetupsHandler;
+use MeetupOrganizing\Handler\ListOrganizersHandler;
+use MeetupOrganizing\Handler\MeetupDetailsHandler;
+use MeetupOrganizing\Handler\RsvpForMeetupHandler;
+use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -165,6 +165,7 @@ class ConfigProvider
             'paths' => [
                 'app' => ['templates/app'],
                 'admin' => ['templates/admin'],
+                'billing' => ['templates/billing'],
                 'error' => ['templates/error'],
                 'layout' => ['templates/layout'],
             ],

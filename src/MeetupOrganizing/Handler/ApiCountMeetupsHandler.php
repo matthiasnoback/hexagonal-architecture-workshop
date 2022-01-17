@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace MeetupOrganizing\Handler;
 
 use Assert\Assert;
 use Laminas\Diactoros\Response\JsonResponse;

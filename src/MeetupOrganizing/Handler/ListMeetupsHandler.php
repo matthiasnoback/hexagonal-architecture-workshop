@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace MeetupOrganizing\Handler;
 
-use App\Entity\ScheduledDate;
 use Assert\Assert;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Laminas\Diactoros\Response\HtmlResponse;
+use MeetupOrganizing\Entity\ScheduledDate;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;

@@ -6,9 +6,9 @@ namespace App;
 
 use App\Entity\User;
 use App\Entity\UserRepository;
-use App\Handler\MeetupDetails;
-use App\Handler\MeetupDetailsRepository;
-use App\Handler\SignUp;
+use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
 final class Application implements ApplicationInterface
 {

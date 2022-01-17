@@ -6,8 +6,8 @@ namespace App\Cli;
 
 use App\ApplicationInterface;
 use App\Entity\UserType;
-use App\Handler\SignUp;
 use Assert\Assert;
+use MeetupOrganizing\Application\SignUp;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
@@ -96,7 +96,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             ]));
         }
 
-        return new HtmlResponse($this->renderer->render('admin::create-invoice.html.twig', [
+        return new HtmlResponse($this->renderer->render('billing::create-invoice.html.twig', [
             'formData' => $formData,
             'years' => range(date('Y') - 1, date('Y')),
             'months' => range(1, 12),

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace MeetupOrganizing\Handler;
 
-use App\Entity\ScheduledDate;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\Entity\ScheduledDate;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;

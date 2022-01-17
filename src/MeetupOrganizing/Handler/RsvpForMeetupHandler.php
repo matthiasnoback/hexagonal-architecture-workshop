@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace MeetupOrganizing\Handler;
 
-use App\Entity\Rsvp;
-use App\Entity\RsvpRepository;
-use App\Entity\UserHasRsvpd;
 use App\EventDispatcher;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\Entity\Rsvp;
+use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\UserHasRsvpd;
 use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-use App\Handler\ApiCountMeetupsHandler;
-use App\Handler\ApiPingHandler;
-use App\Handler\CancelMeetupHandler;
-use App\Handler\CreateInvoiceHandler;
-use App\Handler\DeleteInvoiceHandler;
-use App\Handler\ListInvoicesHandler;
-use App\Handler\ListMeetupsHandler;
-use App\Handler\ListOrganizersHandler;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
-use App\Handler\MeetupDetailsHandler;
-use App\Handler\RsvpForMeetupHandler;
-use App\Handler\ScheduleMeetupHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
+use Billing\Handler\CreateInvoiceHandler;
+use Billing\Handler\DeleteInvoiceHandler;
+use Billing\Handler\ListInvoicesHandler;
+use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
+use MeetupOrganizing\Handler\ApiPingHandler;
+use MeetupOrganizing\Handler\CancelMeetupHandler;
+use MeetupOrganizing\Handler\ListMeetupsHandler;
+use MeetupOrganizing\Handler\ListOrganizersHandler;
+use MeetupOrganizing\Handler\MeetupDetailsHandler;
+use MeetupOrganizing\Handler\RsvpForMeetupHandler;
+use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
@@ -32,15 +32,15 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/logout', LogoutHandler::class, ['POST'], 'logout');
     $app->route('/switch-user', SwitchUserHandler::class, ['POST'], 'switch_user');
     $app->route('/admin/list-organizers', ListOrganizersHandler::class, ['GET'], 'list_organizers');
-    $app->route('/admin/list-invoices/{organizerId:.+}', ListInvoicesHandler::class, ['GET'], 'list_invoices');
+    $app->route('/billing/list-invoices/{organizerId:.+}', ListInvoicesHandler::class, ['GET'], 'list_invoices');
     $app->route(
-        '/admin/create-invoice/{organizerId:.+}',
+        '/billing/create-invoice/{organizerId:.+}',
         CreateInvoiceHandler::class,
         ['GET', 'POST'],
         'create_invoice'
     );
     $app->route(
-        '/admin/delete-invoice/{organizerId:.+}/{invoiceId:.+}',
+        '/billing/delete-invoice/{organizerId:.+}/{invoiceId:.+}',
         DeleteInvoiceHandler::class,
         ['POST'],
         'delete_invoice'
