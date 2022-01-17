@@ -14,9 +14,9 @@
             </thead>
             <tbody>
             {% for invoice in invoices %}
-                <tr>
-                    <td>{{ invoice.month }}/{{ invoice.year }}</td>
-                    <td>{{ invoice.amount|number_format(2) }}</td>
+                <tr class="invoice">
+                    <td class="period">{{ invoice.month }}/{{ invoice.year }}</td>
+                    <td class="amount">{{ invoice.amount|number_format(2) }}</td>
                 </tr>
             {% endfor %}
             </tbody>
