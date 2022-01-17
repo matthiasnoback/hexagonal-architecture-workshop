@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Handler\ApiCountMeetupsHandler;
+use App\Handler\ApiPingHandler;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
 use App\Handler\ListInvoicesHandler;
@@ -35,5 +37,12 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
         CreateInvoiceHandler::class,
         ['GET', 'POST'],
         'create_invoice'
+    );
+    $app->route('/api/ping', ApiPingHandler::class, ['GET'], 'api_ping');
+    $app->route(
+        '/api/count-meetups/{organizerId:.+}/{year:\d+}/{month:\d+}',
+        ApiCountMeetupsHandler::class,
+        ['GET'],
+        'api_count_meetups'
     );
 };

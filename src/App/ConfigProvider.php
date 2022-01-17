@@ -25,9 +25,13 @@ use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
 use Doctrine\DBAL\Connection;
+use GuzzleHttp\Psr7\HttpFactory;
+use Http\Adapter\Guzzle7\Client;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 
 class ConfigProvider
 {
@@ -110,6 +114,8 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
                 ),
                 AddFlashMessage::class => fn (ContainerInterface $container) => new AddFlashMessage($container->get(
                     Session::class
@@ -142,6 +148,8 @@ class ConfigProvider
                 SignUpCommand::class => fn (ContainerInterface $container) => new SignUpCommand($container->get(
                     ApplicationInterface::class
                 )),
+                RequestFactoryInterface::class => fn () => new HttpFactory(),
+                ClientInterface::class => fn () => new Client(),
             ],
         ];
     }

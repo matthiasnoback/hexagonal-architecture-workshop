@@ -12,6 +12,8 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -22,7 +24,9 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Connection $connection,
         private readonly Session $session,
         private readonly RouterInterface $router,
-        private readonly TemplateRendererInterface $renderer
+        private readonly TemplateRendererInterface $renderer,
+        private readonly ClientInterface $client,
+        private readonly RequestFactoryInterface $requestFactory
     ) {
     }
 
@@ -51,6 +55,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
             $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
 
+            // Load the data directly from the database
             $result = $this->connection->executeQuery(
                 'SELECT COUNT(meetupId) as numberOfMeetups FROM meetups WHERE organizerId = :organizerId AND scheduledFor >= :firstDayOfMonth AND scheduledFor <= :lastDayOfMonth',
                 [
@@ -58,6 +63,14 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
                     'firstDayOfMonth' => $firstDayOfMonth->format('Y-m-d'),
                     'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
                 ]
+            );
+
+            // Alternative: use the API
+            $response = $this->client->sendRequest(
+                $this->requestFactory->createRequest(
+                    'GET',
+                    sprintf('http://api:8080/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
+                )
             );
 
             $record = $result->fetchAssociative();
