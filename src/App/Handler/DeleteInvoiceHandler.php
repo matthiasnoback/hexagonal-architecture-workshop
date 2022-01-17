@@ -6,32 +6,34 @@ namespace App\Handler;
 
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
-use Laminas\Diactoros\Response\HtmlResponse;
-use Mezzio\Template\TemplateRendererInterface;
+use Laminas\Diactoros\Response\RedirectResponse;
+use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class ListInvoicesHandler implements RequestHandlerInterface
+final class DeleteInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly TemplateRendererInterface $renderer
+        private readonly RouterInterface $router
     ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $invoiceId = $request->getAttribute('invoiceId');
+        Assert::that($invoiceId)->string();
+
         $organizerId = $request->getAttribute('organizerId');
         Assert::that($organizerId)->string();
 
-        $invoices = $this->connection->fetchAllAssociative(
-            'SELECT * FROM invoices WHERE organizerId = ?',
-            [$organizerId]
-        );
+        $this->connection->delete('invoices', [
+            'organizerId' => $organizerId,
+            'invoiceId' => $invoiceId,
+        ]);
 
-        return new HtmlResponse($this->renderer->render('admin::list-invoices.html.twig', [
-            'invoices' => $invoices,
+        return new RedirectResponse($this->router->generateUri('list_invoices', [
             'organizerId' => $organizerId,
         ]));
     }

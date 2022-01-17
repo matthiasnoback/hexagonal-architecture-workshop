@@ -6,6 +6,7 @@ use App\Handler\ApiCountMeetupsHandler;
 use App\Handler\ApiPingHandler;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
+use App\Handler\DeleteInvoiceHandler;
 use App\Handler\ListInvoicesHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\ListOrganizersHandler;
@@ -37,6 +38,12 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
         CreateInvoiceHandler::class,
         ['GET', 'POST'],
         'create_invoice'
+    );
+    $app->route(
+        '/admin/delete-invoice/{organizerId:.+}/{invoiceId:.+}',
+        DeleteInvoiceHandler::class,
+        ['POST'],
+        'delete_invoice'
     );
     $app->route('/api/ping', ApiPingHandler::class, ['GET'], 'api_ping');
     $app->route(

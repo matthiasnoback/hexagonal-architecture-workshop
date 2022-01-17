@@ -4,19 +4,31 @@
 
 {% block content %}
     <h1>Invoices</h1>
-
+    <p>
+        <a class="btn btn-primary create-invoice" href="{{ path('create_invoice', { organizerId: organizerId }) }}">Create
+            invoice</a>
+    </p>
     {% if invoices is empty %}
         <p>There are no invoices</p>
     {% else %}
         <table class="table table-striped">
             <thead>
-            <tr><th>Period</th><th>Amount</th>  </tr>
+            <tr>
+                <th>Period</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
             </thead>
             <tbody>
             {% for invoice in invoices %}
                 <tr class="invoice">
                     <td class="period">{{ invoice.month }}/{{ invoice.year }}</td>
                     <td class="amount">{{ invoice.amount|number_format(2) }}</td>
+                    <td>
+                        <form action="{{ path('delete_invoice', { organizerId: invoice.organizerId, invoiceId: invoice.invoiceId }) }}" method="post">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

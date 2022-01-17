@@ -12,6 +12,7 @@ use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
 use App\Handler\CancelMeetupHandler;
 use App\Handler\CreateInvoiceHandler;
+use App\Handler\DeleteInvoiceHandler;
 use App\Handler\ListInvoicesHandler;
 use App\Handler\ListMeetupsHandler;
 use App\Handler\ListOrganizersHandler;
@@ -116,6 +117,10 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ClientInterface::class),
                     $container->get(RequestFactoryInterface::class),
+                ),
+                DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
+                    $container->get(Connection::class),
+                    $container->get(RouterInterface::class),
                 ),
                 AddFlashMessage::class => fn (ContainerInterface $container) => new AddFlashMessage($container->get(
                     Session::class
