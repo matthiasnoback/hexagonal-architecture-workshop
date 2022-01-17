@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Entity\UserHasRsvpd;
 use Assert\Assert;
 use Psr\Container\ContainerInterface;
 
@@ -22,7 +21,7 @@ final class EventDispatcherFactory
         foreach ($eventListeners as $eventClass => $listeners) {
             foreach ($listeners as $listener) {
                 $eventDispatcher->registerSpecificListener(
-                    UserHasRsvpd::class,
+                    $eventClass,
                     function ($event) use ($container, $listener) {
                         [$listenerServiceId, $listenerMethod] = $listener;
                         $listener = $container->get($listenerServiceId);
