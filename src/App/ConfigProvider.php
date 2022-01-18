@@ -29,7 +29,7 @@ use MeetupOrganizing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
-use MeetupOrganizing\UsageStatisticsUsingDbal;
+use MeetupOrganizing\UsageStatisticsUsingApi;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -118,12 +118,11 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(ClientInterface::class),
-                    $container->get(RequestFactoryInterface::class),
                     $container->get(UsageStatistics::class),
                 ),
-                UsageStatistics::class => fn (ContainerInterface $container) => new UsageStatisticsUsingDbal(
-                    $container->get(Connection::class),
+                UsageStatistics::class => fn (ContainerInterface $container) => new UsageStatisticsUsingApi(
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
@@ -167,7 +166,9 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(Connection::class)
+                ),
             ],
         ];
     }

@@ -12,8 +12,6 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -25,8 +23,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
         private readonly UsageStatistics $usageStatistics
     ) {
     }
@@ -53,16 +49,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             Assert::that($organizerId)->string();
 
             $numberOfMeetups = $this->usageStatistics->numberOfMeetupsOrganized($organizerId, (int)$year, (int)$month);
-
-            // Alternative: use the API
-            $response = $this->client->sendRequest(
-                $this->requestFactory->createRequest(
-                    'GET',
-                    sprintf('/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
-                )
-            );
-            $decodedData = json_decode($response->getBody()->getContents(), true);
-            Assert::that($decodedData)->isArray();
 
             if ($numberOfMeetups > 0) {
                 $invoiceAmount = $numberOfMeetups * 5;
