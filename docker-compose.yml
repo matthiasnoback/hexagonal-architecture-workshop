@@ -14,6 +14,8 @@ services:
         user: ${HOST_UID}:${HOST_GID}
         env_file:
             - .env
+        depends_on:
+            - api
 
     api:
         build: docker/web/
