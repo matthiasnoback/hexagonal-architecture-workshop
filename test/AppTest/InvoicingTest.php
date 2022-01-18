@@ -8,7 +8,7 @@ use AppTest\PageObject\ListOrganizersPage;
 
 final class InvoicingTest extends AbstractBrowserTest
 {
-    public function testScheduleMeetup(): void
+    public function testCreateInvoice(): void
     {
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->signUp('Administrator', 'administrator@gmail.com', 'Administrator');
