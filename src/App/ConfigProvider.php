@@ -21,6 +21,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
+use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\ListOrganizersHandler;
@@ -159,6 +160,7 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null
                     ]
                 ),
+                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
             ],
         ];
     }

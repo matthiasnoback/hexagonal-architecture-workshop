@@ -25,12 +25,10 @@ final class ApiCountMeetupsHandler implements RequestHandlerInterface
 
         return new JsonResponse(
             [
-                'data' => [
-                    'organizerId' => $organizerId,
-                    'year' => (int) $year,
-                    'month' => (int) $month,
-                    'numberOfMeetups' => 1,
-                ],
+                'organizerId' => $organizerId,
+                'year' => (int) $year,
+                'month' => (int) $month,
+                'numberOfMeetups' => 1,
             ]
         );
     }

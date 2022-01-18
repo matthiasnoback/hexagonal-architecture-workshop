@@ -72,6 +72,8 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
                     sprintf('/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
                 )
             );
+            $decodedData = json_decode($response->getBody()->getContents(), true);
+            Assert::that($decodedData)->isArray();
 
             $record = $result->fetchAssociative();
             Assert::that($record)->isArray();
