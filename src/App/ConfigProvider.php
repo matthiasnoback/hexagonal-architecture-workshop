@@ -154,7 +154,11 @@ class ConfigProvider
                     ApplicationInterface::class
                 )),
                 RequestFactoryInterface::class => fn () => new HttpFactory(),
-                ClientInterface::class => fn () => new Client(),
+                ClientInterface::class => fn () => Client::createWithConfig(
+                    [
+                        'base_uri' => getenv('API_BASE_URI') ?: null
+                    ]
+                ),
             ],
         ];
     }

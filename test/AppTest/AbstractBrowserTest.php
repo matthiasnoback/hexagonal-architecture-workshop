@@ -26,11 +26,8 @@ abstract class AbstractBrowserTest extends TestCase
         $filesystem = new Filesystem();
         $filesystem->remove(__DIR__ . '/../../var/app-testing.sqlite');
 
-        $this->browser = self::createHttpBrowserClient([
-            'env' => [
-                'APPLICATION_ENV' => 'testing',
-            ],
-        ]);
+        self::$baseUri = 'http://web_testing';
+        $this->browser = self::createHttpBrowserClient();
     }
 
     protected function scheduleMeetup(string $name, string $description, string $date, string $time): void

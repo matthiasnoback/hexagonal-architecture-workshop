@@ -1,45 +1,18 @@
 version: '3.9'
 
 services:
-    web:
-        build: docker/web/
-        image: matthiasnoback/hexagonal-architecture-workshop-web
-        volumes:
-            - ./:/app
-        ports:
-            # Change the left number to something else if the port is already in use on your machine
-            - 8000:8080
-        expose:
-            - 8080
-        user: ${HOST_UID}:${HOST_GID}
-        env_file:
-            - .env
-        depends_on:
-            - api
-
-    api:
-        build: docker/web/
-        image: matthiasnoback/hexagonal-architecture-workshop-web
-        volumes:
-            - ./:/app
-        user: ${HOST_UID}:${HOST_GID}
-        env_file:
-            - .env
-
     php:
         build: docker/php/
         image: matthiasnoback/hexagonal-architecture-workshop-php
         volumes:
             - ./:/app
-        environment:
-            WEB_HOSTNAME: web
-        depends_on:
-            - web
         working_dir: /app
         user: ${HOST_UID}:${HOST_GID}
         env_file:
             - .env
         init: true
+        environment:
+            - API_BASE_URI=http://api_testing
 
     composer:
         image: composer:latest
@@ -50,7 +23,101 @@ services:
             - .env
         entrypoint: composer
 
-#    mailhog:
-#        image: mailhog/mailhog:v1.0.1
-#        ports:
-#            - "8025:8025"
+    web:
+        build: docker/nginx/
+        image: matthiasnoback/hexagonal-architecture-workshop-nginx
+        volumes:
+            - ./:/app
+        ports:
+            # Change the left number to something else if the port is already in use on your machine
+            - "8000:80"
+        environment:
+            - SERVER_NAME=localhost
+            - PHP_BACKEND=php_fpm
+            - ROOT=/app/public
+        depends_on:
+            -   php_fpm
+
+    php_fpm:
+        build: docker/php-fpm/
+        image: matthiasnoback/hexagonal-architecture-workshop-php-fpm
+        volumes:
+            - ./:/app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+        environment:
+            - API_BASE_URI=http://api
+        depends_on:
+            - api
+
+    api:
+        build: docker/nginx/
+        image: matthiasnoback/hexagonal-architecture-workshop-nginx
+        volumes:
+            - ./:/app
+        environment:
+            - SERVER_NAME=api
+            - PHP_BACKEND=api_php_fpm
+            - ROOT=/app/public
+
+    api_php_fpm:
+        build: docker/php-fpm/
+        image: matthiasnoback/hexagonal-architecture-workshop-php-fpm
+        volumes:
+            - ./:/app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+        environment:
+            - API_BASE_URI=http://api
+
+    web_testing:
+        build: docker/nginx/
+        image: matthiasnoback/hexagonal-architecture-workshop-nginx
+        volumes:
+            - ./:/app
+        environment:
+            - SERVER_NAME=web_testing
+            - PHP_BACKEND=php_fpm_testing
+            - ROOT=/app/public
+        depends_on:
+            -   php_fpm_testing
+        ports:
+            - "8001:80"
+
+    php_fpm_testing:
+        build: docker/php-fpm/
+        image: matthiasnoback/hexagonal-architecture-workshop-php-fpm
+        volumes:
+            - ./:/app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+            - .env.testing
+        environment:
+            - API_BASE_URI=http://api_testing
+        depends_on:
+            - api_testing
+
+    api_testing:
+        build: docker/nginx/
+        image: matthiasnoback/hexagonal-architecture-workshop-nginx
+        volumes:
+            - ./:/app
+        environment:
+            - SERVER_NAME=api_testing
+            - PHP_BACKEND=api_php_fpm_testing
+            - ROOT=/app/public
+
+    api_php_fpm_testing:
+        build: docker/php-fpm/
+        image: matthiasnoback/hexagonal-architecture-workshop-php-fpm
+        volumes:
+            - ./:/app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+            - .env.testing
+        environment:
+            - API_BASE_URI=http://api_testing

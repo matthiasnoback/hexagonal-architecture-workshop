@@ -69,7 +69,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $response = $this->client->sendRequest(
                 $this->requestFactory->createRequest(
                     'GET',
-                    sprintf('http://api:8080/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
+                    sprintf('/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
                 )
             );
 
