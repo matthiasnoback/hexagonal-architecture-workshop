@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Billing;
+namespace MeetupOrganizing;
 
 use App\Mapping;
 use Assert\Assert;

@@ -16,8 +16,10 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
-use Billing\MeetupInterface;
-use Billing\MeetupUsingDatabase;
+use Billing\MeetupInterface as BillingMeetupInterface;
+use Billing\MeetupUsingApi;
+use MeetupOrganizing\MeetupInterface as MeetupOrganizingMeetupInterface;
+use MeetupOrganizing\MeetupUsingDatabase;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -118,12 +120,11 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
+                    $container->get(BillingMeetupInterface::class),
+                ),
+                BillingMeetupInterface::class => fn (ContainerInterface $container) => new MeetupUsingApi(
                     $container->get(ClientInterface::class),
                     $container->get(RequestFactoryInterface::class),
-                    $container->get(MeetupInterface::class),
-                ),
-                MeetupInterface::class => fn (ContainerInterface $container) => new MeetupUsingDatabase(
-                    $container->get(Connection::class)
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
@@ -167,7 +168,12 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(MeetupOrganizingMeetupInterface::class)
+                ),
+                MeetupOrganizingMeetupInterface::class => fn (ContainerInterface $container) => new MeetupUsingDatabase(
+                    $container->get(Connection::class)
+                ),
             ],
         ];
     }

@@ -25,8 +25,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory,
         private readonly MeetupInterface $meetup
     ) {
     }
@@ -51,16 +49,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             Assert::that($month)->integerish();
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
-
-            // Alternative: use the API
-            $response = $this->client->sendRequest(
-                $this->requestFactory->createRequest(
-                    'GET',
-                    sprintf('/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
-                )
-            );
-            $decodedData = json_decode($response->getBody()->getContents(), true);
-            Assert::that($decodedData)->isArray();
 
             $numberOfMeetups = $this->meetup->countMeetups((int)$year, (int)$month, $organizerId);
 
