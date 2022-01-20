@@ -6,7 +6,7 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
-use DateTimeImmutable;
+use Billing\MeetupInterface;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -26,7 +26,8 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
         private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory
+        private readonly RequestFactoryInterface $requestFactory,
+        private readonly MeetupInterface $meetup
     ) {
     }
 
@@ -51,20 +52,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
-            Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
-            $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
-
-            // Load the data directly from the database
-            $result = $this->connection->executeQuery(
-                'SELECT COUNT(meetupId) as numberOfMeetups FROM meetups WHERE organizerId = :organizerId AND scheduledFor >= :firstDayOfMonth AND scheduledFor <= :lastDayOfMonth',
-                [
-                    'organizerId' => $organizerId,
-                    'firstDayOfMonth' => $firstDayOfMonth->format('Y-m-d'),
-                    'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
-                ]
-            );
-
             // Alternative: use the API
             $response = $this->client->sendRequest(
                 $this->requestFactory->createRequest(
@@ -75,9 +62,8 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $decodedData = json_decode($response->getBody()->getContents(), true);
             Assert::that($decodedData)->isArray();
 
-            $record = $result->fetchAssociative();
-            Assert::that($record)->isArray();
-            $numberOfMeetups = $record['numberOfMeetups'];
+            $numberOfMeetups = $this->meetup->countMeetups((int)$year, (int)$month, $organizerId);
+
             if ($numberOfMeetups > 0) {
                 $invoiceAmount = $numberOfMeetups * 5;
 

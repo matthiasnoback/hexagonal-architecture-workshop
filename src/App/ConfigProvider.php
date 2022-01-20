@@ -16,6 +16,8 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\MeetupInterface;
+use Billing\MeetupUsingDatabase;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -118,6 +120,10 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ClientInterface::class),
                     $container->get(RequestFactoryInterface::class),
+                    $container->get(MeetupInterface::class),
+                ),
+                MeetupInterface::class => fn (ContainerInterface $container) => new MeetupUsingDatabase(
+                    $container->get(Connection::class)
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
