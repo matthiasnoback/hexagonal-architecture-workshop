@@ -115,9 +115,7 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class),
-                    $container->get(ClientInterface::class),
-                    $container->get(RequestFactoryInterface::class),
+                    $container->get(TemplateRendererInterface::class)
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),

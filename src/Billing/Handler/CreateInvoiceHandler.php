@@ -12,8 +12,6 @@ use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
-use Psr\Http\Client\ClientInterface;
-use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -24,9 +22,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Connection $connection,
         private readonly Session $session,
         private readonly RouterInterface $router,
-        private readonly TemplateRendererInterface $renderer,
-        private readonly ClientInterface $client,
-        private readonly RequestFactoryInterface $requestFactory
+        private readonly TemplateRendererInterface $renderer
     ) {
     }
 
@@ -64,16 +60,6 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
                     'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
                 ]
             );
-
-            // Alternative: use the API
-            $response = $this->client->sendRequest(
-                $this->requestFactory->createRequest(
-                    'GET',
-                    sprintf('/api/count-meetups/%s/%d/%d', $organizerId, $year, $month)
-                )
-            );
-            $decodedData = json_decode($response->getBody()->getContents(), true);
-            Assert::that($decodedData)->isArray();
 
             $record = $result->fetchAssociative();
             Assert::that($record)->isArray();
