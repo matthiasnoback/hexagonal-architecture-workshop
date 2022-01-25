@@ -34,6 +34,7 @@ use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use TailEventStream\Producer;
 
 class ConfigProvider
 {
@@ -127,6 +128,7 @@ class ConfigProvider
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
                     $container->get(UserRepository::class),
                     $container->get(MeetupDetailsRepository::class),
+                    $container->get(Producer::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(

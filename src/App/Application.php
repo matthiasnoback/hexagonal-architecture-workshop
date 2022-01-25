@@ -9,12 +9,14 @@ use App\Entity\UserRepository;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use TailEventStream\Producer;
 
 final class Application implements ApplicationInterface
 {
     public function __construct(
         private readonly UserRepository $userRepository,
-        private readonly MeetupDetailsRepository $meetupDetailsRepository
+        private readonly MeetupDetailsRepository $meetupDetailsRepository,
+        private readonly Producer $producer,
     ) {
     }
 
@@ -28,6 +30,14 @@ final class Application implements ApplicationInterface
         );
 
         $this->userRepository->save($user);
+
+        $this->producer->produce(
+            'user.signed_up',
+            [
+                'id' => $user->userId()->asString(),
+                'name' => $user->name(),
+            ]
+        );
 
         return $user->userId()
             ->asString();

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\EventStreamConfigProvider;
 use Laminas\ConfigAggregator\ConfigAggregator;
 use Laminas\ConfigAggregator\PhpFileProvider;
 use Mezzio\Helper\ConfigProvider;
@@ -18,6 +19,7 @@ $aggregator = new ConfigAggregator([
     \Laminas\Diactoros\ConfigProvider::class,
     // Default App module config
     App\ConfigProvider::class,
+    EventStreamConfigProvider::class,
     // Load application config in a pre-defined order in such a way that local settings
     // overwrite global settings. (Loaded as first to last):
     //   - `global.php`
