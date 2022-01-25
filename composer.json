@@ -9,6 +9,7 @@
     },
     "require": {
         "php": "~8.1.0",
+        "ext-json": "*",
         "beberlei/assert": "^3.3",
         "composer/package-versions-deprecated": "^1.10.99",
         "doctrine/dbal": "^2.9",
@@ -16,14 +17,14 @@
         "laminas/laminas-diactoros": "^2.7",
         "laminas/laminas-pimple-config": "^1.1.1",
         "laminas/laminas-stdlib": "^3.6",
+        "matthiasnoback/tail-event-stream": "^0.1.1",
         "mezzio/mezzio": "^3.7",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
         "mezzio/mezzio-twigrenderer": "^2.6",
+        "php-http/guzzle7-adapter": "^0.1.1",
         "ramsey/uuid": "^4.2",
-        "symfony/console": "^6.0",
-        "ext-json": "*",
-        "php-http/guzzle7-adapter": "^0.1.1"
+        "symfony/console": "^6.0"
     },
     "require-dev": {
         "ext-dom": "*",
