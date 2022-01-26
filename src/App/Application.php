@@ -13,7 +13,6 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
-use MeetupOrganizing\ViewModel\Organizer;
 use MeetupOrganizing\ViewModel\UpcomingMeetup;
 
 final class Application implements ApplicationInterface
@@ -25,7 +24,7 @@ final class Application implements ApplicationInterface
     ) {
     }
 
-    public function signUp(SignUp $command): void
+    public function signUp(SignUp $command): string
     {
         $user = User::create(
             $this->userRepository->nextIdentity(),
@@ -35,6 +34,8 @@ final class Application implements ApplicationInterface
         );
 
         $this->userRepository->save($user);
+
+        return $user->userId()->asString();
     }
 
     public function meetupDetails(string $id): MeetupDetails
