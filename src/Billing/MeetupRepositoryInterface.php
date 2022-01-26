@@ -6,8 +6,7 @@ namespace Billing;
 interface MeetupRepositoryInterface
 {
     public function countMeetupsPerMonth(
-        int $month,
-        int $year,
+        InvoicePeriod $invoicePeriod,
         string $organizerId
     ): int;
 }

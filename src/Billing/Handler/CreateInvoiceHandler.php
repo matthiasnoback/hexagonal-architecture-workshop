@@ -6,6 +6,7 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
+use Billing\InvoicePeriod;
 use Billing\MeetupRepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -50,8 +51,10 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
 
             $numberOfMeetups = $this->meetupRepository
                 ->countMeetupsPerMonth(
-                    (int) $month,
-                    (int) $year,
+                    InvoicePeriod::createFromYearAndMonth(
+                        (int) $year,
+                        (int) $month,
+                    ),
                     $organizerId
                 );
 
