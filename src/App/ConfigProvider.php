@@ -142,7 +142,9 @@ class ConfigProvider
                     $container->get(Connection::class)
                 ),
                 Connection::class => ConnectionFactory::class,
-                SchemaManager::class => fn (ContainerInterface $container) => new SchemaManager($container->get(Connection::class)),
+                SchemaManager::class => fn (ContainerInterface $container) => new SchemaManager($container->get(
+                    Connection::class
+                )),
                 SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension(
                     $container->get(Session::class),
                     $container->get(UserRepository::class)
@@ -156,7 +158,7 @@ class ConfigProvider
                 RequestFactoryInterface::class => fn () => new HttpFactory(),
                 ClientInterface::class => fn () => Client::createWithConfig(
                     [
-                        'base_uri' => getenv('API_BASE_URI') ?: null
+                        'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
                 ),
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),

@@ -29,7 +29,8 @@ final class Application implements ApplicationInterface
 
         $this->userRepository->save($user);
 
-        return $user->userId()->asString();
+        return $user->userId()
+            ->asString();
     }
 
     public function meetupDetails(string $id): MeetupDetails

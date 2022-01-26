@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace AppTest;
@@ -9,9 +10,7 @@ final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
 {
     public function testCreateInvoice(): void
     {
-        $organizerId = $this->application->signUp(
-            new SignUp('Organizer', 'organizer@gmail.com', 'Organizer')
-        );
+        $organizerId = $this->application->signUp(new SignUp('Organizer', 'organizer@gmail.com', 'Organizer'));
 
         // @TODO remove useless assertion
         self::assertIsString($organizerId);

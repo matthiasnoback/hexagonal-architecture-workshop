@@ -25,7 +25,8 @@ final class SchemaManager
     {
         foreach ($this->provideSchema()->getTables() as $table) {
             $this->connection->executeQuery(
-                $this->connection->getDatabasePlatform()->getTruncateTableSQL($table->getName())
+                $this->connection->getDatabasePlatform()
+                    ->getTruncateTableSQL($table->getName())
             );
         }
     }

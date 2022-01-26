@@ -25,7 +25,7 @@ $aggregator = new ConfigAggregator([
     //   - `local.php`
     //   - `*.local.php`
     new PhpFileProvider(realpath(__DIR__) . '/autoload/{{,*.}global,{,*.}local}.php'),
-    new PhpFileProvider(realpath(__DIR__) . '/' . (getenv('APPLICATION_ENV') ?: 'development') . '.php')
+    new PhpFileProvider(realpath(__DIR__) . '/' . (getenv('APPLICATION_ENV') ?: 'development') . '.php'),
 ]);
 
 return $aggregator->getMergedConfig();
