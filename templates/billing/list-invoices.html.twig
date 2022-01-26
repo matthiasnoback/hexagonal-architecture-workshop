@@ -22,7 +22,7 @@
             <tbody>
             {% for invoice in invoices %}
                 <tr class="invoice">
-                    <td class="period">{{ invoice.month }}/{{ invoice.year }}</td>
+                    <td class="period">{{ invoice.period }}</td>
                     <td class="amount">{{ invoice.amount|number_format(2) }}</td>
                     <td>
                         <form action="{{ path('delete_invoice', { organizerId: invoice.organizerId, invoiceId: invoice.invoiceId }) }}" method="post">

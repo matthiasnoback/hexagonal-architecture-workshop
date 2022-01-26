@@ -21,6 +21,15 @@ final class SchemaManager
         $synchronizer->updateSchema($this->provideSchema(), true);
     }
 
+    public function truncateTables(): void
+    {
+        foreach ($this->provideSchema()->getTables() as $table) {
+            $this->connection->executeQuery(
+                $this->connection->getDatabasePlatform()->getTruncateTableSQL($table->getName())
+            );
+        }
+    }
+
     private function provideSchema(): Schema
     {
         $schema = new Schema();

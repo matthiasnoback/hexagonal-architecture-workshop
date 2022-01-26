@@ -9,7 +9,7 @@ use MeetupOrganizing\ViewModel\MeetupDetails;
 
 interface ApplicationInterface
 {
-    public function signUp(SignUp $command): void;
+    public function signUp(SignUp $command): string;
 
     public function meetupDetails(string $id): MeetupDetails;
 }

@@ -142,6 +142,7 @@ class ConfigProvider
                     $container->get(Connection::class)
                 ),
                 Connection::class => ConnectionFactory::class,
+                SchemaManager::class => fn (ContainerInterface $container) => new SchemaManager($container->get(Connection::class)),
                 SessionExtension::class => fn (ContainerInterface $container) => new SessionExtension(
                     $container->get(Session::class),
                     $container->get(UserRepository::class)
