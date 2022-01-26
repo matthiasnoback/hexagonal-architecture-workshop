@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -23,7 +24,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly TemplateRendererInterface $renderer,
         private readonly RouterInterface $router,
-        private readonly Connection $connection
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -58,18 +59,14 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull();
 
-                $record = [
-                    'organizerId' => $user
+                $meetupId = $this->application->scheduleMeetup(
+                    $formData['name'],
+                    $formData['description'],
+                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                    $user
                         ->userId()
-                        ->asString(),
-                    'name' => $formData['name'],
-                    'description' => $formData['description'],
-                    'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    'wasCancelled' => 0,
-                ];
-                $this->connection->insert('meetups', $record);
-
-                $meetupId = (int) $this->connection->lastInsertId();
+                        ->asString()
+                );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 
