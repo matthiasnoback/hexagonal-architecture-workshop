@@ -7,6 +7,9 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\InvoicePeriod;
+use Billing\MeetupRepositoryInterface;
+use Billing\ViewModel\Invoice;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\SignUp;
@@ -21,6 +24,7 @@ final class Application implements ApplicationInterface
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly Connection $connection,
+        private readonly MeetupRepositoryInterface $meetupRepository,
     ) {
     }
 
@@ -84,6 +88,50 @@ final class Application implements ApplicationInterface
                 Mapping::getString($record, 'scheduledFor')
             ),
             $upcomingMeetups
+        );
+    }
+
+    public function createInvoice(int $year, int $month, string $organizerId): bool
+    {
+        $numberOfMeetups = $this->meetupRepository
+            ->countMeetupsPerMonth(
+                InvoicePeriod::createFromYearAndMonth(
+                    (int) $year,
+                    (int) $month,
+                ),
+                $organizerId
+            );
+
+        if ($numberOfMeetups > 0) {
+            $invoiceAmount = $numberOfMeetups * 5;
+
+            $this->connection->insert('invoices', [
+                'organizerId' => $organizerId,
+                'amount' => number_format($invoiceAmount, 2),
+                'year' => $year,
+                'month' => $month,
+            ]);
+            return true;
+        }
+
+        return false;
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
         );
     }
 }

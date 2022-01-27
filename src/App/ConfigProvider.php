@@ -110,15 +110,14 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 ListInvoicesHandler::class => fn (ContainerInterface $container) => new ListInvoicesHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
-                    $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(MeetupRepositoryInterface::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 MeetupRepositoryInterface::class => fn (ContainerInterface $container) => new MeetupRepositoryDbal(
                     $container->get(Connection::class),
@@ -134,6 +133,7 @@ class ConfigProvider
                     $container->get(UserRepository::class),
                     $container->get(MeetupDetailsRepository::class),
                     $container->get(Connection::class),
+                    $container->get(MeetupRepositoryInterface::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
