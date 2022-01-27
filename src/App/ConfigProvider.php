@@ -18,6 +18,7 @@ use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\MeetupRepositoryDbal;
 use Billing\MeetupRepositoryInterface;
+use Billing\MeetupRepositoryUsingApi;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -30,6 +31,8 @@ use MeetupOrganizing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\MeetupInterface;
+use MeetupOrganizing\MeetupUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -119,8 +122,9 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
-                MeetupRepositoryInterface::class => fn (ContainerInterface $container) => new MeetupRepositoryDbal(
-                    $container->get(Connection::class),
+                MeetupRepositoryInterface::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingApi(
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
@@ -166,7 +170,12 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(MeetupInterface::class)
+                ),
+                MeetupInterface::class => fn (ContainerInterface $container) => new MeetupUsingDbal(
+                    $container->get(Connection::class)
+                )
             ],
         ];
     }

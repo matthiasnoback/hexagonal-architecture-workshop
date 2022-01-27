@@ -16,6 +16,16 @@ final class InvoicePeriod
         Assert::that($this->month)->range(1, 12);
     }
 
+    public function year(): int
+    {
+        return $this->year;
+    }
+
+    public function month(): int
+    {
+        return $this->month;
+    }
+
     public static function createFromYearAndMonth(int $year, int $month): self
     {
         return new self($year, $month);
