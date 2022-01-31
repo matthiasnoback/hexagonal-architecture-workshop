@@ -15,6 +15,8 @@ abstract class AbstractApplicationTest extends TestCase
 
     protected function setUp(): void
     {
+        $_ENV['APPLICATION_ENV'] = 'application_testing';
+
         /** @var ContainerInterface $container */
         $container = require 'config/container.php';
 

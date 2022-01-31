@@ -94,7 +94,7 @@ services:
         user: ${HOST_UID}:${HOST_GID}
         env_file:
             - .env
-            - .env.testing
+            - .env.end_to_end_testing
         environment:
             - API_BASE_URI=http://api_testing
         depends_on:
@@ -118,6 +118,6 @@ services:
         user: ${HOST_UID}:${HOST_GID}
         env_file:
             - .env
-            - .env.testing
+            - .env.end_to_end_testing
         environment:
             - API_BASE_URI=http://api_testing

@@ -10,10 +10,4 @@
             <directory suffix="Test.php">test</directory>
         </testsuite>
     </testsuites>
-    <extensions>
-        <extension class="Symfony\Component\Panther\ServerExtension" />
-    </extensions>
-    <php>
-        <env name="APPLICATION_ENV" value="testing" />
-    </php>
 </phpunit>

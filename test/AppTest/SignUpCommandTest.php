@@ -16,8 +16,10 @@ final class SignUpCommandTest extends TestCase
     {
         $projectRootDir = __DIR__ . '/../../';
 
+        $_ENV['APPLICATION_ENV'] = 'end_to_end_testing';
+
         $filesystem = new Filesystem();
-        $filesystem->remove($projectRootDir . '/var/app-testing.sqlite');
+        $filesystem->remove($projectRootDir . '/var/app-end_to_end_testing.sqlite');
 
         /** @var ContainerInterface $container */
         $container = require $projectRootDir . '/config/container.php';
