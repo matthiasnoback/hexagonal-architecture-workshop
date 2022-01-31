@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MeetupOrganizing\Handler;
+namespace Billing\Handler;
 
 use App\Entity\UserType;
 use Doctrine\DBAL\Connection;

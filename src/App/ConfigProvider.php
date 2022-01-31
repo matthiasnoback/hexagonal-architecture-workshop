@@ -24,7 +24,7 @@ use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
-use MeetupOrganizing\Handler\ListOrganizersHandler;
+use Billing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
