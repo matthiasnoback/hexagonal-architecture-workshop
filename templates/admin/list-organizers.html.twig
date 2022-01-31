@@ -17,8 +17,8 @@
             <tr class="organizer">
                 <td>{{ organizer.name }}</td>
                 <td>
-                    <a class="btn btn-primary create-invoice" href="{{ path('create_invoice', { organizerId: organizer.userId }) }}">Create invoice</a>
-                    <a class="btn btn-primary list-invoices" href="{{ path('list_invoices', { organizerId: organizer.userId }) }}">List invoices</a>
+                    <a class="btn btn-primary create-invoice" href="{{ path('create_invoice', { organizerId: organizer.id }) }}">Create invoice</a>
+                    <a class="btn btn-primary list-invoices" href="{{ path('list_invoices', { organizerId: organizer.id }) }}">List invoices</a>
                 </td>
             </tr>
             {% endfor %}

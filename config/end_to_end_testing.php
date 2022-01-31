@@ -12,8 +12,7 @@ return [
         'factories' => [
             ExternalEventPublisher::class => fn (ContainerInterface $container) => new SynchronousExternalEventPublisher(
                 $container->get(EventDispatcher::class)
-            ),
-            // TODO define application test-specific factories here, which will override earlier service definitions
+            )
         ],
     ],
 ];

@@ -121,3 +121,15 @@ services:
             - .env.end_to_end_testing
         environment:
             - API_BASE_URI=http://api_testing
+
+    billing_event_consumer:
+        build: docker/php/
+        image: matthiasnoback/hexagonal-architecture-workshop-php
+        volumes:
+            - ./:/app
+        working_dir: /app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+        init: true
+        command: php console.php consume:events

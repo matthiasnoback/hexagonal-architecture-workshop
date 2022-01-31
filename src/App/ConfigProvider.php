@@ -6,6 +6,7 @@ namespace App;
 
 use App\Cli\ConsoleApplication;
 use App\Cli\SignUpCommand;
+use App\Entity\UserHasSignedUp;
 use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
 use App\Handler\LoginHandler;
@@ -13,9 +14,11 @@ use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
+use Billing\Cli\ConsumeEventsCommand;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -34,6 +37,7 @@ use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use TailEventStream\Consumer;
 use TailEventStream\Producer;
 
 class ConfigProvider
@@ -49,6 +53,13 @@ class ConfigProvider
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
+                ConsumerRestarted::class => [
+                    [OrganizerProjection::class, 'whenConsumerRestarted']
+                ],
+                ExternalEventReceived::class => [
+                    [OrganizerProjection::class, 'whenExternalEventReceived']
+                ]
             ],
         ];
     }
@@ -128,7 +139,7 @@ class ConfigProvider
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
                     $container->get(UserRepository::class),
                     $container->get(MeetupDetailsRepository::class),
-                    $container->get(Producer::class),
+                    $container->get(EventDispatcher::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
@@ -157,11 +168,24 @@ class ConfigProvider
                 SignUpCommand::class => fn (ContainerInterface $container) => new SignUpCommand($container->get(
                     ApplicationInterface::class
                 )),
+                ConsumeEventsCommand::class => fn (ContainerInterface $container) => new ConsumeEventsCommand(
+                    $container->get(Consumer::class),
+                    $container->get(EventDispatcher::class),
+                ),
+                OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
+                    $container->get(Connection::class),
+                ),
                 RequestFactoryInterface::class => fn () => new HttpFactory(),
                 ClientInterface::class => fn () => Client::createWithConfig(
                     [
                         'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
+                ),
+                PublishExternalEvent::class => fn (ContainerInterface $container) => new PublishExternalEvent(
+                    $container->get(ExternalEventPublisher::class),
+                ),
+                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
+                    $container->get(Producer::class)
                 ),
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
             ],

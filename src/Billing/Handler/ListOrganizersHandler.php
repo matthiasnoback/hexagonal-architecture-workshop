@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
-use App\Entity\UserType;
+use App\Mapping;
+use Billing\ViewModel\Organizer;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Mezzio\Template\TemplateRendererInterface;
@@ -22,9 +23,14 @@ final class ListOrganizersHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $organizers = $this->connection->fetchAllAssociative(
-            'SELECT * FROM users WHERE userType = ?',
-            [UserType::Organizer->name]
+        $organizers = array_map(
+            fn(array $record) => new Organizer(
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getString($record, 'name'),
+            ),
+            $this->connection->fetchAllAssociative(
+                'SELECT * FROM billing_organizers'
+            )
         );
 
         return new HtmlResponse(

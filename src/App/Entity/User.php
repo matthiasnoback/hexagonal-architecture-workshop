@@ -6,6 +6,8 @@ namespace App\Entity;
 
 final class User
 {
+    use EventRecordingCapabilities;
+
     private UserId $userId;
 
     private string $name;
@@ -38,6 +40,8 @@ final class User
         $user->name = $name;
         $user->emailAddress = $emailAddress;
         $user->userType = $userType;
+
+        $user->events[] = new UserHasSignedUp($user->userId, $user->name, $user->emailAddress, $user->userType);
 
         return $user;
     }
@@ -73,5 +77,10 @@ final class User
             'emailAddress' => $this->emailAddress,
             'userType' => $this->userType->name,
         ];
+    }
+
+    public function userType(): UserType
+    {
+        return $this->userType;
     }
 }

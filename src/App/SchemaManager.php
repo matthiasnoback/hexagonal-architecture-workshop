@@ -74,6 +74,11 @@ final class SchemaManager
         $rsvpsTable->setPrimaryKey(['rsvpId']);
         $rsvpsTable->addUniqueIndex(['meetupId', 'userId']);
 
+        $billingOrganizersTable = $schema->createTable('billing_organizers');
+        $billingOrganizersTable->addColumn('organizerId', 'string');
+        $billingOrganizersTable->addColumn('name', 'string');
+        $billingOrganizersTable->setPrimaryKey(['organizerId']);
+
         return $schema;
     }
 }
