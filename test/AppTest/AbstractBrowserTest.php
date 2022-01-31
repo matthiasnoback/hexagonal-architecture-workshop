@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppTest;
 
+use App\SchemaManager;
 use AppTest\PageObject\GenericPage;
 use AppTest\PageObject\ListMeetupsPage;
 use AppTest\PageObject\LoginPage;
@@ -11,8 +12,8 @@ use AppTest\PageObject\MeetupSnippet;
 use AppTest\PageObject\ScheduleMeetupPage;
 use AppTest\PageObject\SignUpPage;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Panther\PantherTestCaseTrait;
 
 abstract class AbstractBrowserTest extends TestCase
@@ -25,8 +26,13 @@ abstract class AbstractBrowserTest extends TestCase
     {
         $_ENV['APPLICATION_ENV'] = 'end_to_end_testing';
 
-        $filesystem = new Filesystem();
-        $filesystem->remove(__DIR__ . '/../../var/app-end_to_end_testing.sqlite');
+        /** @var ContainerInterface $container */
+        $container = require 'config/container.php';
+
+        /** @var SchemaManager $schemaManager */
+        $schemaManager = $container->get(SchemaManager::class);
+        $schemaManager->updateSchema();
+        $schemaManager->truncateTables();
 
         self::$baseUri = 'http://web_testing';
         $this->browser = self::createHttpBrowserClient();

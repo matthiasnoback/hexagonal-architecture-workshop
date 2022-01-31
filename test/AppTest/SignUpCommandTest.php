@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace AppTest;
 
 use App\Cli\ConsoleApplication;
+use App\SchemaManager;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Tester\ApplicationTester;
-use Symfony\Component\Filesystem\Filesystem;
 
 final class SignUpCommandTest extends TestCase
 {
@@ -18,11 +18,13 @@ final class SignUpCommandTest extends TestCase
 
         $_ENV['APPLICATION_ENV'] = 'end_to_end_testing';
 
-        $filesystem = new Filesystem();
-        $filesystem->remove($projectRootDir . '/var/app-end_to_end_testing.sqlite');
-
         /** @var ContainerInterface $container */
-        $container = require $projectRootDir . '/config/container.php';
+        $container = require 'config/container.php';
+
+        /** @var SchemaManager $schemaManager */
+        $schemaManager = $container->get(SchemaManager::class);
+        $schemaManager->updateSchema();
+        $schemaManager->truncateTables();
 
         $application = $container->get(ConsoleApplication::class);
         $application->setAutoExit(false);
