@@ -14,7 +14,8 @@ final class InvoicingApplicationTest extends AbstractApplicationTest
             new SignUp('Organizer', 'organizer@gmail.com', 'Organizer')
         );
 
-        $this->application->scheduleMeetup('Meetup 1', 'Description', '2022-01-10 20:00', $organizerId);
+        // Given 1 meetup has been scheduled in January 2022
+        $this->meetupRepository->setCount(1);
 
         $this->application->createInvoice(
             2022,
@@ -37,6 +38,7 @@ final class InvoicingApplicationTest extends AbstractApplicationTest
         );
 
         // Given no meetups were scheduled by a given organizer in January 2022
+        $this->meetupRepository->setCount(0);
 
         // When we invoice this organizer for January 2022
         $this->application->createInvoice(

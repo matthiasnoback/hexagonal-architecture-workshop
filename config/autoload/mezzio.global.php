@@ -13,7 +13,7 @@ return [
 
     // Enable debugging; typically used to provide debugging information within templates.
     'debug' => true,
-    'environment' => getenv('APPLICATION_ENV') ?: 'development',
+    'environment' => ($_ENV['APPLICATION_ENV'] ?? 'development'),
     'mezzio' => [
         // Provide templates for the error handling middleware to use when
         // generating responses.

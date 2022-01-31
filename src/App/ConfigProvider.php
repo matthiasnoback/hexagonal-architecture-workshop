@@ -16,7 +16,6 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
-use Billing\MeetupRepositoryDbal;
 use Billing\MeetupRepositoryInterface;
 use Billing\MeetupRepositoryUsingApi;
 use Doctrine\DBAL\Connection;

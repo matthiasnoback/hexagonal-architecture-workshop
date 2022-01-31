@@ -23,8 +23,10 @@ abstract class AbstractBrowserTest extends TestCase
 
     protected function setUp(): void
     {
+        $_ENV['APPLICATION_ENV'] = 'end_to_end_testing';
+
         $filesystem = new Filesystem();
-        $filesystem->remove(__DIR__ . '/../../var/app-testing.sqlite');
+        $filesystem->remove(__DIR__ . '/../../var/app-end_to_end_testing.sqlite');
 
         self::$baseUri = 'http://web_testing';
         $this->browser = self::createHttpBrowserClient();

@@ -13,7 +13,4 @@
     <extensions>
         <extension class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
-    <php>
-        <env name="APPLICATION_ENV" value="testing" />
-    </php>
 </phpunit>
