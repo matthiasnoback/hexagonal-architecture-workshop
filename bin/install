@@ -9,7 +9,7 @@ echo "Pulling Docker images"
 docker-compose pull
 
 echo "Installing Composer dependencies"
-docker-compose run --rm composer install
+docker-compose run --rm composer install --ignore-platform-reqs
 
 echo "Starting all services in docker-compose.yml"
 docker-compose up -d
