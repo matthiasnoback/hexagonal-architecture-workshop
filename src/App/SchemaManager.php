@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 final class SchemaManager
 {
@@ -17,8 +17,14 @@ final class SchemaManager
 
     public function updateSchema(): void
     {
-        $synchronizer = new SingleDatabaseSynchronizer($this->connection);
-        $synchronizer->updateSchema($this->provideSchema(), true);
+        $schemaDiff = (new Comparator())->compare(
+            $this->connection->getSchemaManager()->createSchema(),
+            $this->provideSchema()
+        );
+
+        foreach ($schemaDiff->toSaveSql($this->connection->getDatabasePlatform()) as $sql) {
+            $this->connection->executeStatement($sql);
+        }
     }
 
     public function truncateTables(): void
@@ -78,6 +84,13 @@ final class SchemaManager
         $billingOrganizersTable->addColumn('organizerId', 'string');
         $billingOrganizersTable->addColumn('name', 'string');
         $billingOrganizersTable->setPrimaryKey(['organizerId']);
+
+        $billingMeetupsTable = $schema->createTable('billing_meetups');
+        $billingMeetupsTable->addColumn('organizerId', 'string');
+        $billingMeetupsTable->addColumn('meetupId', 'string');
+        $billingMeetupsTable->addColumn('year', 'integer');
+        $billingMeetupsTable->addColumn('month', 'integer');
+        $billingMeetupsTable->setPrimaryKey(['meetupId']);
 
         return $schema;
     }

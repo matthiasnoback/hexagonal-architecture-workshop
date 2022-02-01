@@ -20,17 +20,17 @@ final class OrganizerProjection
 
     public function whenExternalEventReceived(ExternalEventReceived $event): void
     {
-        if ($event->messageType() !== 'user.signed_up') {
+        if ($event->eventType() !== 'user.signed_up') {
             return;
         }
 
-        if (Mapping::getString($event->messageData(), 'type') !== 'Organizer') {
+        if (Mapping::getString($event->eventData(), 'type') !== 'Organizer') {
             // Only process organizers
             return;
         }
 
         $result = $this->connection->fetchAssociative('SELECT * FROM billing_organizers WHERE organizerId = ?', [
-            Mapping::getString($event->messageData(), 'id')
+            Mapping::getString($event->eventData(), 'id')
         ]);
 
         if (is_array($result)) {
@@ -40,8 +40,8 @@ final class OrganizerProjection
 
         // This is a new organizer
         $this->connection->insert('billing_organizers', [
-            'organizerId' => Mapping::getString($event->messageData(), 'id'),
-            'name' => Mapping::getString($event->messageData(), 'name')
+            'organizerId' => Mapping::getString($event->eventData(), 'id'),
+            'name' => Mapping::getString($event->eventData(), 'name')
         ]);
     }
 }

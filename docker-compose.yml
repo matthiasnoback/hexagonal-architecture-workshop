@@ -122,7 +122,7 @@ services:
         environment:
             - API_BASE_URI=http://api_testing
 
-    billing_event_consumer:
+    event_consumer:
         build: docker/php/
         image: matthiasnoback/hexagonal-architecture-workshop-php
         volumes:

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Billing\Cli;
+namespace App\Cli;
 
 use App\ConsumerRestarted;
 use App\EventDispatcher;

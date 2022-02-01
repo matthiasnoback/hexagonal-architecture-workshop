@@ -5,18 +5,18 @@ namespace App;
 
 final class ExternalEventReceived
 {
-    public function __construct(private string $messageType, private array $messageData)
+    public function __construct(private string $eventType, private array $eventData)
     {
 
     }
 
-    public function messageType(): string
+    public function eventType(): string
     {
-        return $this->messageType;
+        return $this->eventType;
     }
 
-    public function messageData(): array
+    public function eventData(): array
     {
-        return $this->messageData;
+        return $this->eventData;
     }
 }

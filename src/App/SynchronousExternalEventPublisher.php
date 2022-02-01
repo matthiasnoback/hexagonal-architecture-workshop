@@ -10,10 +10,10 @@ final class SynchronousExternalEventPublisher implements ExternalEventPublisher
     {
     }
 
-    public function publish(string $messageType, array $messageData): void
+    public function publish(string $eventType, array $eventData): void
     {
         $this->eventDispatcher->dispatch(
-            new ExternalEventReceived($messageType, $messageData)
+            new ExternalEventReceived($eventType, $eventData)
         );
     }
 }

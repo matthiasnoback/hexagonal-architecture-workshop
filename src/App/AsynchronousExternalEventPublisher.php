@@ -12,10 +12,10 @@ final class AsynchronousExternalEventPublisher implements ExternalEventPublisher
     {
     }
 
-    public function publish(string $messageType, array $messageData): void
+    public function publish(string $eventType, array $eventData): void
     {
         $this->producer->produce(
-            $messageType, $messageData
+            $eventType, $eventData
         );
     }
 }

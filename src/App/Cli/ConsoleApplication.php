@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Cli;
 
-use Billing\Cli\ConsumeEventsCommand;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
 
