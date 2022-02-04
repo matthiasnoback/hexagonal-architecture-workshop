@@ -7,6 +7,8 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\Meetups;
+use Billing\ViewModel\Invoice;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\SignUp;
@@ -21,6 +23,7 @@ final class Application implements ApplicationInterface
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly Connection $connection,
+        private readonly Meetups $meetups,
     ) {
     }
 
@@ -80,6 +83,47 @@ final class Application implements ApplicationInterface
         return array_map(
             fn (array $record) => Meetup::fromDatabaseRecord($record),
             $upcomingMeetups
+        );
+    }
+
+    public function createInvoice(string $organizerId, int $year, int $month): bool
+    {
+        $numberOfMeetups = $this->meetups->countScheduledMeetupsFor(
+            $year,
+            $month,
+            $organizerId,
+        );
+
+        if ($numberOfMeetups > 0) {
+            $invoiceAmount = $numberOfMeetups * 5;
+
+            $this->connection->insert('invoices', [
+                'organizerId' => $organizerId,
+                'amount' => number_format($invoiceAmount, 2),
+                'year' => $year,
+                'month' => $month,
+            ]);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
         );
     }
 }
