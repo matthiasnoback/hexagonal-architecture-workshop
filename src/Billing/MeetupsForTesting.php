@@ -5,15 +5,18 @@ namespace Billing;
 
 final class MeetupsForTesting implements Meetups
 {
-    private int $count;
+    private array $counts = [];
 
-    public function setScheduledMeetupsCount(int $count): void
+    public function setScheduledMeetupsCount(
+        int $year, int $month, string $organizerId, int $count
+    ): void
     {
-        $this->count = $count;
+        $this->counts[$year][$month][$organizerId] = $count;
     }
 
     public function countScheduledMeetupsFor(int $year, int $month, string $organizerId): int
     {
-        return $this->count;
+        return $this->counts[$year][$month][$organizerId]
+            ?? throw new \RuntimeException('First call setScheduledMeetupsCount');
     }
 }

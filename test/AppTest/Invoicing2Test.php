@@ -19,7 +19,7 @@ final class Invoicing2Test extends AbstractApplicationTest
 
         // Given an organizer has scheduled two meetups in January 2022
         // @TODO check Year and Month and OrganizerId
-        $this->meetups->setScheduledMeetupsCount(2);
+        $this->meetups->setScheduledMeetupsCount(2022, 1, $organizerId, 2);
 
         // When we create an invoice for this organizer
         $this->application->createInvoice($organizerId, 2022, 1);
@@ -44,7 +44,7 @@ final class Invoicing2Test extends AbstractApplicationTest
         );
 
         // Given no meetups were scheduled
-        $this->meetups->setScheduledMeetupsCount(0);
+        $this->meetups->setScheduledMeetupsCount(2022, 1, $organizerId, 0);
 
         $this->application->createInvoice($organizerId, 2022, 1);
 
