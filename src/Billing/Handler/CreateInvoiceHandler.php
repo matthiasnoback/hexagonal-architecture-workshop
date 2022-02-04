@@ -6,6 +6,7 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
+use Billing\Meetups;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -22,7 +23,9 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Connection $connection,
         private readonly Session $session,
         private readonly RouterInterface $router,
-        private readonly TemplateRendererInterface $renderer
+        private readonly TemplateRendererInterface $renderer,
+        private readonly Meetups $meetups,
+
     ) {
     }
 
@@ -47,23 +50,12 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
-            Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
-            $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
-
-            // Load the data directly from the database
-            $result = $this->connection->executeQuery(
-                'SELECT COUNT(meetupId) as numberOfMeetups FROM meetups WHERE organizerId = :organizerId AND scheduledFor >= :firstDayOfMonth AND scheduledFor <= :lastDayOfMonth',
-                [
-                    'organizerId' => $organizerId,
-                    'firstDayOfMonth' => $firstDayOfMonth->format('Y-m-d'),
-                    'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
-                ]
+            $numberOfMeetups = $this->meetups->countScheduledMeetupsFor(
+                (int) $year,
+                (int) $month,
+                $organizerId,
             );
 
-            $record = $result->fetchAssociative();
-            Assert::that($record)->isArray();
-            $numberOfMeetups = $record['numberOfMeetups'];
             if ($numberOfMeetups > 0) {
                 $invoiceAmount = $numberOfMeetups * 5;
 
