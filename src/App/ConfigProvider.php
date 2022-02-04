@@ -17,6 +17,7 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Meetups;
+use MeetupOrganizing\MeetupsFromApi;
 use MeetupOrganizing\MeetupsFromDatabase;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -120,7 +121,10 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                 ),
                 Meetups::class => fn (ContainerInterface $container) =>
-                    new MeetupsFromDatabase($container->get(Connection::class)),
+                    new MeetupsFromApi(
+                        $container->get(ClientInterface::class),
+                        $container->get(RequestFactoryInterface::class),
+                    ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
@@ -167,7 +171,9 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(Connection::class),
+                ),
             ],
         ];
     }

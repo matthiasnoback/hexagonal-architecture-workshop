@@ -6,12 +6,15 @@ namespace AppTest;
 
 use App\ApplicationInterface;
 use App\SchemaManager;
+use Billing\Meetups;
+use Billing\MeetupsForTesting;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
 abstract class AbstractApplicationTest extends TestCase
 {
     protected ApplicationInterface $application;
+    protected MeetupsForTesting $meetups;
 
     protected function setUp(): void
     {
@@ -26,5 +29,9 @@ abstract class AbstractApplicationTest extends TestCase
         $schemaManager->truncateTables();
 
         $this->application = $container->get(ApplicationInterface::class);
+
+        $meetups = $container->get(Meetups::class);
+        self::assertInstanceOf(MeetupsForTesting::class, $meetups);
+        $this->meetups = $meetups;
     }
 }
