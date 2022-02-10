@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\ApplicationInterface;
+use App\Mapping;
 use App\ScheduleMeetup;
 use App\Session;
 use Assert\Assert;
@@ -43,30 +44,29 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
             $formData = $request->getParsedBody();
             Assert::that($formData)->isArray();
 
-            if ($formData['name'] === '') {
+            $user = $this->session->getLoggedInUser();
+            Assert::that($user)->notNull();
+
+            $command = new ScheduleMeetup(
+                $user->userId()->asString(),
+                Mapping::getString($formData, 'name'),
+                Mapping::getString($formData, 'description'),
+                Mapping::getString($formData, 'scheduleForDate') . ' ' . Mapping::getString($formData, 'scheduleForTime')
+            );
+
+            if ($command->name() === '') {
                 $formErrors['name'][] = 'Provide a name';
             }
-            if ($formData['description'] === '') {
+            if ($command->description() === '') {
                 $formErrors['description'][] = 'Provide a description';
             }
             try {
-                ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
+                ScheduledDate::fromString($command->dateAndTime());
             } catch (Exception) {
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 
             if ($formErrors === []) {
-                $user = $this->session->getLoggedInUser();
-                Assert::that($user)->notNull();
-
-                $command = new ScheduleMeetup(
-                    $user
-                        ->userId()
-                        ->asString(),
-                    $formData['name'],
-                    $formData['description'],
-                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                );
                 $meetupId = $this->application->scheduleMeetup($command);
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
