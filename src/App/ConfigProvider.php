@@ -16,6 +16,8 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\Integration\MeetupOrganizingMeetupCounts;
+use Billing\MeetupCounts;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -115,8 +117,13 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(MeetupCounts::class),
                 ),
+                MeetupCounts::class => fn (ContainerInterface $container) =>
+                    new MeetupOrganizingMeetupCounts(
+                        $container->get(Connection::class)
+                    ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
