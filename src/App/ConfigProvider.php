@@ -16,7 +16,8 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
-use Billing\Integration\MeetupOrganizingMeetupCounts;
+use Billing\MeetupCountsUsingMeetupOrganizingApi;
+use MeetupOrganizing\ViewModel\MeetupOrganizingMeetupCounts;
 use Billing\MeetupCounts;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -119,10 +120,14 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
-                MeetupCounts::class => fn (ContainerInterface $container) =>
+                MeetupOrganizingMeetupCounts::class => fn (ContainerInterface $container) =>
                     new MeetupOrganizingMeetupCounts(
                         $container->get(Connection::class)
                     ),
+                MeetupCounts::class => fn (ContainerInterface $container) => new MeetupCountsUsingMeetupOrganizingApi(
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
+                ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
@@ -169,7 +174,9 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(MeetupOrganizingMeetupCounts::class)
+                ),
             ],
         ];
     }

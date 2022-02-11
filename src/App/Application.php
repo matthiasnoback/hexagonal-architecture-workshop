@@ -90,14 +90,10 @@ final class Application implements ApplicationInterface
 
     public function createInvoice(int $year, int $month, string $organizerId): int
     {
-        $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
-        Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
-        $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
-
         $numberOfMeetups = $this->meetupCounts->getTotalNumberOfMeetups(
             $organizerId,
-            $firstDayOfMonth,
-            $lastDayOfMonth,
+            $year,
+            $month,
         );
 
         if ($numberOfMeetups > 0) {

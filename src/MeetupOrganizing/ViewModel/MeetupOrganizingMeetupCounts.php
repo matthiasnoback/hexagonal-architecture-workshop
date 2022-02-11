@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Billing\Integration;
+namespace MeetupOrganizing\ViewModel;
 
 use App\Mapping;
 use Assert\Assert;
-use Billing\MeetupCounts;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 
-final class MeetupOrganizingMeetupCounts implements MeetupCounts
+final class MeetupOrganizingMeetupCounts
 {
     public function __construct(
         private readonly Connection $connection
