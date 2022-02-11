@@ -26,7 +26,7 @@ final class InvoicingApplicationTest extends AbstractApplicationTest
             new SignUp('Organizer', 'organizer@gmail.com', 'Organizer')
         );
 
-        $this->meetupCounts->setCount(2);
+        $this->meetupCounts->setExpectationsForGetTotalNumberOfMeetups($organizerId, 2022, 1, 2);
 
         $this->application->createInvoice(
             2022,
