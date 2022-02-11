@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
+use App\ApplicationInterface;
+use App\InvoiceNotNeeded;
 use App\Session;
 use Assert\Assert;
 use Billing\MeetupCounts;
@@ -20,11 +22,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class CreateInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection $connection,
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly MeetupCounts $meetupCounts,
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -49,28 +50,14 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
-            Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
-            $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
-
-            $numberOfMeetups = $this->meetupCounts->getTotalNumberOfMeetups(
-                $organizerId,
-                $firstDayOfMonth,
-                $lastDayOfMonth,
-            );
-
-            if ($numberOfMeetups > 0) {
-                $invoiceAmount = $numberOfMeetups * 5;
-
-                $this->connection->insert('invoices', [
-                    'organizerId' => $organizerId,
-                    'amount' => number_format($invoiceAmount, 2),
-                    'year' => $year,
-                    'month' => $month,
-                ]);
-
+            try {
+                $this->application->createInvoice(
+                    (int)$year,
+                    (int)$month,
+                    $organizerId,
+                );
                 $this->session->addSuccessFlash('Invoice created');
-            } else {
+            } catch (InvoiceNotNeeded) {
                 $this->session->addErrorFlash('No need to create an invoice');
             }
 

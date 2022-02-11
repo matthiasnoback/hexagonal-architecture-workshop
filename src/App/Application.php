@@ -7,6 +7,8 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\MeetupCounts;
+use Billing\ViewModel\Invoice;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
@@ -22,6 +24,7 @@ final class Application implements ApplicationInterface
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly Connection $connection,
+        private readonly MeetupCounts $meetupCounts,
     ) {
     }
 
@@ -82,6 +85,52 @@ final class Application implements ApplicationInterface
                 Mapping::getString($record, 'scheduledFor'),
             ),
             $upcomingMeetups
+        );
+    }
+
+    public function createInvoice(int $year, int $month, string $organizerId): int
+    {
+        $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
+        Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
+        $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
+
+        $numberOfMeetups = $this->meetupCounts->getTotalNumberOfMeetups(
+            $organizerId,
+            $firstDayOfMonth,
+            $lastDayOfMonth,
+        );
+
+        if ($numberOfMeetups > 0) {
+            $invoiceAmount = $numberOfMeetups * 5;
+
+            $this->connection->insert('invoices', [
+                'organizerId' => $organizerId,
+                'amount' => number_format($invoiceAmount, 2),
+                'year' => $year,
+                'month' => $month,
+            ]);
+
+            return (int)$this->connection->lastInsertId();
+        }
+
+        throw new InvoiceNotNeeded();
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
         );
     }
 }
