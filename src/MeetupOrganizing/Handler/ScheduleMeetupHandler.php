@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\ApplicationInterface;
+use App\ScheduleMeetup;
 use App\Session;
 use Assert\Assert;
-use Doctrine\DBAL\Connection;
 use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -23,7 +24,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly TemplateRendererInterface $renderer,
         private readonly RouterInterface $router,
-        private readonly Connection $connection
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -58,18 +59,17 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull();
 
-                $record = [
-                    'organizerId' => $user
-                        ->userId()
-                        ->asString(),
-                    'name' => $formData['name'],
-                    'description' => $formData['description'],
-                    'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    'wasCancelled' => 0,
-                ];
-                $this->connection->insert('meetups', $record);
-
-                $meetupId = (int) $this->connection->lastInsertId();
+                $meetupId = $this->application->scheduleMeetup(
+                    new ScheduleMeetup(
+                        $user
+                            ->userId()
+                            ->asString(),
+                        $formData['name'],
+                        $formData['description'],
+                        $formData['scheduleForDate'],
+                        $formData['scheduleForTime'],
+                    )
+                );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 
