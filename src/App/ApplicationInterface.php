@@ -23,6 +23,8 @@ interface ApplicationInterface
      */
     public function listMeetups(): array;
 
+    // ports for Billing:
+
     /**
      * @return array<Invoice>
      */
