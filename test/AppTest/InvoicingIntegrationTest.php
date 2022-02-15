@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace AppTest;
 
-use App\ScheduleMeetup;
+use AppTest\Integration\BillableMeetupsForTest;
+use Billing\BillableMeetups;
 use Billing\ViewModel\Invoice;
 use MeetupOrganizing\Application\SignUp;
 
@@ -15,10 +16,23 @@ final class InvoicingIntegrationTest extends AbstractApplicationTest
             new SignUp('Organizer', 'organizer@gmail.com', 'Organizer'),
         );
 
+        // Given 2 meetups were scheduled in January 2022 by this organizer
+        $billableMeetups = $this->container->get(BillableMeetups::class);
+        self::assertInstanceOf(BillableMeetupsForTest::class, $billableMeetups);
+        $year = 2022;
+        $month = 1;
+        $billableMeetups->setCount(
+            $organizerId,
+            $year,
+            $month,
+            2,
+        );
+
+        // When we create an invoice for this month
         $this->application->createInvoice(
             $organizerId,
-            2022,
-            1,
+            $year,
+            $month,
         );
 
         // list invoices
