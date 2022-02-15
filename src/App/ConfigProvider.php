@@ -14,6 +14,7 @@ use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
 use Billing\BillableMeetups;
+use Billing\BillableMeetupsFromApi;
 use MeetupOrganizing\BillableMeetupsUsingDbal;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
@@ -119,8 +120,12 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
-                BillableMeetups::class => fn (ContainerInterface $container) => new BillableMeetupsUsingDbal(
-                    $container->get(Connection::class),
+                BillableMeetups::class => fn (ContainerInterface $container) => $container->get(BillableMeetupsFromApi::class),
+                BillableMeetupsFromApi::class => fn (ContainerInterface $container) => new BillableMeetupsFromApi(
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
+                ),
+                BillableMeetupsUsingDbal::class => fn (ContainerInterface $container) => new BillableMeetupsUsingDbal($container->get(Connection::class),
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
@@ -168,7 +173,9 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    $container->get(BillableMeetupsUsingDbal::class)
+                ),
             ],
         ];
     }
