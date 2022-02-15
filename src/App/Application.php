@@ -7,6 +7,9 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\BillableMeetups;
+use Billing\InvoiceNotNeeded;
+use Billing\ViewModel\Invoice;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
@@ -22,6 +25,7 @@ final class Application implements ApplicationInterface
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly Connection $connection,
+        private readonly BillableMeetups $billableMeetups,
     ) {
     }
 
@@ -83,5 +87,45 @@ final class Application implements ApplicationInterface
             ),
             $upcomingMeetups,
         );
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
+        );
+    }
+
+    public function createInvoice(string $organizerId, int $year, int $month,): void
+    {
+        $numberOfMeetups = $this->billableMeetups->howManyBillableMeetupsDoesThisOrganizerHaveInTheGivenMonth(
+            $organizerId,
+            $year,
+            $month,
+        );
+
+        if ($numberOfMeetups === 0) {
+            throw new InvoiceNotNeeded();
+        }
+
+        $invoiceAmount = $numberOfMeetups * 5;
+
+        $this->connection->insert('invoices', [
+            'organizerId' => $organizerId,
+            'amount' => number_format($invoiceAmount, 2),
+            'year' => $year,
+            'month' => $month,
+        ]);
     }
 }
