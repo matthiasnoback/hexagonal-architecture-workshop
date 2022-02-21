@@ -11,7 +11,8 @@ final class ScheduleMeetupCommand
         private string $organizerId,
         private string $name,
         private string $description,
-        private ScheduledDate $scheduledFor,
+        private string $scheduledForDate,
+        private string $scheduledForTime,
     )
     {
     }
@@ -33,6 +34,8 @@ final class ScheduleMeetupCommand
 
     public function scheduledFor(): ScheduledDate
     {
-        return $this->scheduledFor;
+        return ScheduledDate::fromString(
+            $this->scheduledForDate . ' ' . $this->scheduledForTime
+        );
     }
 }

@@ -65,9 +65,8 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                         ->asString(),
                     $formData['name'],
                     $formData['description'],
-                    ScheduledDate::fromString(
-                        $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-                    ),
+                    $formData['scheduleForDate'],
+                    $formData['scheduleForTime'],
                 );
 
                 $meetupId = $this->application->scheduleMeetup(
