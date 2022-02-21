@@ -6,10 +6,14 @@ namespace App;
 
 use App\Entity\User;
 use App\Entity\UserRepository;
+use Assert\Assert;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupSummary;
 
 final class Application implements ApplicationInterface
 {
@@ -52,5 +56,29 @@ final class Application implements ApplicationInterface
         $this->connection->insert('meetups', $record);
 
         return (int) $this->connection->lastInsertId();
+    }
+
+    public function listUpcomingMeetups(ListUpcomingMeetups $query): array
+    {
+        $statement = $this->connection->createQueryBuilder()
+            ->select('*')
+            ->from('meetups')
+            ->where('scheduledFor >= :now')
+            ->setParameter('now', $query->date()
+                ->format(ScheduledDate::DATE_TIME_FORMAT)
+            )
+            ->andWhere('wasCancelled = :wasNotCancelled')
+            ->setParameter('wasNotCancelled', 0)
+            ->execute();
+        Assert::that($statement)->isInstanceOf(Statement::class);
+
+        return array_map(
+            fn (array $record) => new MeetupSummary(
+                Mapping::getInt($record, 'meetupId'),
+                Mapping::getString($record, 'name'),
+                Mapping::getString($record, 'scheduledFor'),
+            ),
+            $statement->fetchAllAssociative()
+        );
     }
 }

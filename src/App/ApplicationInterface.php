@@ -6,6 +6,7 @@ namespace App;
 
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupSummary;
 
 interface ApplicationInterface
 {
@@ -14,4 +15,11 @@ interface ApplicationInterface
     public function meetupDetails(string $id): MeetupDetails;
 
     public function scheduleMeetup(ScheduleMeetupCommand $command): int;
+
+    /**
+     * @return array<MeetupSummary>
+     */
+    public function listUpcomingMeetups(
+        ListUpcomingMeetups $query
+    ): array;
 }
