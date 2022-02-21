@@ -61,7 +61,7 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
-                    $container->get(Connection::class)
+                    $container->get(ApplicationInterface::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),
@@ -127,6 +127,7 @@ class ConfigProvider
                 ApplicationInterface::class => fn (ContainerInterface $container) => new Application(
                     $container->get(UserRepository::class),
                     $container->get(MeetupDetailsRepository::class),
+                    $container->get(Connection::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
