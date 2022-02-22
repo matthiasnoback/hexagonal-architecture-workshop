@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
+use Billing\MeetupRepository;
+use Billing\MeetupRepositoryForTesting;
+
 return [
     'dependencies' => [
         'factories' => [
-            // TODO define application test-specific factories here, which will override earlier service definitions
+            MeetupRepository::class => fn () => new MeetupRepositoryForTesting()
         ],
     ],
 ];

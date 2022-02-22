@@ -18,31 +18,6 @@ final class BetterInvoicingTest extends AbstractApplicationTest
                 'Organizer'
             )
         );
-        $this->application->signUp(
-            new SignUp(
-                'Administrator',
-                'administrator@gmail.com',
-                'Administrator'
-            )
-        );
-
-        $this->application->scheduleMeetup(
-            new ScheduleMeetupCommand(
-                $organizerId,
-                'Meetup 1',
-                'Description',
-                '2022-01-10',
-                '20:00'
-            )
-        );
-        $this->application->scheduleMeetup(
-            new ScheduleMeetupCommand(
-                $organizerId,
-                'Meetup 2',
-                'Description',
-                '2022-01-17',
-                '20:00')
-        );
 
         $this->application->createInvoice(
             new CreateInvoice($organizerId, 2022, 1)
