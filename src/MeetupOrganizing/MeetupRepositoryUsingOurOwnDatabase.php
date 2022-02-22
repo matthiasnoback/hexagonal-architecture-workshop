@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Billing\Integration;
+namespace MeetupOrganizing;
 
 use App\Mapping;
 use Assert\Assert;
-use Billing\MeetupRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 
-final class MeetupRepositoryUsingSharedDatabase implements MeetupRepository
+final class MeetupRepositoryUsingOurOwnDatabase
 {
     public function __construct(
         private readonly Connection $connection,

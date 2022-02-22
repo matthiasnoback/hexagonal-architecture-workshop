@@ -16,7 +16,10 @@ use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
-use Billing\Integration\MeetupRepositoryUsingSharedDatabase;
+use Billing\MeetupRepositoryFromApi;
+use MeetupOrganizing\MeetupOrganizingApplication;
+use MeetupOrganizing\MeetupOrganizingApplicationInterface;
+use MeetupOrganizing\MeetupRepositoryUsingOurOwnDatabase;
 use Billing\MeetupRepository;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -119,9 +122,6 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
                 ),
-                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingSharedDatabase(
-                    $container->get(Connection::class),
-                ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
@@ -134,6 +134,10 @@ class ConfigProvider
                     $container->get(MeetupDetailsRepository::class),
                     $container->get(Connection::class),
                     $container->get(MeetupRepository::class),
+                ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryFromApi(
+                    $container->get(ClientInterface::class),
+                    $container->get(RequestFactoryInterface::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
@@ -168,7 +172,9 @@ class ConfigProvider
                         'base_uri' => getenv('API_BASE_URI') ?: null,
                     ]
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler($container->get(MeetupOrganizingApplicationInterface::class)),
+                MeetupOrganizingApplicationInterface::class => fn (ContainerInterface $container) => new MeetupOrganizingApplication($container->get(MeetupRepositoryUsingOurOwnDatabase::class)),
+                MeetupRepositoryUsingOurOwnDatabase::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingOurOwnDatabase($container->get(Connection::class)),
             ],
         ];
     }

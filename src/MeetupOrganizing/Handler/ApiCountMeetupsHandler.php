@@ -6,12 +6,18 @@ namespace MeetupOrganizing\Handler;
 
 use Assert\Assert;
 use Laminas\Diactoros\Response\JsonResponse;
+use MeetupOrganizing\MeetupOrganizingApplicationInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 final class ApiCountMeetupsHandler implements RequestHandlerInterface
 {
+    public function __construct(
+        private readonly MeetupOrganizingApplicationInterface $application
+    ) {
+    }
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $organizerId = $request->getAttribute('organizerId');
@@ -28,7 +34,11 @@ final class ApiCountMeetupsHandler implements RequestHandlerInterface
                 'organizerId' => $organizerId,
                 'year' => (int) $year,
                 'month' => (int) $month,
-                'numberOfMeetups' => 1,
+                'numberOfMeetups' => $this->application->getNumberOfMeetups(
+                    $organizerId,
+                    (int) $year,
+                    (int) $month,
+                ),
             ]
         );
     }
