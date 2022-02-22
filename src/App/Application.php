@@ -7,6 +7,9 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\MeetupRepository;
+use Billing\NothingToInvoice;
+use Billing\ViewModel\Invoice;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\SignUp;
@@ -21,6 +24,7 @@ final class Application implements ApplicationInterface
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly Connection $connection,
+        private readonly MeetupRepository $meetupRepository,
     ) {
     }
 
@@ -79,6 +83,46 @@ final class Application implements ApplicationInterface
                 Mapping::getString($record, 'scheduledFor'),
             ),
             $statement->fetchAllAssociative()
+        );
+    }
+
+    public function createInvoice(CreateInvoice $command): void
+    {
+        $numberOfMeetups = $this->meetupRepository->getNumberOfMeetups(
+            $command->organizerId(),
+            $command->year(),
+            $command->month(),
+        );
+
+        if ($numberOfMeetups < 1) {
+            throw new NothingToInvoice();
+        }
+
+        $invoiceAmount = $numberOfMeetups * 5;
+
+        $this->connection->insert('invoices', [
+            'organizerId' => $command->organizerId(),
+            'amount' => number_format($invoiceAmount, 2),
+            'year' => $command->year(),
+            'month' => $command->month(),
+        ]);
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
         );
     }
 }

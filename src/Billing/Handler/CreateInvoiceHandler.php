@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
+use App\ApplicationInterface;
+use App\CreateInvoice;
 use App\Session;
 use Assert\Assert;
-use Billing\MeetupRepository;
-use Doctrine\DBAL\Connection;
+use Billing\NothingToInvoice;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
@@ -19,11 +20,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class CreateInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection $connection,
+        private readonly ApplicationInterface $application,
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly MeetupRepository $meetupRepository,
     ) {
     }
 
@@ -48,24 +48,12 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $numberOfMeetups = $this->meetupRepository->getNumberOfMeetups(
-                $organizerId,
-                (int) $year,
-                (int) $month,
-            );
-
-            if ($numberOfMeetups > 0) {
-                $invoiceAmount = $numberOfMeetups * 5;
-
-                $this->connection->insert('invoices', [
-                    'organizerId' => $organizerId,
-                    'amount' => number_format($invoiceAmount, 2),
-                    'year' => $year,
-                    'month' => $month,
-                ]);
-
+            try {
+                $this->application->createInvoice(
+                    new CreateInvoice($organizerId, (int)$year, (int)$month)
+                );
                 $this->session->addSuccessFlash('Invoice created');
-            } else {
+            } catch (NothingToInvoice) {
                 $this->session->addErrorFlash('No need to create an invoice');
             }
 
