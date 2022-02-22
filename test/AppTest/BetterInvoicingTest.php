@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace AppTest;
 
 use App\CreateInvoice;
-use App\ScheduleMeetupCommand;
+use Billing\MeetupRepository;
+use Billing\MeetupRepositoryForTesting;
 use MeetupOrganizing\Application\SignUp;
 
 final class BetterInvoicingTest extends AbstractApplicationTest
@@ -19,10 +20,17 @@ final class BetterInvoicingTest extends AbstractApplicationTest
             )
         );
 
+        // Given 2 meetups were scheduled by an organizer in January 2022
+        $meetupRepository = $this->container->get(MeetupRepository::class);
+        assert($meetupRepository instanceof MeetupRepositoryForTesting);
+        $meetupRepository->mockNumberOfMeetups($organizerId, 2022, 1, 2);
+
+        // When we create an invoice for this organizer, for January 2022
         $this->application->createInvoice(
             new CreateInvoice($organizerId, 2022, 1)
         );
 
+        // Then this invoice should have an amount 10.00
         $invoices = $this->application->listInvoices($organizerId);
         self::assertCount(1, $invoices);
         $invoice = $invoices[0];
