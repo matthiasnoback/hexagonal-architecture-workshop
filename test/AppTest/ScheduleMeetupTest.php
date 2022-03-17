@@ -15,6 +15,8 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
 
         $this->flashMessagesShouldContain('Your meetup was scheduled successfully');
 
+        $this->flashMessagesShouldContain('You have successfully RSVP-ed to this meetup');
+
         $this->assertUpcomingMeetupExists('Coding Dojo');
     }
 }
