@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use App\Entity\UserId;
+use Shared\ExternalEvents\MeetupOrganizingMeetupWasScheduled;
 
 final class MeetupWasScheduled
 {
@@ -27,5 +28,14 @@ final class MeetupWasScheduled
     public function scheduledDate(): ScheduledDate
     {
         return $this->scheduledDate;
+    }
+
+    public function asExternalEvent(): MeetupOrganizingMeetupWasScheduled
+    {
+        return new MeetupOrganizingMeetupWasScheduled(
+            $this->meetupId,
+            $this->organizerId->asString(),
+            $this->scheduledDate->asString()
+        );
     }
 }

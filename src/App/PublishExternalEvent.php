@@ -6,6 +6,7 @@ namespace App;
 use App\Entity\UserHasSignedUp;
 use MeetupOrganizing\Entity\MeetupWasCancelled;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
+use Shared\ExternalEvents\MeetupOrganizingMeetupWasScheduled;
 
 final class PublishExternalEvent
 {
@@ -28,23 +29,21 @@ final class PublishExternalEvent
 
     public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
     {
+        $externalEvent = $event->asExternalEvent();
+
         $this->publisher->publish(
-            'meetup.scheduled',
-            [
-                'meetupId' => $event->meetupId(),
-                'organizerId' => $event->organizerId()->asString(),
-                'scheduledDate' => $event->scheduledDate()->asString()
-            ]
+            $externalEvent->name(),
+            $externalEvent->toArray(),
         );
     }
 
     public function whenMeetupWasCancelled(MeetupWasCancelled $event): void
     {
+        $externalEvent = $event->asExternalEvent();
+
         $this->publisher->publish(
-            'meetup.cancelled',
-            [
-                'meetupId' => $event->meetupId(),
-            ]
+            $externalEvent->name(),
+            $externalEvent->toArray(),
         );
     }
 }
