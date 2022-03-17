@@ -76,7 +76,8 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                 $this->eventDispatcher->dispatch(new MeetupWasScheduled(
                     $meetupId,
-                    $user->userId()
+                    $user->userId(),
+                    ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'])
                 ));
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');

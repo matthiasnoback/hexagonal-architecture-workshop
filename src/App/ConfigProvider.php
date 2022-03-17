@@ -25,6 +25,7 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Application\RsvpOrganizerForMeetup;
+use MeetupOrganizing\BillingMeetups;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -65,8 +66,9 @@ class ConfigProvider
                     [OrganizerProjection::class, 'whenExternalEventReceived']
                 ],
                 MeetupWasScheduled::class => [
-                    [RsvpOrganizerForMeetup::class, 'whenMeetupWasScheduled']
-                ]
+                    [RsvpOrganizerForMeetup::class, 'whenMeetupWasScheduled'],
+                    [BillingMeetups::class, 'whenMeetupWasScheduled']
+                ],
             ],
         ];
     }
@@ -85,6 +87,9 @@ class ConfigProvider
                 ),
                 RsvpOrganizerForMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerForMeetup(
                     $container->get(ApplicationInterface::class)
+                ),
+                BillingMeetups::class => fn (ContainerInterface $container) => new BillingMeetups(
+                    $container->get(Connection::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),

@@ -63,4 +63,14 @@ final class ScheduledDate
 
         return $dateTimeImmutable;
     }
+
+    public function year(): int
+    {
+        return (int) $this->toDateTimeImmutable()->format('Y');
+    }
+
+    public function month(): int
+    {
+        return (int) $this->toDateTimeImmutable()->format('m');
+    }
 }

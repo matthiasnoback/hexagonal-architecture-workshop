@@ -7,8 +7,11 @@ use App\Entity\UserId;
 
 final class MeetupWasScheduled
 {
-    public function __construct(private int $meetupId, private UserId $organizerId)
-    {
+    public function __construct(
+        private int $meetupId,
+        private UserId $organizerId,
+        private ScheduledDate $scheduledDate,
+    ) {
     }
 
     public function meetupId(): int
@@ -19,5 +22,10 @@ final class MeetupWasScheduled
     public function organizerId(): UserId
     {
         return $this->organizerId;
+    }
+
+    public function scheduledDate(): ScheduledDate
+    {
+        return $this->scheduledDate;
     }
 }
