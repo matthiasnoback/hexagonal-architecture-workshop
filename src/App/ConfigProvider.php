@@ -26,6 +26,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Application\RsvpOrganizerForMeetup;
 use MeetupOrganizing\BillingMeetups;
+use MeetupOrganizing\Entity\MeetupWasCancelled;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -69,6 +70,9 @@ class ConfigProvider
                     [RsvpOrganizerForMeetup::class, 'whenMeetupWasScheduled'],
                     [BillingMeetups::class, 'whenMeetupWasScheduled']
                 ],
+                MeetupWasCancelled::class => [
+                    [BillingMeetups::class, 'whenMeetupWasCancelled']
+                ]
             ],
         ];
     }
@@ -98,7 +102,8 @@ class ConfigProvider
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
                     $container->get(Connection::class),
                     $container->get(Session::class),
-                    $container->get(RouterInterface::class)
+                    $container->get(RouterInterface::class),
+                    $container->get(EventDispatcher::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
