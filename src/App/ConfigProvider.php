@@ -20,6 +20,7 @@ use App\Cli\ConsumeEventsCommand;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\Projections\MeetupProjection;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -61,18 +62,18 @@ class ConfigProvider
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 ConsumerRestarted::class => [
-                    [OrganizerProjection::class, 'whenConsumerRestarted']
+                    [OrganizerProjection::class, 'whenConsumerRestarted'],
+                    [MeetupProjection::class, 'whenConsumerRestarted'],
                 ],
                 ExternalEventReceived::class => [
-                    [OrganizerProjection::class, 'whenExternalEventReceived']
+                    [OrganizerProjection::class, 'whenExternalEventReceived'],
+                    [MeetupProjection::class, 'whenExternalEventReceived'],
                 ],
                 MeetupWasScheduled::class => [
                     [RsvpOrganizerForMeetup::class, 'whenMeetupWasScheduled'],
-                    [BillingMeetups::class, 'whenMeetupWasScheduled'],
                     [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
-                    [BillingMeetups::class, 'whenMeetupWasCancelled'],
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ]
             ],
@@ -94,7 +95,7 @@ class ConfigProvider
                 RsvpOrganizerForMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerForMeetup(
                     $container->get(ApplicationInterface::class)
                 ),
-                BillingMeetups::class => fn (ContainerInterface $container) => new BillingMeetups(
+                MeetupProjection::class => fn (ContainerInterface $container) => new MeetupProjection(
                     $container->get(Connection::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
