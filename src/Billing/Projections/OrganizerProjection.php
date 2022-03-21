@@ -29,15 +29,6 @@ final class OrganizerProjection
             return;
         }
 
-        $result = $this->connection->fetchAssociative('SELECT * FROM billing_organizers WHERE organizerId = ?', [
-            Mapping::getString($event->eventData(), 'id')
-        ]);
-
-        if (is_array($result)) {
-            // We already know this organizer
-            return;
-        }
-
         // This is a new organizer
         $this->connection->insert('billing_organizers', [
             'organizerId' => Mapping::getString($event->eventData(), 'id'),
