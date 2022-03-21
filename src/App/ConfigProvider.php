@@ -191,7 +191,10 @@ class ConfigProvider
                 SignUpCommand::class => fn (ContainerInterface $container) => new SignUpCommand($container->get(
                     ApplicationInterface::class
                 )),
-                ExportUsersCommand::class => fn () => new ExportUsersCommand(),
+                ExportUsersCommand::class => fn (ContainerInterface $container) => new ExportUsersCommand(
+                    $container->get(Connection::class),
+                    $container->get(ExternalEventPublisher::class),
+                ),
                 ConsumeEventsCommand::class => fn (ContainerInterface $container) => new ConsumeEventsCommand(
                     $container->get(Consumer::class),
                     $container->get(EventDispatcher::class),
