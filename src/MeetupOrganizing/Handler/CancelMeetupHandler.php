@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\EventDispatcher;
+use App\Outbox;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -23,6 +24,7 @@ final class CancelMeetupHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly EventDispatcher $eventDispatcher,
+        private readonly Outbox $outbox,
     ) {
     }
 
@@ -55,10 +57,10 @@ final class CancelMeetupHandler implements RequestHandlerInterface
                     ]
                 );
 
-                $this->connection->insert('outbox', [
-                    'messageType' => $event->asExternalEvent()->name(),
-                    'messageData' => json_encode($event->asExternalEvent()->toArray())
-                ]);
+                $this->outbox->send(
+                    $event->asExternalEvent()->name(),
+                    $event->asExternalEvent()->toArray()
+                );
 
                 return $numberOfAffectedRows;
             }

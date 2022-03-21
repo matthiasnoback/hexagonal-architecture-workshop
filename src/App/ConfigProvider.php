@@ -85,6 +85,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(Connection::class),
                     $container->get(EventDispatcher::class),
+                    $container->get(Outbox::class),
                 ),
                 RsvpOrganizerForMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerForMeetup(
                     $container->get(ApplicationInterface::class)
@@ -101,6 +102,10 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(EventDispatcher::class),
+                    $container->get(Outbox::class),
+                ),
+                Outbox::class => fn (ContainerInterface $container) => new RealOutbox(
+                    $container->get(Connection::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),

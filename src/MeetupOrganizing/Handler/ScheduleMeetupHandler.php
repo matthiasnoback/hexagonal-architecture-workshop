@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\EventDispatcher;
+use App\Outbox;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -27,6 +28,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         private readonly RouterInterface $router,
         private readonly Connection $connection,
         private readonly EventDispatcher $eventDispatcher,
+        private readonly Outbox $outbox,
     ) {
     }
 
@@ -84,10 +86,10 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                         $this->eventDispatcher->dispatch($event);
 
-                        $this->connection->insert('outbox', [
-                            'messageType' => $event->asExternalEvent()->name(),
-                            'messageData' => json_encode($event->asExternalEvent()->toArray())
-                        ]);
+                        $this->outbox->send(
+                            $event->asExternalEvent()->name(),
+                            $event->asExternalEvent()->toArray()
+                        );
 
                         return $meetupId;
                     }
