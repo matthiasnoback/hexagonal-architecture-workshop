@@ -18,6 +18,7 @@ final class ConsoleApplication extends Application
             $this->container->get(SignUpCommand::class),
             $this->container->get(ConsumeEventsCommand::class),
             $this->container->get(OutboxRelayCommand::class),
+            $this->container->get(ExportUsersCommand::class),
         ]);
     }
 }

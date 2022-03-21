@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Cli\ConsoleApplication;
+use App\Cli\ExportUsersCommand;
 use App\Cli\OutboxRelayCommand;
 use App\Cli\SignUpCommand;
 use App\Entity\UserHasSignedUp;
@@ -169,6 +170,7 @@ class ConfigProvider
                 SignUpCommand::class => fn (ContainerInterface $container) => new SignUpCommand($container->get(
                     ApplicationInterface::class
                 )),
+                ExportUsersCommand::class => fn () => new ExportUsersCommand(),
                 ConsumeEventsCommand::class => fn (ContainerInterface $container) => new ConsumeEventsCommand(
                     $container->get(Consumer::class),
                     $container->get(EventDispatcher::class),
