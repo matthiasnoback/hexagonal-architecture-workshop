@@ -92,6 +92,15 @@ final class SchemaManager
         $billingMeetupsTable->addColumn('month', 'integer');
         $billingMeetupsTable->setPrimaryKey(['meetupId']);
 
+        $outboxTable = $schema->createTable('outbox');
+        $outboxTable->addColumn('messageId', 'integer', [
+            'autoincrement' => true,
+        ]);
+        $outboxTable->addColumn('messageType', 'string');
+        $outboxTable->addColumn('messageData', 'string');
+        $outboxTable->addColumn('wasPublished', 'integer', ['default' => 0]);
+        $outboxTable->setPrimaryKey(['messageId']);
+
         return $schema;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Cli\ConsoleApplication;
+use App\Cli\OutboxRelayCommand;
 use App\Cli\SignUpCommand;
 use App\Entity\UserHasSignedUp;
 use App\Entity\UserRepository;
@@ -172,6 +173,7 @@ class ConfigProvider
                     $container->get(Consumer::class),
                     $container->get(EventDispatcher::class),
                 ),
+                OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
                     $container->get(Connection::class),
                 ),

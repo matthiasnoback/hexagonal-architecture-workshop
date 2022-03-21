@@ -133,3 +133,15 @@ services:
             - .env
         init: true
         command: php console.php consume:events
+
+    outbox_relay:
+        build: docker/php/
+        image: matthiasnoback/hexagonal-architecture-workshop-php
+        volumes:
+            - ./:/app
+        working_dir: /app
+        user: ${HOST_UID}:${HOST_GID}
+        env_file:
+            - .env
+        init: true
+        command: php console.php outbox:relay
