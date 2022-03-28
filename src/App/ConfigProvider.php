@@ -27,6 +27,7 @@ use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use Billing\Event\BillingListener;
+use MeetupOrganizing\Event\MeetupWasCancelled;
 use MeetupOrganizing\Event\MeetupWasScheduledByOrganizer;
 use MeetupOrganizing\Event\RsvpOrganizer;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -61,6 +62,9 @@ class ConfigProvider
                 MeetupWasScheduledByOrganizer::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduledByOrganizer'],
                     [BillingListener::class, 'whenMeetupWasScheduledByOrganizer'],
+                ],
+                MeetupWasCancelled::class => [
+                    [BillingListener::class, 'whenMeetupWasCancelled'],
                 ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 ConsumerRestarted::class => [
@@ -98,7 +102,8 @@ class ConfigProvider
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
                     $container->get(Connection::class),
                     $container->get(Session::class),
-                    $container->get(RouterInterface::class)
+                    $container->get(RouterInterface::class),
+                    $container->get(EventDispatcher::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
