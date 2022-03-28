@@ -94,4 +94,15 @@ abstract class AbstractBrowserTest extends TestCase
     {
         $this->browser->request('POST', '/logout');
     }
+
+    protected function listOfAttendeesShouldContain(string $meetupName, string $attendeeName): void
+    {
+        self::assertContains(
+            $attendeeName,
+            $this->listMeetupsPage()
+                ->upcomingMeetup($meetupName)
+                ->readMore($this->browser)
+                ->attendees()
+        );
+    }
 }
