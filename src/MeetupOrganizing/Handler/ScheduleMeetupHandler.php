@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
-use App\ApplicationInterface;
+use App\EventDispatcher;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -12,6 +12,7 @@ use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use MeetupOrganizing\Entity\ScheduledDate;
+use MeetupOrganizing\Event\MeetupWasScheduledByOrganizer;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -25,7 +26,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         private readonly TemplateRendererInterface $renderer,
         private readonly RouterInterface $router,
         private readonly Connection $connection,
-        private readonly ApplicationInterface $application,
+        private readonly EventDispatcher $eventDispatcher,
     ) {
     }
 
@@ -73,11 +74,13 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                 $meetupId = (int) $this->connection->lastInsertId();
 
-                $this->application->rsvpForMeetup(
-                    $meetupId,
-                    $user
-                        ->userId()
-                        ->asString()
+                $this->eventDispatcher->dispatch(
+                    new MeetupWasScheduledByOrganizer(
+                        $meetupId,
+                        $user
+                            ->userId()
+                            ->asString()
+                    )
                 );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');

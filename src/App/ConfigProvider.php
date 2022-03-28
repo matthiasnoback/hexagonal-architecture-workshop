@@ -26,6 +26,8 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
+use MeetupOrganizing\Event\MeetupWasScheduledByOrganizer;
+use MeetupOrganizing\Event\RsvpOrganizer;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
@@ -55,6 +57,7 @@ class ConfigProvider
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                MeetupWasScheduledByOrganizer::class => [[RsvpOrganizer::class, 'whenMeetupWasScheduledByOrganizer']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 ConsumerRestarted::class => [
                     [OrganizerProjection::class, 'whenConsumerRestarted']
@@ -76,6 +79,9 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
                     $container->get(Connection::class),
+                    $container->get(EventDispatcher::class),
+                ),
+                RsvpOrganizer::class => fn (ContainerInterface $container) => new RsvpOrganizer(
                     $container->get(ApplicationInterface::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
