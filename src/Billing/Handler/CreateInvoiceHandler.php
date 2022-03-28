@@ -6,7 +6,6 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -47,17 +46,12 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $firstDayOfMonth = DateTimeImmutable::createFromFormat('Y-m-d', $year . '-' . $month . '-1');
-            Assert::that($firstDayOfMonth)->isInstanceOf(DateTimeImmutable::class);
-            $lastDayOfMonth = $firstDayOfMonth->modify('last day of this month');
-
-            // Load the data directly from the database
             $result = $this->connection->executeQuery(
-                'SELECT COUNT(meetupId) as numberOfMeetups FROM meetups WHERE organizerId = :organizerId AND scheduledFor >= :firstDayOfMonth AND scheduledFor <= :lastDayOfMonth',
+                'SELECT COUNT(meetupId) as numberOfMeetups FROM billing_meetups WHERE organizerId = :organizerId AND year = :year AND month = :month',
                 [
                     'organizerId' => $organizerId,
-                    'firstDayOfMonth' => $firstDayOfMonth->format('Y-m-d'),
-                    'lastDayOfMonth' => $lastDayOfMonth->format('Y-m-d'),
+                    'year' => $year,
+                    'month' => $month
                 ]
             );
 

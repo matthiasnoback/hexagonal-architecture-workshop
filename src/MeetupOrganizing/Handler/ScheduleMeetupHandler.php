@@ -61,13 +61,15 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull();
 
+                $scheduledDate = ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
+
                 $record = [
                     'organizerId' => $user
                         ->userId()
                         ->asString(),
                     'name' => $formData['name'],
                     'description' => $formData['description'],
-                    'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                    'scheduledFor' => $scheduledDate->asString(),
                     'wasCancelled' => 0,
                 ];
                 $this->connection->insert('meetups', $record);
@@ -79,7 +81,8 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                         $meetupId,
                         $user
                             ->userId()
-                            ->asString()
+                            ->asString(),
+                        $scheduledDate,
                     )
                 );
 
