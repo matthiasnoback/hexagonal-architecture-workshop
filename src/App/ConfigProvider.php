@@ -62,9 +62,11 @@ class ConfigProvider
                 MeetupWasScheduledByOrganizer::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduledByOrganizer'],
                     [BillingListener::class, 'whenMeetupWasScheduledByOrganizer'],
+                    [PublishExternalEvent::class, 'whenMeetupWasScheduledByOrganizer'],
                 ],
                 MeetupWasCancelled::class => [
                     [BillingListener::class, 'whenMeetupWasCancelled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 ConsumerRestarted::class => [
