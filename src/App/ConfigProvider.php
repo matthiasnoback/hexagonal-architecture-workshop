@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Cli\ConsoleApplication;
+use App\Cli\ConsumeEventsCommand;
 use App\Cli\ExportUsersCommand;
 use App\Cli\OutboxRelayCommand;
 use App\Cli\SignUpCommand;
@@ -16,24 +17,23 @@ use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
-use App\Cli\ConsumeEventsCommand;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
-use Billing\Projections\OrganizerProjection;
+use Billing\Handler\ListOrganizersHandler;
+use Billing\Projections\Meetups;
+use Billing\Projections\Organizers;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
-use Billing\Event\BillingListener;
 use MeetupOrganizing\Event\MeetupWasCancelled;
 use MeetupOrganizing\Event\MeetupWasScheduledByOrganizer;
 use MeetupOrganizing\Event\RsvpOrganizer;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
-use Billing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
@@ -61,19 +61,19 @@ class ConfigProvider
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 MeetupWasScheduledByOrganizer::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduledByOrganizer'],
-                    [BillingListener::class, 'whenMeetupWasScheduledByOrganizer'],
                     [PublishExternalEvent::class, 'whenMeetupWasScheduledByOrganizer'],
                 ],
                 MeetupWasCancelled::class => [
-                    [BillingListener::class, 'whenMeetupWasCancelled'],
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 ConsumerRestarted::class => [
-                    [OrganizerProjection::class, 'whenConsumerRestarted']
+                    [Organizers::class, 'whenConsumerRestarted'],
+                    [Meetups::class, 'whenConsumerRestarted'],
                 ],
                 ExternalEventReceived::class => [
-                    [OrganizerProjection::class, 'whenExternalEventReceived']
+                    [Organizers::class, 'whenExternalEventReceived'],
+                    [Meetups::class, 'whenExternalEventReceived']
                 ]
             ],
         ];
@@ -94,7 +94,7 @@ class ConfigProvider
                 RsvpOrganizer::class => fn (ContainerInterface $container) => new RsvpOrganizer(
                     $container->get(ApplicationInterface::class),
                 ),
-                BillingListener::class => fn (ContainerInterface $container) => new BillingListener(
+                Meetups::class => fn (ContainerInterface $container) => new Meetups(
                     $container->get(Connection::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
@@ -197,7 +197,7 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                 ),
                 OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
-                OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
+                Organizers::class => fn (ContainerInterface $container) => new Organizers(
                     $container->get(Connection::class),
                 ),
                 RequestFactoryInterface::class => fn () => new HttpFactory(),

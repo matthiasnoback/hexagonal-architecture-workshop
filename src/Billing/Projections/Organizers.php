@@ -7,7 +7,7 @@ use App\ExternalEventReceived;
 use App\Mapping;
 use Doctrine\DBAL\Connection;
 
-final class OrganizerProjection
+final class Organizers implements Projection
 {
     public function __construct(private readonly Connection $connection)
     {

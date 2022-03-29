@@ -30,15 +30,14 @@ final class PublishExternalEvent
     public function whenMeetupWasScheduledByOrganizer(
         MeetupWasScheduledByOrganizer $event
     ): void {
+        $dto = new \Shared\DTOs\MeetupOrganizing\MeetupWasScheduledByOrganizer(
+            $event->meetupId,
+            $event->userId,
+            $event->scheduledDate->toDateTimeImmutable()
+        );
         $this->publisher->publish(
             'meetup_organizing.meetup_was_scheduled_by_organizer',
-            [
-                'id' => $event->meetupId,
-                'organizerId' => $event->userId,
-                'scheduledDate' => $event->scheduledDate->toDateTimeImmutable()->format(
-                    DateTimeImmutable::RFC3339
-                )
-            ]
+            $dto->toArray()
         );
     }
 
