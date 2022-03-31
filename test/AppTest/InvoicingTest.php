@@ -32,6 +32,34 @@ final class InvoicingTest extends AbstractBrowserTest
         self::assertEquals('10.00', $invoicesPage->invoiceAmountForPeriod('1/2022'));
     }
 
+    public function testCancelInvoice(): void
+    {
+        $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
+        $this->signUp('Administrator', 'administrator@gmail.com', 'Administrator');
+
+        $date = new \DateTimeImmutable('tomorrow');
+
+        $this->login('organizer@gmail.com');
+        $this->scheduleMeetup('Meetup 1', 'Description', $date->format('Y-m-d'), '15:00');
+        $this->scheduleMeetup('Meetup 2', 'Description', $date->format('Y-m-d'), '20:00');
+        $this->cancelMeetup('Meetup 1');
+
+        $this->logout();
+
+        $this->login('administrator@gmail.com');
+
+        $this->listOrganizersPage()
+            ->firstOrganizer()
+            ->createInvoice($this->browser)
+            ->createInvoice($this->browser, $date->format('Y'), $date->format('m'));
+        $this->flashMessagesShouldContain('Invoice created');
+
+        $invoicesPage = $this->listOrganizersPage()
+            ->firstOrganizer()
+            ->listInvoices($this->browser);
+        self::assertEquals('5.00', $invoicesPage->invoiceAmountForPeriod($date->format('n/Y')));
+    }
+
     private function listOrganizersPage(): ListOrganizersPage
     {
         return new ListOrganizersPage($this->browser->request('GET', '/admin/list-organizers'));
