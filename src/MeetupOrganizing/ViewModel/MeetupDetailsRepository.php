@@ -31,7 +31,7 @@ final class MeetupDetailsRepository
         );
 
         return new MeetupDetails(
-            Mapping::getInt($record, 'meetupId'),
+            Mapping::getString($record, 'meetupId'),
             Mapping::getString($record, 'name'),
             Mapping::getString($record, 'description'),
             Mapping::getString($record, 'scheduledFor'),

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace AppTest\PageObject;
 
+use AppTest\SuccessfulResponse;
 use DOMNode;
+use PHPUnit\Framework\Assert;
+use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\DomCrawler\Crawler;
 
 abstract class AbstractPageObject
@@ -27,5 +30,10 @@ abstract class AbstractPageObject
             fn (DOMNode $node) => new static(new Crawler($node, $filter->getUri())),
             iterator_to_array($filter)
         );
+    }
+
+    protected static function assertSuccessfulResponse(HttpBrowser $browser): void
+    {
+        Assert::assertThat($browser->getInternalResponse(), new SuccessfulResponse());
     }
 }

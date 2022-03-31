@@ -15,5 +15,7 @@ final class SignUpPage extends AbstractPageObject
             'emailAddress' => $emailAddress,
             'userType' => $userType,
         ]);
+
+        self::assertSuccessfulResponse($browser);
     }
 }

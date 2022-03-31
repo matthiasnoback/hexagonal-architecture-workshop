@@ -13,5 +13,7 @@ final class LoginPage extends AbstractPageObject
         $browser->submitForm('Log in', [
             'emailAddress' => $emailAddress,
         ]);
+
+        self::assertSuccessfulResponse($browser);
     }
 }

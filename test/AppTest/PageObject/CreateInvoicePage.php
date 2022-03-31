@@ -14,5 +14,7 @@ final class CreateInvoicePage extends AbstractPageObject
             'year' => $year,
             'month' => $month,
         ]);
+
+        self::assertSuccessfulResponse($browser);
     }
 }

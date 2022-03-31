@@ -10,7 +10,7 @@ final class MeetupDetails
      * @param array<string> $attendeeNames
      */
     public function __construct(
-        private readonly int $meetupId,
+        private readonly string $meetupId,
         private readonly string $name,
         private readonly string $description,
         private readonly string $scheduledFor,
@@ -39,7 +39,7 @@ final class MeetupDetails
         return $this->organizer;
     }
 
-    public function meetupId(): int
+    public function meetupId(): string
     {
         return $this->meetupId;
     }

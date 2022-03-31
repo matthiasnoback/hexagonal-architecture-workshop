@@ -21,5 +21,7 @@ final class ScheduleMeetupPage extends AbstractPageObject
             'scheduleForDate' => $date,
             'scheduleForTime' => $time,
         ]);
+
+        self::assertSuccessfulResponse($browser);
     }
 }

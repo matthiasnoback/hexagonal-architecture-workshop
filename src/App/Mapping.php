@@ -14,9 +14,10 @@ final class Mapping
     public static function getString(array $data, string $key): string
     {
         Assert::that($data)->keyExists($key);
-        Assert::that($data[$key])->string();
 
-        return $data[$key];
+        Assert::that($data[$key])->scalar();
+
+        return (string) $data[$key];
     }
 
     /**
