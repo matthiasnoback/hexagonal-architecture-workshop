@@ -21,6 +21,7 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Projections\OrganizerProjection;
+use Billing\Projections\MeetupProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -66,6 +67,7 @@ class ConfigProvider
                 ],
                 MeetupWasScheduled::class => [
                     [RsvpOrganizerToMeetup::class, 'whenMeetupWasScheduled'],
+                    [MeetupProjection::class, 'whenMeetupWasScheduled'],
                 ]
             ],
         ];
@@ -83,6 +85,7 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(EventDispatcher::class),
                 ),
+                MeetupProjection::class => fn (ContainerInterface $container) => new MeetupProjection($container->get(Connection::class)),
                 RsvpOrganizerToMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerToMeetup(
                     $container->get(ApplicationInterface::class),
                 ),

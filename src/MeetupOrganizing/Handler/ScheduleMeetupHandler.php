@@ -74,10 +74,13 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                 $meetupId = (int) $this->connection->lastInsertId();
 
+                $scheduledDate = ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
+
                 $this->eventDispatcher->dispatch(
                     new MeetupWasScheduled(
                         (string) $meetupId,
-                        $user->userId()
+                        $user->userId(),
+                        $scheduledDate,
                     )
                 );
 
