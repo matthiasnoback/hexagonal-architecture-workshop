@@ -34,7 +34,7 @@ abstract class AbstractBrowserTest extends TestCase
         $schemaManager->updateSchema();
         $schemaManager->truncateTables();
 
-        self::$baseUri = 'http://web_testing';
+        self::$baseUri = 'http://web_testing:80';
         $this->browser = self::createHttpBrowserClient();
     }
 
