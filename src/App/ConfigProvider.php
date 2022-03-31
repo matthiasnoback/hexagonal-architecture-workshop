@@ -33,6 +33,8 @@ use Billing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\MeetupWasScheduled;
+use MeetupOrganizing\RsvpOrganizerToMeetup;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -61,6 +63,9 @@ class ConfigProvider
                 ],
                 ExternalEventReceived::class => [
                     [OrganizerProjection::class, 'whenExternalEventReceived']
+                ],
+                MeetupWasScheduled::class => [
+                    [RsvpOrganizerToMeetup::class, 'whenMeetupWasScheduled'],
                 ]
             ],
         ];
@@ -76,6 +81,9 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
                     $container->get(Connection::class),
+                    $container->get(EventDispatcher::class),
+                ),
+                RsvpOrganizerToMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerToMeetup(
                     $container->get(ApplicationInterface::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
