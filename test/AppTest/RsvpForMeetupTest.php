@@ -32,15 +32,4 @@ final class RsvpForMeetupTest extends AbstractBrowserTest
             ->readMore($this->browser)
             ->rsvpToMeetup($this->browser);
     }
-
-    private function listOfAttendeesShouldContain(string $meetupName, string $attendeeName): void
-    {
-        self::assertContains(
-            $attendeeName,
-            $this->listMeetupsPage()
-                ->upcomingMeetup($meetupName)
-                ->readMore($this->browser)
-                ->attendees()
-        );
-    }
 }
