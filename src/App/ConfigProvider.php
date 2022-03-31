@@ -61,7 +61,6 @@ class ConfigProvider
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 MeetupWasScheduledByOrganizer::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduledByOrganizer'],
-                    [PublishExternalEvent::class, 'whenMeetupWasScheduledByOrganizer'],
                 ],
                 MeetupWasCancelled::class => [
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
@@ -196,7 +195,10 @@ class ConfigProvider
                     $container->get(Consumer::class),
                     $container->get(EventDispatcher::class),
                 ),
-                OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
+                OutboxRelayCommand::class => fn (ContainerInterface $container) => new OutboxRelayCommand(
+                    $container->get(Connection::class),
+                    $container->get(ExternalEventPublisher::class),
+                ),
                 Organizers::class => fn (ContainerInterface $container) => new Organizers(
                     $container->get(Connection::class),
                 ),

@@ -72,19 +72,43 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                     'scheduledFor' => $scheduledDate->asString(),
                     'wasCancelled' => 0,
                 ];
-                $this->connection->insert('meetups', $record);
 
-                $meetupId = (int) $this->connection->lastInsertId();
+                $events = [];
 
-                $this->eventDispatcher->dispatch(
-                    new MeetupWasScheduledByOrganizer(
-                        $meetupId,
-                        $user
-                            ->userId()
-                            ->asString(),
-                        $scheduledDate,
-                    )
+                $meetupId = $this->connection->transactional(
+                    function () use ($scheduledDate, $user, $record, &$events) {
+                        $this->connection->insert('meetups', $record);
+
+                        $meetupId = (int)$this->connection->lastInsertId();
+
+                        $event = new MeetupWasScheduledByOrganizer(
+                            $meetupId,
+                            $user
+                                ->userId()
+                                ->asString(),
+                            $scheduledDate,
+                        );
+                        $events[] = $event;
+
+                        $dto = new \Shared\DTOs\MeetupOrganizing\MeetupWasScheduledByOrganizer(
+                            $event->meetupId,
+                            $event->userId,
+                            $event->scheduledDate->toDateTimeImmutable()
+                        );
+
+                        $this->connection->insert(
+                            'outbox',
+                            [
+                                'messageType' => \Shared\DTOs\MeetupOrganizing\MeetupWasScheduledByOrganizer::EVENT_TYPE,
+                                'messageData' => json_encode($dto->toArray()),
+                            ]
+                        );
+
+                        return $meetupId;
+                    }
                 );
+
+                $this->eventDispatcher->dispatchAll($events);
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 

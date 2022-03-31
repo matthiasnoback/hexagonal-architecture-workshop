@@ -9,6 +9,8 @@ use DateTimeImmutable;
 
 final class MeetupWasScheduledByOrganizer
 {
+    public const EVENT_TYPE = 'meetup_organizing.meetup_was_scheduled_by_organizer';
+
     public function __construct(
         public readonly int $meetupId,
         public readonly string $organizerId,
