@@ -32,6 +32,7 @@ final class ConsumeEventsCommand extends Command
         $this->consumer->consume(
             function (string $eventName, array $eventData) use ($output) {
                 $output->writeln('Consuming external event: ' . $eventName);
+
                 $this->eventDispatcher->dispatch(
                     new ExternalEventReceived($eventName, $eventData)
                 );
