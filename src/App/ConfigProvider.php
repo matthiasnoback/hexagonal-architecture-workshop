@@ -69,10 +69,12 @@ class ConfigProvider
                 MeetupWasScheduled::class => [
                     [RsvpOrganizerToMeetup::class, 'whenMeetupWasScheduled'],
                     [MeetupProjection::class, 'whenMeetupWasScheduled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
                     [MeetupProjection::class, 'whenMeetupWasCancelled'],
-                ]
+                    [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
+                ],
             ],
         ];
     }
