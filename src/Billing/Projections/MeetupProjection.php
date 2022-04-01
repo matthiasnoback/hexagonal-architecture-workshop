@@ -8,6 +8,7 @@ use App\Mapping;
 use Assert\Assertion;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
+use Shared\MeetupWasScheduledData;
 
 final class MeetupProjection
 {
@@ -24,8 +25,10 @@ final class MeetupProjection
     public function whenExternalEventReceived(ExternalEventReceived $event): void
     {
         switch ($event->eventType()) {
-            case 'meetup_organizing.meetup.scheduled':
-                $this->whenMeetupWasScheduled($event->eventData());
+            case MeetupWasScheduledData::NAME:
+                $this->whenMeetupWasScheduled(
+                    MeetupWasScheduledData::fromEventData($event->eventData())
+                );
                 break;
             case 'meetup_organizing.meetup.cancelled':
                 $this->whenMeetupWasCancelled($event->eventData());
@@ -34,9 +37,9 @@ final class MeetupProjection
     }
 
     private function whenMeetupWasScheduled(
-        array $event
+        MeetupWasScheduledData $event
     ): void {
-        $scheduledDate = Mapping::getString($event, 'scheduledDate');
+        $scheduledDate = $event->scheduledDate;
 
         $dateTime = DateTimeImmutable::createFromFormat('Y-m-d H:i', $scheduledDate);
         Assertion::isInstanceOf($dateTime, DateTimeImmutable::class);
@@ -44,8 +47,8 @@ final class MeetupProjection
         $this->connection->insert(
             'billing_meetups',
             [
-                'organizerId' => Mapping::getString($event, 'organizerId'),
-                'meetupId' => Mapping::getString($event, 'meetupId'),
+                'organizerId' => $event->organizerId,
+                'meetupId' => $event->meetupId,
                 'year' => (int) $dateTime->format('Y'),
                 'month' => (int) $dateTime->format('n'),
             ]
