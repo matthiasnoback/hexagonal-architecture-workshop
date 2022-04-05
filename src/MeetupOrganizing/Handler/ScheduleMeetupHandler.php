@@ -18,6 +18,7 @@ use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Shared\MeetupWasScheduledData;
 
 final class ScheduleMeetupHandler implements RequestHandlerInterface
 {
@@ -70,18 +71,39 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                     'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
                     'wasCancelled' => 0,
                 ];
+
+                $this->connection->beginTransaction();
+
                 $this->connection->insert('meetups', $record);
 
                 $meetupId = (int) $this->connection->lastInsertId();
 
                 $scheduledDate = ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
 
+                $event = new MeetupWasScheduled(
+                    (string) $meetupId,
+                    $user->userId(),
+                    $scheduledDate,
+                );
+
+                $dto = new MeetupWasScheduledData(
+                    $event->meetupId(),
+                    $event->organizerId()->asString(),
+                    $event->scheduledDate()->asString()
+                );
+                $this->connection->insert(
+                    'outbox',
+                    [
+                        'messageType' => $dto::NAME,
+                        'messageData' => json_encode($dto->toEventData()),
+                        'wasPublished' => 0,
+                    ]
+                );
+
+                $this->connection->commit();
+
                 $this->eventDispatcher->dispatch(
-                    new MeetupWasScheduled(
-                        (string) $meetupId,
-                        $user->userId(),
-                        $scheduledDate,
-                    )
+                    $event
                 );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');

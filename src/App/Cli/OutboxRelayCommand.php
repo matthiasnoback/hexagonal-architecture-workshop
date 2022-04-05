@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Cli;
 
+use App\ExternalEventPublisher;
+use App\Mapping;
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,8 +14,10 @@ final class OutboxRelayCommand extends Command
 {
     private bool $keepRunning = true;
 
-    public function __construct()
-    {
+    public function __construct(
+        private Connection $connection,
+        private ExternalEventPublisher $externalEventPublisher,
+    ) {
         parent::__construct();
     }
 
@@ -30,7 +35,7 @@ final class OutboxRelayCommand extends Command
         while ($this->keepRunning) {
             $this->publishNextMessage();
 
-            usleep (1000);
+            usleep(1000);
             pcntl_signal_dispatch();
         }
 
@@ -39,6 +44,29 @@ final class OutboxRelayCommand extends Command
 
     private function publishNextMessage(): void
     {
-        // TODO implement
+        $record = $this->connection->fetchAssociative(
+            'SELECT * FROM outbox WHERE wasPublished = 0 ORDER BY messageId LIMIT 1'
+        );
+        var_dump($record);
+        if ($record === false) {
+            return;
+        }
+
+        $eventData = json_decode(Mapping::getString($record, 'messageData'), true);
+        $eventType = Mapping::getString($record, 'messageType');
+
+        $this->externalEventPublisher->publish(
+            $eventType,
+            $eventData,
+        );
+
+        $this->connection->update('outbox',
+            [
+                'wasPublished' => 1
+            ],
+            [
+                'messageId' => Mapping::getInt($record, 'messageId')
+            ]
+        );
     }
 }
