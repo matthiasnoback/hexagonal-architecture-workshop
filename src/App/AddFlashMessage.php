@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 
 final class AddFlashMessage
@@ -16,5 +17,10 @@ final class AddFlashMessage
     public function whenUserHasRsvped(UserHasRsvpd $event): void
     {
         $this->session->addSuccessFlash('You have successfully RSVP-ed to this meetup');
+    }
+
+    public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
+    {
+        $this->session->addSuccessFlash('Your meetup was scheduled successfully');
     }
 }

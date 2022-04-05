@@ -24,6 +24,7 @@ use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
+use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -33,6 +34,7 @@ use Billing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\RsvpOrganizer;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -61,6 +63,10 @@ class ConfigProvider
                 ],
                 ExternalEventReceived::class => [
                     [OrganizerProjection::class, 'whenExternalEventReceived']
+                ],
+                MeetupWasScheduled::class => [
+                    [RsvpOrganizer::class, 'whenMeetupWasScheduled'],
+                    [AddFlashMessage::class, 'whenMeetupWasScheduled'],
                 ]
             ],
         ];
@@ -75,7 +81,9 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
+                ),
+                RsvpOrganizer::class => fn (ContainerInterface $container) => new RsvpOrganizer(
                     $container->get(ApplicationInterface::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(

@@ -11,6 +11,8 @@ use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\MeetupId;
+use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -80,5 +82,32 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(
             new UserHasRsvpd($meetupId, $user->userId(), $rsvp->rsvpId())
         );
+    }
+
+    public function scheduleMeetup(string $userId, string $name, string $description, string $scheduledDate): string
+    {
+        $user = $this->userRepository->getById(UserId::fromString($userId));
+
+        $record = [
+            'organizerId' => $user->userId()->asString(),
+            'name' => $name,
+            'description' => $description,
+            'scheduledFor' => $scheduledDate,
+            'wasCancelled' => 0,
+        ];
+        $this->connection->insert('meetups', $record);
+
+        $meetupId = (int) $this->connection->lastInsertId();
+
+        $event = new MeetupWasScheduled(
+            $user->userId(),
+            MeetupId::fromString((string) $meetupId)
+        );
+
+        $this->eventDispatcher->dispatch($event);
+
+        // TODO set up a listener that RSVPs the organizer
+
+        return (string) $meetupId;
     }
 }
