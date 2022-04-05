@@ -21,6 +21,7 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Projections\OrganizerProjection;
+use Billing\TrackMeetupScheduled;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
@@ -67,7 +68,8 @@ class ConfigProvider
                 MeetupWasScheduled::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduled'],
                     [AddFlashMessage::class, 'whenMeetupWasScheduled'],
-                ]
+                    [TrackMeetupScheduled::class, 'whenMeetupWasScheduled'],
+                ],
             ],
         ];
     }
@@ -85,6 +87,9 @@ class ConfigProvider
                 ),
                 RsvpOrganizer::class => fn (ContainerInterface $container) => new RsvpOrganizer(
                     $container->get(ApplicationInterface::class),
+                ),
+                TrackMeetupScheduled::class => fn (ContainerInterface $container) => new TrackMeetupScheduled(
+                    $container->get(Connection::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),

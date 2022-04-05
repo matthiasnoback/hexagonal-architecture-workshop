@@ -15,6 +15,7 @@ use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
@@ -101,7 +102,8 @@ final class Application implements ApplicationInterface
 
         $event = new MeetupWasScheduled(
             $user->userId(),
-            MeetupId::fromString((string) $meetupId)
+            MeetupId::fromString((string) $meetupId),
+            ScheduledDate::fromString($scheduledDate)->toDateTimeImmutable(),
         );
 
         $this->eventDispatcher->dispatch($event);
