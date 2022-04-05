@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use MeetupOrganizing\Entity\MeetupWasCancelled;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 
@@ -22,5 +23,11 @@ final class AddFlashMessage
     public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
     {
         $this->session->addSuccessFlash('Your meetup was scheduled successfully');
+    }
+
+    public function whenMeetupWasCancelled(
+        MeetupWasCancelled $event
+    ): void {
+        $this->session->addSuccessFlash('You have cancelled the meetup');
     }
 }

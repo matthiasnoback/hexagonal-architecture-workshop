@@ -21,10 +21,11 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Projections\OrganizerProjection;
-use Billing\TrackMeetupScheduled;
+use Billing\MeetupProjectionForInvoicing;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
+use MeetupOrganizing\Entity\MeetupWasCancelled;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -68,8 +69,12 @@ class ConfigProvider
                 MeetupWasScheduled::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduled'],
                     [AddFlashMessage::class, 'whenMeetupWasScheduled'],
-                    [TrackMeetupScheduled::class, 'whenMeetupWasScheduled'],
+                    [MeetupProjectionForInvoicing::class, 'whenMeetupWasScheduled'],
                 ],
+                MeetupWasCancelled::class => [
+                    [MeetupProjectionForInvoicing::class, 'whenMeetupWasCancelled'],
+                    [AddFlashMessage::class, 'whenMeetupWasCancelled'],
+                ]
             ],
         ];
     }
@@ -88,7 +93,7 @@ class ConfigProvider
                 RsvpOrganizer::class => fn (ContainerInterface $container) => new RsvpOrganizer(
                     $container->get(ApplicationInterface::class),
                 ),
-                TrackMeetupScheduled::class => fn (ContainerInterface $container) => new TrackMeetupScheduled(
+                MeetupProjectionForInvoicing::class => fn (ContainerInterface $container) => new MeetupProjectionForInvoicing(
                     $container->get(Connection::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
@@ -98,7 +103,8 @@ class ConfigProvider
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
                     $container->get(Connection::class),
                     $container->get(Session::class),
-                    $container->get(RouterInterface::class)
+                    $container->get(RouterInterface::class),
+                    $container->get(EventDispatcher::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
