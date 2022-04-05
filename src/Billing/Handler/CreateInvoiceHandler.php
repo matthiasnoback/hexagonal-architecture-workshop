@@ -6,6 +6,7 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
+use Billing\Meetups;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -21,7 +22,8 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Connection $connection,
         private readonly Session $session,
         private readonly RouterInterface $router,
-        private readonly TemplateRendererInterface $renderer
+        private readonly TemplateRendererInterface $renderer,
+        private readonly Meetups $meetups,
     ) {
     }
 
@@ -46,19 +48,12 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            // Load the data directly from the database
-            $result = $this->connection->executeQuery(
-                'SELECT COUNT(meetupId) as numberOfMeetups FROM billing_meetups WHERE organizerId = :organizerId AND year = :year AND month = :month',
-                [
-                    'organizerId' => $organizerId,
-                    'year' => $year,
-                    'month' => $month,
-                ]
+            $numberOfMeetups = $this->meetups->organizedInPeriod(
+                $organizerId,
+                (int) $year,
+                (int) $month,
             );
 
-            $record = $result->fetchAssociative();
-            Assert::that($record)->isArray();
-            $numberOfMeetups = $record['numberOfMeetups'];
             if ($numberOfMeetups > 0) {
                 $invoiceAmount = $numberOfMeetups * 5;
 

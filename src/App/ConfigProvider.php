@@ -20,6 +20,8 @@ use App\Cli\ConsumeEventsCommand;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\Meetups;
+use Billing\MeetupsUsingDbal;
 use Billing\Projections\OrganizerProjection;
 use Billing\MeetupProjectionForInvoicing;
 use Doctrine\DBAL\Connection;
@@ -147,8 +149,10 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(Meetups::class),
                 ),
+                Meetups::class => fn (ContainerInterface $container) => $container->get(MeetupProjectionForInvoicing::class),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
