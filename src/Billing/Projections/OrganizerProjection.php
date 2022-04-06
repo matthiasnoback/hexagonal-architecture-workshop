@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Billing\Projections;
 
-use App\ExternalEventReceived;
+use App\ExternalEvents\ExternalEventReceived;
 use App\Mapping;
 use Doctrine\DBAL\Connection;
 

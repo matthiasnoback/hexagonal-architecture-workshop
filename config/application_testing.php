@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\EventDispatcher;
-use App\ExternalEventPublisher;
-use App\SynchronousExternalEventPublisher;
+use App\ExternalEvents\ExternalEventPublisher;
+use App\ExternalEvents\SynchronousExternalEventPublisher;
 use Psr\Container\ContainerInterface;
 
 return [

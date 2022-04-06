@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\EventStreamConfigProvider;
+use App\ExternalEvents\EventStreamConfigProvider;
 use Laminas\ConfigAggregator\ConfigAggregator;
 use Laminas\ConfigAggregator\PhpFileProvider;
 use Mezzio\Helper\ConfigProvider;

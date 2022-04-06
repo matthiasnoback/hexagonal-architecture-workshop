@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\ExternalEvents;
+
+use App\EventDispatcher;
 
 final class SynchronousExternalEventPublisher implements ExternalEventPublisher
 {

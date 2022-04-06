@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace App\ExternalEvents;
 
 use Assert\Assert;
 use Psr\Container\ContainerInterface;
