@@ -7,5 +7,5 @@ interface ExternalEventConsumer
 {
     public function whenConsumerRestarted(): void;
 
-    public function whenExternalEventReceived(ExternalEventReceived $event): void;
+    public function whenExternalEventReceived(string $eventType, array $eventData): void;
 }

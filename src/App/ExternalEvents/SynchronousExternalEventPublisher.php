@@ -21,7 +21,8 @@ final class SynchronousExternalEventPublisher implements ExternalEventPublisher
     {
         foreach ($this->externalEventConsumers() as $eventConsumer) {
             $eventConsumer->whenExternalEventReceived(
-                new ExternalEventReceived($eventType, $eventData)
+                $eventType,
+                $eventData,
             );
         }
     }

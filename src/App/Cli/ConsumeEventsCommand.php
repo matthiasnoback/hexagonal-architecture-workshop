@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace App\Cli;
 
 use App\ExternalEvents\ExternalEventConsumer;
-use App\ExternalEvents\ExternalEventReceived;
 use Assert\Assertion;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -38,7 +37,8 @@ final class ConsumeEventsCommand extends Command
                 $output->writeln('Consuming external event: ' . $eventName);
 
                 $externalEventConsumer->whenExternalEventReceived(
-                    new ExternalEventReceived($eventName, $eventData)
+                    $eventName,
+                    $eventData,
                 );
             }
         );
