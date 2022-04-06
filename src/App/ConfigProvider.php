@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Cli\ConsoleApplication;
+use App\Cli\ConsumeEventsCommand;
 use App\Cli\ExportUsersCommand;
 use App\Cli\OutboxRelayCommand;
 use App\Cli\SignUpCommand;
@@ -12,19 +13,18 @@ use App\Entity\UserHasSignedUp;
 use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
 use App\ExternalEvents\AsynchronousExternalEventPublisher;
-use App\ExternalEvents\ConsumerRestarted;
 use App\ExternalEvents\ExternalEventPublisher;
-use App\ExternalEvents\ExternalEventReceived;
 use App\ExternalEvents\PublishExternalEvent;
+use App\ExternalEvents\SynchronousExternalEventPublisherFactory;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
-use App\Cli\ConsumeEventsCommand;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
+use Billing\Handler\ListOrganizersHandler;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -34,7 +34,6 @@ use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
-use Billing\Handler\ListOrganizersHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
@@ -61,13 +60,10 @@ class ConfigProvider
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
-                ConsumerRestarted::class => [
-                    [OrganizerProjection::class, 'whenConsumerRestarted']
-                ],
-                ExternalEventReceived::class => [
-                    [OrganizerProjection::class, 'whenExternalEventReceived']
-                ]
             ],
+            'external_event_consumers' => [
+                OrganizerProjection::class,
+            ]
         ];
     }
 
@@ -193,10 +189,14 @@ class ConfigProvider
                 PublishExternalEvent::class => fn (ContainerInterface $container) => new PublishExternalEvent(
                     $container->get(ExternalEventPublisher::class),
                 ),
-                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
-                    $container->get(Producer::class)
-                ),
+//                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
+//                    $container->get(Producer::class)
+//                ),
+                ExternalEventPublisher::class => SynchronousExternalEventPublisherFactory::class,
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                'external_event_consumers' => fn (ContainerInterface $container) => [
+                    $container->get(OrganizerProjection::class)
+                ]
             ],
         ];
     }

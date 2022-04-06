@@ -8,6 +8,12 @@ final class ListOrganizersPage extends AbstractPageObject
 {
     public function firstOrganizer(): OrganizerSnippet
     {
-        return new OrganizerSnippet($this->crawler->filter('.organizer')->first());
+        $organizers = $this->crawler->filter('.organizer');
+
+        if (count($organizers) === 0) {
+            throw new \RuntimeException('No organizers found');
+        }
+
+        return new OrganizerSnippet($organizers->first());
     }
 }

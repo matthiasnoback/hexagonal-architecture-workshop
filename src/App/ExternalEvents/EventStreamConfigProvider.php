@@ -26,7 +26,7 @@ final class EventStreamConfigProvider
                 },
                 Producer::class => function (ContainerInterface $container) {
                     return new Producer($this->getStreamFilePath($container));
-                }
+                },
             ],
         ];
     }
