@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace Billing\Projections;
 
+use App\ExternalEvents\ExternalEventConsumer;
 use App\ExternalEvents\ExternalEventReceived;
 use App\Mapping;
 use Doctrine\DBAL\Connection;
 
-final class OrganizerProjection
+final class OrganizerProjection implements ExternalEventConsumer
 {
     public function __construct(private readonly Connection $connection)
     {

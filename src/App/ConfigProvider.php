@@ -178,7 +178,7 @@ class ConfigProvider
                 ExportUsersCommand::class => fn () => new ExportUsersCommand(),
                 ConsumeEventsCommand::class => fn (ContainerInterface $container) => new ConsumeEventsCommand(
                     $container->get(Consumer::class),
-                    $container->get(EventDispatcher::class),
+                    $container,
                 ),
                 OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
