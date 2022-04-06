@@ -8,6 +8,7 @@ use App\Mapping;
 use Assert\Assert;
 use Assert\AssertionFailedException;
 use Doctrine\DBAL\Connection;
+use Shared\MeetupWasScheduledData;
 
 final class MeetupProjectionForInvoicing implements Meetups
 {
@@ -23,8 +24,10 @@ final class MeetupProjectionForInvoicing implements Meetups
 
     public function whenExternalEventReceived(ExternalEventReceived $event): void
     {
-        if ($event->eventType() === 'meetup.scheduled') {
-            $this->whenMeetupWasScheduled($event->eventData());
+        if ($event->eventType() === MeetupWasScheduledData::eventType()) {
+            $this->whenMeetupWasScheduled(
+                MeetupWasScheduledData::fromArray($event->eventData())
+            );
         }
         if ($event->eventType() === 'meetup.cancelled') {
             $this->whenMeetupWasCancelled($event->eventData());
@@ -32,20 +35,15 @@ final class MeetupProjectionForInvoicing implements Meetups
     }
 
     private function whenMeetupWasScheduled(
-        array $eventData,
+        MeetupWasScheduledData $event,
     ): void {
-        $scheduledDate = \DateTimeImmutable::createFromFormat(
-            \DateTimeInterface::ISO8601,
-            $eventData['scheduledDate'],
-        );
-
         $this->connection->insert(
             'billing_meetups',
             [
-                'organizerId' => $eventData['organizerId'],
-                'meetupId' => $eventData['meetupId'],
-                'year' => $scheduledDate->format('Y'),
-                'month' => $scheduledDate->format('n'),
+                'organizerId' => $event->organizerId,
+                'meetupId' => $event->meetupId,
+                'year' => $event->scheduledDate->format('Y'),
+                'month' => $event->scheduledDate->format('n'),
             ]
         );
     }

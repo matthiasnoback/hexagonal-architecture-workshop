@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\UserHasSignedUp;
-use DateTimeImmutable;
 use MeetupOrganizing\Entity\MeetupWasCancelled;
 use MeetupOrganizing\Entity\MeetupWasScheduled;
+use Shared\MeetupWasScheduledData;
 
 final class PublishExternalEvent
 {
@@ -29,16 +29,12 @@ final class PublishExternalEvent
 
     public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
     {
-        $this->publisher->publish(
-            'meetup.scheduled',
-            [
-                'organizerId' => $event->organizerId()->asString(),
-                'meetupId' => $event->meetupId()->asString(),
-                'scheduledDate' => $event->scheduledDate()->format(
-                    DateTimeImmutable::ISO8601
-                ),
-            ]
+        $eventDto = new MeetupWasScheduledData(
+            $event->organizerId()->asString(),
+            $event->meetupId()->asString(),
+            $event->scheduledDate()
         );
+        $this->publisher->publishEvent($eventDto);
     }
 
     public function whenMeetupWasCancelled(MeetupWasCancelled $event): void

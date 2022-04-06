@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use Shared\PublishedExternalEvent;
+
 final class SynchronousExternalEventPublisher implements ExternalEventPublisher
 {
     public function __construct(
@@ -15,5 +17,10 @@ final class SynchronousExternalEventPublisher implements ExternalEventPublisher
         $this->eventDispatcher->dispatch(
             new ExternalEventReceived($eventType, $eventData)
         );
+    }
+
+    public function publishEvent(PublishedExternalEvent $event): void
+    {
+        $this->publish($event::eventType(), $event->toArray());
     }
 }
