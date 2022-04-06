@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Cli;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,8 +12,9 @@ final class OutboxRelayCommand extends Command
 {
     private bool $keepRunning = true;
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly Connection $connection,
+    ) {
         parent::__construct();
     }
 
@@ -39,6 +41,15 @@ final class OutboxRelayCommand extends Command
 
     private function publishNextMessage(): void
     {
-        // TODO implement
+        $record = $this->connection->fetchAssociative(
+            'SELECT * FROM outbox WHERE wasPublished = 0 ORDER BY messageId LIMIT 1'
+        );
+        if ($record === false) {
+            return;
+        }
+
+        // TODO really publish the message this time
+
+        // TODO mark the message as published
     }
 }

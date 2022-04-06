@@ -172,7 +172,9 @@ class ConfigProvider
                     $container->get(Consumer::class),
                     $container->get('external_event_consumers'),
                 ),
-                OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
+                OutboxRelayCommand::class => fn (ContainerInterface $container) => new OutboxRelayCommand(
+                    $container->get(Connection::class),
+                ),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
                     $container->get(Connection::class),
                 ),
