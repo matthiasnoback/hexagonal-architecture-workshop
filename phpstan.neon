@@ -9,3 +9,6 @@ parameters:
         - rector.php
         - console.php
     checkMissingIterableValueType: false
+
+includes:
+    - phpstan-baseline.neon

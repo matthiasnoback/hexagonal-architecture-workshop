@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 use App\ExternalEvents\ExternalEventPublisher;
-use App\ExternalEvents\SynchronousExternalEventPublisherFactory;
+use App\ExternalEvents\SynchronousExternalEventPublisher;
+use Psr\Container\ContainerInterface;
 
 return [
     'dependencies' => [
         'factories' => [
-            ExternalEventPublisher::class => SynchronousExternalEventPublisherFactory::class
+            ExternalEventPublisher::class => fn (ContainerInterface $container) => new SynchronousExternalEventPublisher(
+                $container->get('external_event_consumers')
+            ),
         ],
     ],
 ];

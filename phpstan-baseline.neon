@@ -1,0 +1,22 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$externalEventConsumers of class App\\\\ExternalEvents\\\\SynchronousExternalEventPublisher constructor expects array\\<App\\\\ExternalEvents\\\\ExternalEventConsumer\\>, mixed given\\.$#"
+			count: 1
+			path: config/application_testing.php
+
+		-
+			message: "#^Parameter \\#1 \\$externalEventConsumers of class App\\\\ExternalEvents\\\\SynchronousExternalEventPublisher constructor expects array\\<App\\\\ExternalEvents\\\\ExternalEventConsumer\\>, mixed given\\.$#"
+			count: 1
+			path: config/end_to_end_testing.php
+
+		-
+			message: "#^Parameter \\#2 \\$externalEventConsumers of class App\\\\Cli\\\\ConsumeEventsCommand constructor expects array\\<App\\\\ExternalEvents\\\\ExternalEventConsumer\\>, mixed given\\.$#"
+			count: 1
+			path: src/App/ConfigProvider.php
+
+		-
+			message: "#^Method App\\\\ExternalEvents\\\\ExternalEventConsumersFactory\\:\\:__invoke\\(\\) should return array\\<App\\\\ExternalEvents\\\\ExternalEventConsumer\\> but returns array\\.$#"
+			count: 1
+			path: src/App/ExternalEvents/ExternalEventConsumersFactory.php
+

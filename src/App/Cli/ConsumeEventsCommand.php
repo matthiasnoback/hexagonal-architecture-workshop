@@ -5,7 +5,7 @@ namespace App\Cli;
 
 use App\ExternalEvents\ExternalEventConsumer;
 use Assert\Assertion;
-use Psr\Container\ContainerInterface;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,9 +13,12 @@ use TailEventStream\Consumer;
 
 final class ConsumeEventsCommand extends Command
 {
+    /**
+     * @param array<ExternalEventConsumer> $externalEventConsumers
+     */
     public function __construct(
         private readonly Consumer $consumer,
-        private readonly ContainerInterface $container,
+        private array $externalEventConsumers,
     ) {
         parent::__construct();
     }
@@ -23,7 +26,7 @@ final class ConsumeEventsCommand extends Command
     protected function configure(): void
     {
         $this->setName('consume:events')
-            ->addArgument('consumerServiceId');
+            ->addArgument('consumerServiceClass');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -48,12 +51,19 @@ final class ConsumeEventsCommand extends Command
 
     private function resolveExternalEventConsumer(InputInterface $input): ExternalEventConsumer
     {
-        $consumerServiceId = $input->getArgument('consumerServiceId');
-        Assertion::string($consumerServiceId);
+        $consumerServiceClass = $input->getArgument('consumerServiceClass');
+        Assertion::string($consumerServiceClass);
 
-        $externalEventConsumer = $this->container->get($consumerServiceId);
-        Assertion::isInstanceOf($externalEventConsumer, ExternalEventConsumer::class);
+        foreach ($this->externalEventConsumers as $eventConsumer) {
+            if ($eventConsumer instanceof $consumerServiceClass) {
+                return $eventConsumer;
+            }
+        }
 
-        return $externalEventConsumer;
+        throw new RuntimeException(
+            sprintf('There is no external event consumer with class "%s", first add it to the list of consumers in ConfigProvider under "external_event_consumers"',
+                $consumerServiceClass
+            )
+        );
     }
 }

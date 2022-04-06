@@ -6,15 +6,21 @@ namespace App\ExternalEvents;
 use Assert\Assert;
 use Psr\Container\ContainerInterface;
 
-final class SynchronousExternalEventPublisherFactory
+final class ExternalEventConsumersFactory
 {
-    public function __invoke(ContainerInterface $container): SynchronousExternalEventPublisher
+    /**
+     * @return array<ExternalEventConsumer>
+     */
+    public function __invoke(ContainerInterface $container): array
     {
         $config = $container->get('config');
         Assert::that($config)->isArray();
 
         $serviceIds = $config['external_event_consumers'] ?? [];
 
-        return new SynchronousExternalEventPublisher($container, $serviceIds);
+        return array_map(
+            fn (string $id) => $container->get($id),
+            $serviceIds
+        );
     }
 }

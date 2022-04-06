@@ -15,7 +15,6 @@ use App\Entity\UserRepositoryUsingDbal;
 use App\ExternalEvents\AsynchronousExternalEventPublisher;
 use App\ExternalEvents\ExternalEventPublisher;
 use App\ExternalEvents\PublishExternalEvent;
-use App\ExternalEvents\SynchronousExternalEventPublisherFactory;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
@@ -60,9 +59,6 @@ class ConfigProvider
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
-            ],
-            'external_event_consumers' => [
-                OrganizerProjection::class,
             ]
         ];
     }
@@ -174,7 +170,7 @@ class ConfigProvider
                 ExportUsersCommand::class => fn () => new ExportUsersCommand(),
                 ConsumeEventsCommand::class => fn (ContainerInterface $container) => new ConsumeEventsCommand(
                     $container->get(Consumer::class),
-                    $container,
+                    $container->get('external_event_consumers'),
                 ),
                 OutboxRelayCommand::class => fn () => new OutboxRelayCommand(),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
@@ -189,14 +185,13 @@ class ConfigProvider
                 PublishExternalEvent::class => fn (ContainerInterface $container) => new PublishExternalEvent(
                     $container->get(ExternalEventPublisher::class),
                 ),
-//                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
-//                    $container->get(Producer::class)
-//                ),
-                ExternalEventPublisher::class => SynchronousExternalEventPublisherFactory::class,
+                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
+                    $container->get(Producer::class)
+                ),
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [
-                    $container->get(OrganizerProjection::class)
-                ]
+                    $container->get(OrganizerProjection::class),
+                ],
             ],
         ];
     }
