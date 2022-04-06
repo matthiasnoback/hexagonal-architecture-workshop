@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\UserHasSignedUp;
+use DateTimeImmutable;
+use MeetupOrganizing\Entity\MeetupWasCancelled;
+use MeetupOrganizing\Entity\MeetupWasScheduled;
 
 final class PublishExternalEvent
 {
@@ -20,6 +23,30 @@ final class PublishExternalEvent
                 'id' => $event->userId()->asString(),
                 'name' => $event->name(),
                 'type' => $event->userType()->value
+            ]
+        );
+    }
+
+    public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
+    {
+        $this->publisher->publish(
+            'meetup.scheduled',
+            [
+                'organizerId' => $event->organizerId()->asString(),
+                'meetupId' => $event->meetupId()->asString(),
+                'scheduledDate' => $event->scheduledDate()->format(
+                    DateTimeImmutable::ISO8601
+                ),
+            ]
+        );
+    }
+
+    public function whenMeetupWasCancelled(MeetupWasCancelled $event): void
+    {
+        $this->publisher->publish(
+            'meetup.cancelled',
+            [
+                'meetupId' => $event->meetupId()->asString(),
             ]
         );
     }

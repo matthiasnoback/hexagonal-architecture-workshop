@@ -61,7 +61,9 @@ class ConfigProvider
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
-                UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
+                UserHasSignedUp::class => [
+                    [PublishExternalEvent::class, 'whenUserHasSignedUp']
+                ],
                 ConsumerRestarted::class => [
                     [OrganizerProjection::class, 'whenConsumerRestarted']
                 ],
@@ -72,10 +74,12 @@ class ConfigProvider
                     [RsvpOrganizer::class, 'whenMeetupWasScheduled'],
                     [AddFlashMessage::class, 'whenMeetupWasScheduled'],
                     [MeetupProjectionForInvoicing::class, 'whenMeetupWasScheduled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
                     [MeetupProjectionForInvoicing::class, 'whenMeetupWasCancelled'],
                     [AddFlashMessage::class, 'whenMeetupWasCancelled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ]
             ],
         ];
