@@ -65,19 +65,19 @@ class ConfigProvider
                     [PublishExternalEvent::class, 'whenUserHasSignedUp']
                 ],
                 ConsumerRestarted::class => [
-                    [OrganizerProjection::class, 'whenConsumerRestarted']
+                    [OrganizerProjection::class, 'whenConsumerRestarted'],
+                    [MeetupProjectionForInvoicing::class, 'whenConsumerRestarted'],
                 ],
                 ExternalEventReceived::class => [
-                    [OrganizerProjection::class, 'whenExternalEventReceived']
+                    [OrganizerProjection::class, 'whenExternalEventReceived'],
+                    [MeetupProjectionForInvoicing::class, 'whenExternalEventReceived'],
                 ],
                 MeetupWasScheduled::class => [
                     [RsvpOrganizer::class, 'whenMeetupWasScheduled'],
                     [AddFlashMessage::class, 'whenMeetupWasScheduled'],
-                    [MeetupProjectionForInvoicing::class, 'whenMeetupWasScheduled'],
                     [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
-                    [MeetupProjectionForInvoicing::class, 'whenMeetupWasCancelled'],
                     [AddFlashMessage::class, 'whenMeetupWasCancelled'],
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ]

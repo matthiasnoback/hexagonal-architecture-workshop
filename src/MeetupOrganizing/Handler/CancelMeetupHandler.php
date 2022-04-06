@@ -40,6 +40,11 @@ final class CancelMeetupHandler implements RequestHandlerInterface
         }
         $meetupId = $parsedBody['meetupId'];
 
+        // TODO check if the meetup is there
+
+        // $meetup = $this->meetupRepository->getById(...);
+        // $meetup->cancel();
+
         $numberOfAffectedRows = $this->connection->update(
             'meetups',
             [

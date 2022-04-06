@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Billing;
 
+use App\ExternalEventReceived;
 use App\Mapping;
 use Assert\Assert;
 use Assert\AssertionFailedException;
 use Doctrine\DBAL\Connection;
-use MeetupOrganizing\Entity\MeetupWasCancelled;
-use MeetupOrganizing\Entity\MeetupWasScheduled;
 
 final class MeetupProjectionForInvoicing implements Meetups
 {
@@ -17,27 +16,47 @@ final class MeetupProjectionForInvoicing implements Meetups
     ) {
     }
 
-    public function whenMeetupWasScheduled(
-        MeetupWasScheduled $event
+    public function whenConsumerRestarted(): void
+    {
+        $this->connection->executeQuery('DELETE FROM billing_meetups WHERE 1');
+    }
+
+    public function whenExternalEventReceived(ExternalEventReceived $event): void
+    {
+        if ($event->eventType() === 'meetup.scheduled') {
+            $this->whenMeetupWasScheduled($event->eventData());
+        }
+        if ($event->eventType() === 'meetup.cancelled') {
+            $this->whenMeetupWasCancelled($event->eventData());
+        }
+    }
+
+    private function whenMeetupWasScheduled(
+        array $eventData,
     ): void {
+        $scheduledDate = \DateTimeImmutable::createFromFormat(
+            \DateTimeInterface::ISO8601,
+            $eventData['scheduledDate'],
+        );
+
         $this->connection->insert(
             'billing_meetups',
             [
-                'organizerId' => $event->organizerId()->asString(),
-                'meetupId' => $event->meetupId()->asString(),
-                'year' => $event->scheduledDate()->format('Y'),
-                'month' => $event->scheduledDate()->format('n'),
+                'organizerId' => $eventData['organizerId'],
+                'meetupId' => $eventData['meetupId'],
+                'year' => $scheduledDate->format('Y'),
+                'month' => $scheduledDate->format('n'),
             ]
         );
     }
 
-    public function whenMeetupWasCancelled(
-        MeetupWasCancelled $event
+    private function whenMeetupWasCancelled(
+        array $eventData,
     ): void {
         $this->connection->delete(
             'billing_meetups',
             [
-                'meetupId' => $event->meetupId()->asString()
+                'meetupId' => $eventData['meetupId']
             ],
         );
     }
