@@ -111,11 +111,9 @@ class ConfigProvider
                     $container->get(Session::class),
                 ),
                 RsvpForMeetupHandler::class => fn (ContainerInterface $container) => new RsvpForMeetupHandler(
-                    $container->get(Connection::class),
                     $container->get(Session::class),
-                    $container->get(RsvpRepository::class),
                     $container->get(RouterInterface::class),
-                    $container->get(EventDispatcher::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 ListOrganizersHandler::class => fn (ContainerInterface $container) => new ListOrganizersHandler(
                     $container->get(Connection::class),
@@ -142,6 +140,8 @@ class ConfigProvider
                     $container->get(UserRepository::class),
                     $container->get(MeetupDetailsRepository::class),
                     $container->get(EventDispatcher::class),
+                    $container->get(Connection::class),
+                    $container->get(RsvpRepository::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
