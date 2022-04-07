@@ -77,8 +77,7 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
-                    $container->get(Connection::class),
-                    $container->get(EventDispatcher::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 OrganizerRsvpForMeetup::class => fn (ContainerInterface $container) => new OrganizerRsvpForMeetup(
                     $container->get(ApplicationInterface::class),

@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\ApplicationInterface;
-use App\EventDispatcher;
+use App\ScheduleMeetup;
 use App\Session;
 use Assert\Assert;
-use Doctrine\DBAL\Connection;
 use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
-use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\ScheduledDate;
-use MeetupOrganizing\MeetupWasScheduled;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -27,8 +24,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly TemplateRendererInterface $renderer,
         private readonly RouterInterface $router,
-        private readonly Connection $connection,
-        private readonly EventDispatcher $eventDispatcher,
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -63,27 +59,17 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull();
 
-                $record = [
-                    'organizerId' => $user
+                $command = new ScheduleMeetup(
+                    $user
                         ->userId()
                         ->asString(),
-                    'name' => $formData['name'],
-                    'description' => $formData['description'],
-                    'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    'wasCancelled' => 0,
-                ];
-                $this->connection->insert('meetups', $record);
-
-                $meetupId = (int) $this->connection->lastInsertId();
+                    $formData['name'],
+                    $formData['description'],
+                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                );
+                $meetupId = $this->application->scheduleMeetup($command);
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
-
-                $this->eventDispatcher->dispatch(
-                    new MeetupWasScheduled(
-                        MeetupId::fromString((string) $meetupId),
-                        $user->userId()
-                    )
-                );
 
                 return new RedirectResponse(
                     $this->router->generateUri('meetup_details', [

@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\User;
+use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
+use MeetupOrganizing\MeetupWasScheduled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use RuntimeException;
@@ -76,5 +79,28 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(
             new UserHasRsvpd($command->meetupId(), $command->userId(), $rsvp->rsvpId())
         );
+    }
+
+    public function scheduleMeetup(ScheduleMeetup $command): int
+    {
+        $record = [
+            'organizerId' => $command->organizerId,
+            'name' => $command->name,
+            'description' => $command->description,
+            'scheduledFor' => $command->scheduledFor,
+            'wasCancelled' => 0,
+        ];
+        $this->connection->insert('meetups', $record);
+
+        $meetupId = (int) $this->connection->lastInsertId();
+
+        $this->eventDispatcher->dispatch(
+            new MeetupWasScheduled(
+                MeetupId::fromString((string) $meetupId),
+                UserId::fromString($command->organizerId),
+            )
+        );
+
+        return $meetupId;
     }
 }
