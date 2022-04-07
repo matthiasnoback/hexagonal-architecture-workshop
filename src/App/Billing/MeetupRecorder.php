@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Billing;
 
 use Doctrine\DBAL\Connection;
+use MeetupOrganizing\Handler\MeetupWasCancelled;
 use MeetupOrganizing\MeetupWasScheduled;
 
 final class MeetupRecorder
@@ -25,6 +26,17 @@ final class MeetupRecorder
                     ->toDateTimeImmutable()->format('Y'),
                 'month' => (int) $event->scheduledFor
                     ->toDateTimeImmutable()->format('m'),
+            ]
+        );
+    }
+
+    public function whenMeetupWasCancelled(
+        MeetupWasCancelled $event
+    ): void {
+        $this->connection->delete(
+            'billing_meetups',
+            [
+                'meetupId' => $event->meetupId->asString()
             ]
         );
     }
