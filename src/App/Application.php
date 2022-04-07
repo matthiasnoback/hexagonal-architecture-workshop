@@ -15,6 +15,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\MeetupWasScheduled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
@@ -98,6 +99,7 @@ final class Application implements ApplicationInterface
             new MeetupWasScheduled(
                 MeetupId::fromString((string) $meetupId),
                 UserId::fromString($command->organizerId),
+                ScheduledDate::fromString($command->scheduledFor),
             )
         );
 

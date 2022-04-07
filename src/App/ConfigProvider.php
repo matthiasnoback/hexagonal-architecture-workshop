@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Billing\MeetupRecorder;
 use App\Cli\ConsoleApplication;
 use App\Cli\ConsumeEventsCommand;
 use App\Cli\ExportUsersCommand;
@@ -62,7 +63,8 @@ class ConfigProvider
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 MeetupWasScheduled::class => [
-                    [OrganizerRsvpForMeetup::class, 'whenMeetupWasScheduled']
+                    [OrganizerRsvpForMeetup::class, 'whenMeetupWasScheduled'],
+                    [MeetupRecorder::class, 'whenMeetupWasScheduled'],
                 ],
             ]
         ];
@@ -78,6 +80,9 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
                     $container->get(ApplicationInterface::class),
+                ),
+                MeetupRecorder::class => fn (ContainerInterface $container) => new MeetupRecorder(
+                    $container->get(Connection::class),
                 ),
                 OrganizerRsvpForMeetup::class => fn (ContainerInterface $container) => new OrganizerRsvpForMeetup(
                     $container->get(ApplicationInterface::class),
