@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Assert\Assertion;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -91,17 +92,24 @@ final class Application implements ApplicationInterface
             'scheduledFor' => $command->scheduledFor,
             'wasCancelled' => 0,
         ];
-        $this->connection->insert('meetups', $record);
 
-        $meetupId = (int) $this->connection->lastInsertId();
+        $meetupId = $this->connection->transactional(function () use ($command, $record) {
+            $this->connection->insert('meetups', $record);
 
-        $this->eventDispatcher->dispatch(
-            new MeetupWasScheduled(
-                MeetupId::fromString((string) $meetupId),
-                UserId::fromString($command->organizerId),
-                ScheduledDate::fromString($command->scheduledFor),
-            )
-        );
+            $meetupId = (int)$this->connection->lastInsertId();
+
+            $this->eventDispatcher->dispatch(
+                new MeetupWasScheduled(
+                    MeetupId::fromString((string)$meetupId),
+                    UserId::fromString($command->organizerId),
+                    ScheduledDate::fromString($command->scheduledFor),
+                )
+            );
+
+            return $meetupId;
+        });
+
+        Assertion::integer($meetupId);
 
         return $meetupId;
     }
