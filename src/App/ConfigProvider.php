@@ -36,6 +36,8 @@ use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\MeetupWasScheduled;
+use MeetupOrganizing\OrganizerRsvpForMeetup;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -59,6 +61,9 @@ class ConfigProvider
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
+                MeetupWasScheduled::class => [
+                    [OrganizerRsvpForMeetup::class, 'whenMeetupWasScheduled']
+                ],
             ]
         ];
     }
@@ -73,6 +78,9 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
                     $container->get(Connection::class),
+                    $container->get(EventDispatcher::class),
+                ),
+                OrganizerRsvpForMeetup::class => fn (ContainerInterface $container) => new OrganizerRsvpForMeetup(
                     $container->get(ApplicationInterface::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
