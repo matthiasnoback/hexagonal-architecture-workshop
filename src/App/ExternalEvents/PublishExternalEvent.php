@@ -28,13 +28,15 @@ final class PublishExternalEvent
 
     public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
     {
+        $dto = new \Shared\MeetupWasScheduled(
+            $event->meetupId->asString(),
+            $event->organizerId->asString(),
+            $event->scheduledFor->toDateTimeImmutable(),
+        );
+
         $this->publisher->publish(
-            'public.meetup_organizing.meetup_was_scheduled',
-            [
-                'meetupId' => $event->meetupId->asString(),
-                'organizerId' => $event->organizerId->asString(),
-                'scheduledDate' => $event->scheduledFor->asString(),
-            ]
+            $dto::EVENT_TYPE,
+            $dto->toJsonSerializableArray(),
         );
     }
 

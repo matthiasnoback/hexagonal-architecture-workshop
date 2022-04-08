@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use App\Billing\MeetupRecorder;
+use App\Billing\MeetupsForInvoicingProjection;
 use App\Cli\ConsoleApplication;
 use App\Cli\ConsumeEventsCommand;
 use App\Cli\ExportUsersCommand;
@@ -69,11 +69,9 @@ class ConfigProvider
                 ],
                 MeetupWasScheduled::class => [
                     [OrganizerRsvpForMeetup::class, 'whenMeetupWasScheduled'],
-                    [MeetupRecorder::class, 'whenMeetupWasScheduled'],
                     [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
-                    [MeetupRecorder::class, 'whenMeetupWasCancelled'],
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ]
             ]
@@ -91,7 +89,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
-                MeetupRecorder::class => fn (ContainerInterface $container) => new MeetupRecorder(
+                MeetupsForInvoicingProjection::class => fn (ContainerInterface $container) => new MeetupsForInvoicingProjection(
                     $container->get(Connection::class),
                 ),
                 OrganizerRsvpForMeetup::class => fn (ContainerInterface $container) => new OrganizerRsvpForMeetup(
@@ -217,6 +215,7 @@ class ConfigProvider
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [
                     $container->get(OrganizerProjection::class),
+                    $container->get(MeetupsForInvoicingProjection::class),
                 ],
             ],
         ];
