@@ -197,6 +197,7 @@ class ConfigProvider
                 ),
                 OutboxRelayCommand::class => fn (ContainerInterface $container) => new OutboxRelayCommand(
                     $container->get(Connection::class),
+                    $container->get(AsynchronousExternalEventPublisher::class),
                 ),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
                     $container->get(Connection::class),
@@ -212,6 +213,9 @@ class ConfigProvider
                 ),
                 ExternalEventPublisher::class => fn (ContainerInterface $container) => new OutboxPublisher(
                     $container->get(Connection::class),
+                ),
+                AsynchronousExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
+                    $container->get(Producer::class),
                 ),
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Cli;
 
+use App\ExternalEvents\AsynchronousExternalEventPublisher;
+use App\Json;
+use App\Mapping;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +17,7 @@ final class OutboxRelayCommand extends Command
 
     public function __construct(
         private readonly Connection $connection,
+        private readonly AsynchronousExternalEventPublisher $eventPublisher,
     ) {
         parent::__construct();
     }
@@ -48,8 +52,21 @@ final class OutboxRelayCommand extends Command
             return;
         }
 
-        // TODO really publish the message this time
+        $this->connection->transactional(function () use ($record) {
+            $this->connection->update(
+                'outbox',
+                [
+                    'wasPublished' => 1
+                ],
+                [
+                    'messageId' => Mapping::getInt($record, 'messageId')
+                ]
+            );
 
-        // TODO mark the message as published
+            $this->eventPublisher->publish(
+                Mapping::getString($record, 'messageType'),
+                Json::decode(Mapping::getString($record, 'messageData')),
+            );
+        });
     }
 }
