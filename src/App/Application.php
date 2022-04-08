@@ -43,10 +43,14 @@ final class Application implements ApplicationInterface
             $command->userType()
         );
 
-        $this->userRepository->save($user);
+        $this->connection->transactional(
+            function () use ($user) {
+                $this->userRepository->save($user);
 
-        $this->eventDispatcher->dispatchAll(
-            $user->releaseEvents()
+                $this->eventDispatcher->dispatchAll(
+                    $user->releaseEvents()
+                );
+            }
         );
 
         return $user->userId()
