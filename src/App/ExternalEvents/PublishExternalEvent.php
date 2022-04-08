@@ -34,6 +34,9 @@ final class PublishExternalEvent
             $event->scheduledFor->toDateTimeImmutable(),
         );
 
+        // add to outbox
+
+
         $this->publisher->publish(
             $dto::EVENT_TYPE,
             $dto->toJsonSerializableArray(),
