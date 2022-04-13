@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\EventDispatcher;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -19,7 +20,8 @@ final class CancelMeetupHandler implements RequestHandlerInterface
     public function __construct(
         private readonly Connection $connection,
         private readonly Session $session,
-        private readonly RouterInterface $router
+        private readonly RouterInterface $router,
+        private readonly EventDispatcher $eventDispatcher,
     ) {
     }
 
@@ -49,6 +51,10 @@ final class CancelMeetupHandler implements RequestHandlerInterface
         );
 
         if ($numberOfAffectedRows > 0) {
+            $this->eventDispatcher->dispatch(
+                new MeetupWasCancelled($meetupId),
+            );
+
             $this->session->addSuccessFlash('You have cancelled the meetup');
         }
 

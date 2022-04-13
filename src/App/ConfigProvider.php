@@ -35,6 +35,7 @@ use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
+use MeetupOrganizing\Handler\MeetupWasCancelled;
 use MeetupOrganizing\Handler\MeetupWasScheduled;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
@@ -70,6 +71,9 @@ class ConfigProvider
                     [RsvpOrganizerForScheduledMeetup::class, 'whenMeetupWasScheduled'],
                     [BillingMeetupRecorder::class, 'whenMeetupWasScheduled'],
                 ],
+                MeetupWasCancelled::class => [
+                    [BillingMeetupRecorder::class, 'whenMeetupWasCancelled'],
+                ],
             ]
         ];
     }
@@ -99,7 +103,8 @@ class ConfigProvider
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
                     $container->get(Connection::class),
                     $container->get(Session::class),
-                    $container->get(RouterInterface::class)
+                    $container->get(RouterInterface::class),
+                    $container->get(EventDispatcher::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
