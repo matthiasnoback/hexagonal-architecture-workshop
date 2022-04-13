@@ -69,21 +69,26 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                     'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
                     'wasCancelled' => 0,
                 ];
-                $this->connection->insert('meetups', $record);
 
-                $meetupId = (int) $this->connection->lastInsertId();
+                $meetupId = $this->connection->transactional(function () use ($formData, $user, $record) {
+                    $this->connection->insert('meetups', $record);
 
-                $this->session->addSuccessFlash('Your meetup was scheduled successfully');
+                    $meetupId = (int) $this->connection->lastInsertId();
 
-                $this->eventDispatcher->dispatch(
-                    new MeetupWasScheduled(
-                        (string) $meetupId,
-                        $user->userId(),
-                        ScheduledDate::fromString(
-                            $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-                        ),
-                    )
-                );
+                    $this->session->addSuccessFlash('Your meetup was scheduled successfully');
+
+                    $this->eventDispatcher->dispatch(
+                        new MeetupWasScheduled(
+                            (string) $meetupId,
+                            $user->userId(),
+                            ScheduledDate::fromString(
+                                $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+                            ),
+                        )
+                    );
+
+                    return $meetupId;
+                });
 
                 return new RedirectResponse(
                     $this->router->generateUri('meetup_details', [
