@@ -16,11 +16,11 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
         $this->flashMessagesShouldContain('Your meetup was scheduled successfully');
 
         // Enable this line for Part 2, Assignment 1:
-        //$this->flashMessagesShouldContain('You have successfully RSVP-ed to this meetup');
+        $this->flashMessagesShouldContain('You have successfully RSVP-ed to this meetup');
 
         $this->assertUpcomingMeetupExists('Coding Dojo');
 
         // Enable this line for Part 2, Assignment 1:
-        //$this->listOfAttendeesShouldContain('Coding Dojo', 'Organizer');
+        $this->listOfAttendeesShouldContain('Coding Dojo', 'Organizer');
     }
 }
