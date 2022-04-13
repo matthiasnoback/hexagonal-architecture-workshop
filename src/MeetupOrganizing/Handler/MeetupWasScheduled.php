@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\Entity\UserId;
+use MeetupOrganizing\Entity\ScheduledDate;
 
 final class MeetupWasScheduled
 {
     public function __construct(
         private readonly string $meetupId,
         private readonly UserId $organizerId,
+        private readonly ScheduledDate $scheduledDate,
     ) {
     }
 
@@ -21,5 +23,10 @@ final class MeetupWasScheduled
     public function organizerId(): UserId
     {
         return $this->organizerId;
+    }
+
+    public function scheduledDate(): ScheduledDate
+    {
+        return $this->scheduledDate;
     }
 }

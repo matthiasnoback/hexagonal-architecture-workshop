@@ -24,6 +24,7 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
+use Billing\BillingMeetupRecorder;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -67,6 +68,7 @@ class ConfigProvider
                 ],
                 MeetupWasScheduled::class => [
                     [RsvpOrganizerForScheduledMeetup::class, 'whenMeetupWasScheduled'],
+                    [BillingMeetupRecorder::class, 'whenMeetupWasScheduled'],
                 ],
             ]
         ];
@@ -86,6 +88,9 @@ class ConfigProvider
                 ),
                 RsvpOrganizerForScheduledMeetup::class => fn (ContainerInterface $container) => new RsvpOrganizerForScheduledMeetup(
                     $container->get(ApplicationInterface::class),
+                ),
+                BillingMeetupRecorder::class => fn (ContainerInterface $container) => new BillingMeetupRecorder(
+                    $container->get(Connection::class),
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),

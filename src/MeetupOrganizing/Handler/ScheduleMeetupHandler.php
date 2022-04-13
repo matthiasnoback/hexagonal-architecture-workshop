@@ -79,6 +79,9 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                     new MeetupWasScheduled(
                         (string) $meetupId,
                         $user->userId(),
+                        ScheduledDate::fromString(
+                            $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+                        ),
                     )
                 );
 
