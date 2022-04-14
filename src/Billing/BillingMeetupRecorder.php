@@ -5,10 +5,8 @@ namespace Billing;
 
 use App\ExternalEvents\ExternalEventConsumer;
 use App\Mapping;
-use Assert\Assertion;
-use DateTimeImmutable;
-use DateTimeInterface;
 use Doctrine\DBAL\Connection;
+use MeetupOrganizingPublished\Event\MeetupWasScheduledDto;
 
 /**
  * This creates a projection
@@ -27,8 +25,10 @@ final class BillingMeetupRecorder implements ExternalEventConsumer
 
     public function whenExternalEventReceived(string $eventType, array $eventData): void
     {
-        if ($eventType === 'meetup_organizing.public.meetup.meetup_was_scheduled') {
-            $this->whenMeetupWasScheduled($eventData);
+        if ($eventType === MeetupWasScheduledDto::EVENT_NAME) {
+            $this->whenMeetupWasScheduled(
+                MeetupWasScheduledDto::fromEventData($eventData)
+            );
         }
 
         if ($eventType === 'meetup_organizing.public.meetup.meetup_was_cancelled') {
@@ -37,21 +37,15 @@ final class BillingMeetupRecorder implements ExternalEventConsumer
     }
 
     private function whenMeetupWasScheduled(
-        array $eventData,
+        MeetupWasScheduledDto $event,
     ): void {
-        $dateTimeImmutable = DateTimeImmutable::createFromFormat(
-            DateTimeInterface::ATOM,
-            Mapping::getString($eventData, 'scheduledDate'),
-        );
-        Assertion::isInstanceOf($dateTimeImmutable, DateTimeImmutable::class);
-
         $this->connection->insert(
             'billing_meetups',
             [
-                'organizerId' => Mapping::getString($eventData, 'organizerId'),
-                'meetupId' => Mapping::getString($eventData, 'meetupId'),
-                'year' => $dateTimeImmutable->format('Y'),
-                'month' => $dateTimeImmutable->format('n'),
+                'organizerId' => $event->organizerId(),
+                'meetupId' => $event->meetupId(),
+                'year' => $event->scheduledDate()->format('Y'),
+                'month' => $event->scheduledDate()->format('n'),
             ]
         );
     }

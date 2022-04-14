@@ -7,6 +7,7 @@ use App\Entity\UserHasSignedUp;
 use DateTimeInterface;
 use MeetupOrganizing\Handler\MeetupWasCancelled;
 use MeetupOrganizing\Handler\MeetupWasScheduled;
+use MeetupOrganizingPublished\Event\MeetupWasScheduledDto;
 
 final class PublishExternalEvent
 {
@@ -29,16 +30,18 @@ final class PublishExternalEvent
 
     public function whenMeetupWasScheduled(MeetupWasScheduled $event): void
     {
+        $dto = new MeetupWasScheduledDto(
+            $event->meetupId(),
+            $event->organizerId()->asString(),
+            $event->scheduledDate()
+                ->toDateTimeImmutable()->format(
+                    DateTimeInterface::ATOM,
+                )
+        );
+
         $this->publisher->publish(
-            'meetup_organizing.public.meetup.meetup_was_scheduled',
-            [
-                'meetupId' => $event->meetupId(),
-                'organizerId' => $event->organizerId()->asString(),
-                'scheduledDate' => $event->scheduledDate()
-                    ->toDateTimeImmutable()->format(
-                        DateTimeInterface::ATOM,
-                    ),
-            ]
+            $dto->eventName(),
+            $dto->eventData(),
         );
     }
 
