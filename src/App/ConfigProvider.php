@@ -69,11 +69,9 @@ class ConfigProvider
                 ],
                 MeetupWasScheduled::class => [
                     [RsvpOrganizerForScheduledMeetup::class, 'whenMeetupWasScheduled'],
-                    [BillingMeetupRecorder::class, 'whenMeetupWasScheduled'],
                     [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
-                    [BillingMeetupRecorder::class, 'whenMeetupWasCancelled'],
                     [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ],
             ]
@@ -218,6 +216,7 @@ class ConfigProvider
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [
                     $container->get(OrganizerProjection::class),
+                    $container->get(BillingMeetupRecorder::class),
                 ],
             ],
         ];
