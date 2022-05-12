@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use MeetupOrganizing\EmailAddress;
+
 final class UserHasSignedUp
 {
     public function __construct(
         private readonly UserId $userId,
         private readonly string $name,
-        private readonly string $emailAddress,
+        private readonly EmailAddress $emailAddress,
         private readonly UserType $userType)
     {
 
@@ -24,7 +26,7 @@ final class UserHasSignedUp
         return $this->name;
     }
 
-    public function emailAddress(): string
+    public function emailAddress(): EmailAddress
     {
         return $this->emailAddress;
     }

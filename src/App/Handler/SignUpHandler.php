@@ -46,16 +46,13 @@ final class SignUpHandler implements RequestHandlerInterface
 
             $formData = array_merge($formData, $requestData);
 
-            if ($formData['name'] === '') {
-                $formErrors['name'][] = 'Please provide a name';
-            }
-            if ($formData['emailAddress'] === '') {
-                $formErrors['emailAddress'][] = 'Please provide an email address';
-            }
+            $command = new SignUp($formData['name'], $formData['emailAddress'], $formData['userType']);
+
+            $formErrors = $command->validate();
 
             if ($formErrors === []) {
                 $this->application->signUp(
-                    new SignUp($formData['name'], $formData['emailAddress'], $formData['userType'])
+                    $command
                 );
 
                 $this->session->addSuccessFlash('You have been registered as a user');

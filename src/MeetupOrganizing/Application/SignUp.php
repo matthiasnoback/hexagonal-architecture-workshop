@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Application;
 
 use App\Entity\UserType;
+use MeetupOrganizing\EmailAddress;
 
 final class SignUp
 {
@@ -20,13 +21,26 @@ final class SignUp
         return $this->name;
     }
 
-    public function emailAddress(): string
+    public function emailAddress(): EmailAddress
     {
-        return $this->emailAddress;
+        return new EmailAddress($this->emailAddress);
     }
 
     public function userType(): UserType
     {
         return UserType::from($this->userType);
+    }
+
+    public function validate(): array
+    {
+        $formErrors = [];
+        if ($this->name === '') {
+            $formErrors['name'][] = 'Please provide a name';
+        }
+        if ($this->emailAddress === '') {
+            $formErrors['emailAddress'][] = 'Please provide an email address';
+        }
+
+        return $formErrors;
     }
 }

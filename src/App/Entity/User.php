@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use MeetupOrganizing\EmailAddress;
+
 final class User
 {
     use EventRecordingCapabilities;
@@ -12,7 +14,7 @@ final class User
 
     private string $name;
 
-    private string $emailAddress;
+    private EmailAddress $emailAddress;
 
     private UserType $userType;
 
@@ -26,13 +28,13 @@ final class User
 
         $user->userId = UserId::fromString($record['userId']);
         $user->name = $record['name'];
-        $user->emailAddress = $record['emailAddress'];
+        $user->emailAddress = new EmailAddress($record['emailAddress']);
         $user->userType = UserType::from($record['userType']);
 
         return $user;
     }
 
-    public static function create(UserId $userId, string $name, string $emailAddress, UserType $userType): self
+    public static function create(UserId $userId, string $name, EmailAddress $emailAddress, UserType $userType): self
     {
         $user = new self();
 
@@ -56,7 +58,7 @@ final class User
         return $this->name;
     }
 
-    public function emailAddress(): string
+    public function emailAddress(): EmailAddress
     {
         return $this->emailAddress;
     }
@@ -74,7 +76,7 @@ final class User
         return [
             'userId' => $this->userId->asString(),
             'name' => $this->name,
-            'emailAddress' => $this->emailAddress,
+            'emailAddress' => $this->emailAddress->asString(),
             'userType' => $this->userType->name,
         ];
     }
