@@ -12,8 +12,8 @@ use App\Cli\SignUpCommand;
 use App\Entity\UserHasSignedUp;
 use App\Entity\UserRepository;
 use App\Entity\UserRepositoryUsingDbal;
-use App\ExternalEvents\AsynchronousExternalEventPublisher;
 use App\ExternalEvents\ExternalEventPublisher;
+use App\ExternalEvents\OutboxPublisher;
 use App\ExternalEvents\PublishExternalEvent;
 use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
@@ -197,6 +197,7 @@ class ConfigProvider
                 ),
                 OutboxRelayCommand::class => fn (ContainerInterface $container) => new OutboxRelayCommand(
                     $container->get(Connection::class),
+                    $container->get(Producer::class),
                 ),
                 OrganizerProjection::class => fn (ContainerInterface $container) => new OrganizerProjection(
                     $container->get(Connection::class),
@@ -210,8 +211,8 @@ class ConfigProvider
                 PublishExternalEvent::class => fn (ContainerInterface $container) => new PublishExternalEvent(
                     $container->get(ExternalEventPublisher::class),
                 ),
-                ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
-                    $container->get(Producer::class)
+                ExternalEventPublisher::class => fn (ContainerInterface $container) => new OutboxPublisher(
+                    $container->get(Connection::class),
                 ),
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [

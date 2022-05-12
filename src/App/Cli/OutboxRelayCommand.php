@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace App\Cli;
 
+use App\Json;
+use App\Mapping;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TailEventStream\Producer;
 
 final class OutboxRelayCommand extends Command
 {
@@ -14,6 +17,7 @@ final class OutboxRelayCommand extends Command
 
     public function __construct(
         private readonly Connection $connection,
+        private readonly Producer $producer,
     ) {
         parent::__construct();
     }
@@ -32,7 +36,7 @@ final class OutboxRelayCommand extends Command
         while ($this->keepRunning) {
             $this->publishNextMessage();
 
-            usleep (1000);
+            usleep(1000);
             pcntl_signal_dispatch();
         }
 
@@ -48,8 +52,23 @@ final class OutboxRelayCommand extends Command
             return;
         }
 
-        // TODO really publish the message this time
+        $this->connection->transactional(
+            function () use ($record) {
+                $this->connection->update(
+                    'outbox',
+                    [
+                        'wasPublished' => 1,
+                    ],
+                    [
+                        'messageId' => Mapping::getInt($record, 'messageId'),
+                    ]
+                );
 
-        // TODO mark the message as published
+                $this->producer->produce(
+                    Mapping::getString($record, 'messageType'),
+                    Json::decode(Mapping::getString($record, 'messageData')),
+                );
+            }
+        );
     }
 }
