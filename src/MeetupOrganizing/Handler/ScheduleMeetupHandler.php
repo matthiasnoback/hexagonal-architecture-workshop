@@ -64,27 +64,32 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 Assert::that($user)->notNull();
 
                 // TODO create DTO, pass to ApplicationInterface::scheduleMeetup()
-                $record = [
-                    'organizerId' => $user
-                        ->userId()
-                        ->asString(),
-                    'name' => $formData['name'],
-                    'description' => $formData['description'],
-                    'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    'wasCancelled' => 0,
-                ];
-                $this->connection->insert('meetups', $record);
 
-                $meetupId = (int) $this->connection->lastInsertId();
+                $meetupId = $this->connection->transactional(function () use ($formData, $user) {
+                    $record = [
+                        'organizerId' => $user
+                            ->userId()
+                            ->asString(),
+                        'name' => $formData['name'],
+                        'description' => $formData['description'],
+                        'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                        'wasCancelled' => 0,
+                    ];
+                    $this->connection->insert('meetups', $record);
 
-                $this->eventDispatcher->dispatch(
-                    new MeetupWasScheduled(
-                        (string) $meetupId,
-                        $user
-                            ->userId(),
-                        ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'])
-                    )
-                );
+                    $meetupId = (int) $this->connection->lastInsertId();
+
+                    $this->eventDispatcher->dispatch(
+                        new MeetupWasScheduled(
+                            (string) $meetupId,
+                            $user
+                                ->userId(),
+                            ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'])
+                        )
+                    );
+
+                    return $meetupId;
+                });
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 

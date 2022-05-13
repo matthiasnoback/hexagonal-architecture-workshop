@@ -38,21 +38,27 @@ final class CancelMeetupHandler implements RequestHandlerInterface
         }
         $meetupId = $parsedBody['meetupId'];
 
-        $numberOfAffectedRows = $this->connection->update(
-            'meetups',
-            [
-                'wasCancelled' => 1,
-            ],
-            [
-                'meetupId' => $meetupId,
-                'organizerId' => $loggedInUser->userId()
-                    ->asString(),
-            ]
-        );
+        $numberOfAffectedRows = $this->connection->transactional(function () use ($loggedInUser, $meetupId) {
+            $numberOfAffectedRows = $this->connection->update(
+                'meetups',
+                [
+                    'wasCancelled' => 1,
+                ],
+                [
+                    'meetupId' => $meetupId,
+                    'organizerId' => $loggedInUser->userId()
+                        ->asString(),
+                ]
+            );
 
-        $this->eventDispatcher->dispatch(
-            new MeetupWasCancelled($loggedInUser->userId(), $meetupId)
-        );
+            if ($numberOfAffectedRows > 0) {
+                $this->eventDispatcher->dispatch(
+                    new MeetupWasCancelled($loggedInUser->userId(), $meetupId)
+                );
+            }
+
+            return $numberOfAffectedRows;
+        });
 
         if ($numberOfAffectedRows > 0) {
             $this->session->addSuccessFlash('You have cancelled the meetup');
