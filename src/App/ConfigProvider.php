@@ -24,6 +24,7 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
+use Billing\KeepTrackOfMeetupsForBilling;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -61,7 +62,10 @@ class ConfigProvider
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
-                MeetupWasScheduled::class => [[MeetupWasScheduledListener::class, 'rsvpForOrganizer']],
+                MeetupWasScheduled::class => [
+                    [MeetupWasScheduledListener::class, 'rsvpForOrganizer'],
+                    [KeepTrackOfMeetupsForBilling::class, 'whenMeetupWasScheduled'],
+                ],
             ]
         ];
     }
@@ -71,6 +75,7 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                KeepTrackOfMeetupsForBilling::class => fn (ContainerInterface $container) => new KeepTrackOfMeetupsForBilling($container->get(Connection::class)),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
