@@ -65,10 +65,10 @@ class ConfigProvider
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
                 MeetupWasScheduled::class => [
                     [MeetupWasScheduledListener::class, 'rsvpForOrganizer'],
-                    [KeepTrackOfMeetupsForBilling::class, 'whenMeetupWasScheduled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasScheduled'],
                 ],
                 MeetupWasCancelled::class => [
-                    [KeepTrackOfMeetupsForBilling::class, 'whenMeetupWasCancelled'],
+                    [PublishExternalEvent::class, 'whenMeetupWasCancelled'],
                 ],
             ]
         ];
@@ -208,6 +208,7 @@ class ConfigProvider
                 ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
                 'external_event_consumers' => fn (ContainerInterface $container) => [
                     $container->get(OrganizerProjection::class),
+                    $container->get(KeepTrackOfMeetupsForBilling::class),
                 ],
             ],
         ];
