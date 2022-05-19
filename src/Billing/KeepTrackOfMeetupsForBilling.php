@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Billing;
 
 use App\ExternalEvents\ExternalEventConsumer;
+use Assert\Assertion;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
@@ -31,6 +32,8 @@ final class KeepTrackOfMeetupsForBilling implements ExternalEventConsumer
     private function whenMeetupWasScheduled(array $event): void
     {
         $scheduledDate = DateTimeImmutable::createFromFormat(DateTimeInterface::ATOM, $event['scheduledDate']);
+
+        Assertion::isInstanceOf($scheduledDate, DateTimeImmutable::class);
 
         $this->connection->insert(
             'billing_meetups',

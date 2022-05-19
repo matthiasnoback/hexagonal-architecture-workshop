@@ -5,6 +5,7 @@ namespace App\Cli;
 
 use App\ExternalEvents\ExternalEventPublisher;
 use App\Json;
+use App\Mapping;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -63,8 +64,8 @@ final class OutboxRelayCommand extends Command
             );
 
             $this->externalEventPublisher->publish(
-                $record['messageType'],
-                Json::decode($record['messageData']),
+                Mapping::getString($record, 'messageType'),
+                Json::decode(Mapping::getString($record, 'messageData')),
             );
         });
     }
