@@ -15,6 +15,7 @@ use MeetupOrganizing\Handler\ApiPingHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
+use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use Mezzio\Application;
@@ -25,6 +26,7 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->route('/schedule-meetup', ScheduleMeetupHandler::class, ['GET', 'POST'], 'schedule_meetup');
     $app->route('/meetup-details/{id:.+}', MeetupDetailsHandler::class, ['GET'], 'meetup_details');
     $app->route('/rsvp-for-meetup', RsvpForMeetupHandler::class, ['POST'], 'rsvp_for_meetup');
+    $app->route('/reschedule-meetup/{id:.+}', RescheduleMeetupHandler::class, ['GET', 'POST'], 'reschedule_meetup');
     $app->route('/cancel-meetup', CancelMeetupHandler::class, ['POST'], 'cancel_meetup');
     $app->route('/', ListMeetupsHandler::class, ['GET'], 'list_meetups');
     $app->route('/sign-up', SignUpHandler::class, ['GET', 'POST'], 'sign_up');

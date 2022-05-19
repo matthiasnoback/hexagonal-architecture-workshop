@@ -1,0 +1,25 @@
+{% extends "@layout/default.html.twig" %}
+
+{% block title %}Reschedule a meetup{% endblock %}
+
+{% block content %}
+    <h1>Rechedule meetup {{ meetupName }}</h1>
+
+    <form method="post" action="{{ path('reschedule_meetup', { id: meetupId }) }}">
+        <div class="form-group {% if formErrors["scheduleForDate"] is defined %} has-error{% endif %}">
+            <label for="scheduleForDate">Schedule for date: </label>
+            <input class="form-control" name="scheduleForDate" id="scheduleForDate" type="date"
+                   value="{{ formData["scheduleForDate"]|default("") }}">
+        </div>
+        <div class="form-group {% if formErrors["scheduleForTime"] is defined %} has-error{% endif %}">
+            <label for="scheduleForTime">Time: </label>
+            <input class="form-control{% if formErrors["scheduleFor"] is defined %} is-invalid{% endif %}" name="scheduleForTime" id="scheduleForTime" type="time"
+                   value="{{ formData["scheduleForTime"]|default("") }}">
+            {% for error in formErrors["scheduleFor"]|default({}) %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Reschedule</button>
+    </form>
+{% endblock %}

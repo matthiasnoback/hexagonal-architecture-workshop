@@ -28,12 +28,14 @@ use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
+use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
+use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
@@ -82,6 +84,13 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class)
+                ),
+                RescheduleMeetupHandler::class => fn (ContainerInterface $container) => new RescheduleMeetupHandler(
+                    $container->get(Connection::class),
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(ResponseFactory::class),
+                    $container->get(TemplateRendererInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),

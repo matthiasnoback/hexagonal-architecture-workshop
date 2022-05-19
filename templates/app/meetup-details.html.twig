@@ -5,7 +5,7 @@
 {% block content %}
     <h2>{{ meetupDetails.organizer.name }} presents: {{ meetupDetails.name }}</h2>
 
-    <p><small>{{ meetupDetails.scheduledFor|date() }}</small></p>
+    <p class="meetup-scheduled-for"><small>{{ meetupDetails.scheduledFor|date() }}</small></p>
     <p>{{ meetupDetails.description }}</p>
 
     <h3>Attendees</h3>
@@ -24,6 +24,7 @@
             <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">
             <button class="btn btn-danger">Cancel this meetup</button>
         </form>
+        <a class="btn btn-warning mt-3" href="{{ path('reschedule_meetup', { id: meetupDetails.meetupId }) }}">Reschedule this meetup</a>
     {% else %}
         <form action="{{ path('rsvp_for_meetup') }}" method="post">
             <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">

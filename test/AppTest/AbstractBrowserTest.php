@@ -52,6 +52,15 @@ abstract class AbstractBrowserTest extends TestCase
             ->cancelMeetup($this->browser);
     }
 
+    protected function rescheduleMeetup(string $name, string $date, string $time): void
+    {
+        $this->listMeetupsPage()
+            ->upcomingMeetup($name)
+            ->readMore($this->browser)
+            ->rescheduleMeetup($this->browser)
+            ->reschedule($this->browser, $date, $time);
+    }
+
     protected function assertUpcomingMeetupExists(string $expectedName): void
     {
         self::assertContains(
