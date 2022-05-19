@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\Mapping;
 use App\Session;
 use Assert\Assert;
+use Assert\Assertion;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -35,16 +37,14 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
 
         $record = $this->connection->fetchAssociative(
             'SELECT * FROM meetups WHERE meetupId = ?',
-            [
-                $request->getAttribute('id')
-            ]
+            [$request->getAttribute('id')]
         );
 
         if ($record === false) {
             return $this->responseFactory->createResponse(400);
         }
 
-        list($date, $time) = explode(' ', $record['scheduledFor']);
+        [$date, $time] = explode(' ', Mapping::getString($record, 'scheduledFor'));
 
         $formErrors = [];
         $formData = [
@@ -53,7 +53,10 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
         ];
 
         if ($request->getMethod() === 'POST') {
-            $formData = array_merge($formData, $request->getParsedBody());
+            $submittedData = $request->getParsedBody();
+            Assertion::isArray($submittedData);
+
+            $formData = array_merge($formData, $submittedData);
 
             $dateTime = DateTimeImmutable::createFromFormat(
                 'Y-m-d H:i',

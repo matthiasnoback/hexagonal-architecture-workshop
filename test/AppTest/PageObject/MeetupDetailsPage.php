@@ -42,9 +42,6 @@ final class MeetupDetailsPage extends AbstractPageObject
 
     public function assertScheduledFor(string $expected): void
     {
-        Assert::assertEquals(
-            $expected,
-            trim($this->crawler->filter('.meetup-scheduled-for')->text())
-        );
+        Assert::assertEquals($expected, trim($this->crawler->filter('.meetup-scheduled-for')->text()));
     }
 }
