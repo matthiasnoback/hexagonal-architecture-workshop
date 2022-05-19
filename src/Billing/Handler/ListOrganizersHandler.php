@@ -24,13 +24,11 @@ final class ListOrganizersHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $organizers = array_map(
-            fn(array $record) => new Organizer(
+            fn (array $record) => new Organizer(
                 Mapping::getString($record, 'organizerId'),
                 Mapping::getString($record, 'name'),
             ),
-            $this->connection->fetchAllAssociative(
-                'SELECT * FROM billing_organizers'
-            )
+            $this->connection->fetchAllAssociative('SELECT * FROM billing_organizers')
         );
 
         return new HtmlResponse(

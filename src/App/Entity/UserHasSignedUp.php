@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -9,9 +10,8 @@ final class UserHasSignedUp
         private readonly UserId $userId,
         private readonly string $name,
         private readonly string $emailAddress,
-        private readonly UserType $userType)
-    {
-
+        private readonly UserType $userType
+    ) {
     }
 
     public function userId(): UserId

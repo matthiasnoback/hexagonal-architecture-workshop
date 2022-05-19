@@ -59,7 +59,7 @@ class ConfigProvider
             'event_listeners' => [
                 UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
-            ]
+            ],
         ];
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Cli;
@@ -32,7 +33,7 @@ final class OutboxRelayCommand extends Command
         while ($this->keepRunning) {
             $this->publishNextMessage();
 
-            usleep (1000);
+            usleep(1000);
             pcntl_signal_dispatch();
         }
 

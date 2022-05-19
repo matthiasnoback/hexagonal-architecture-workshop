@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Billing\ViewModel;
@@ -6,8 +7,8 @@ namespace Billing\ViewModel;
 final class Organizer
 {
     public function __construct(
-        private string $id,
-        private string $name
+        private readonly string $id,
+        private readonly string $name
     ) {
     }
 

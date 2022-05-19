@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Billing\Projections;
@@ -9,8 +10,9 @@ use Doctrine\DBAL\Connection;
 
 final class OrganizerProjection implements ExternalEventConsumer
 {
-    public function __construct(private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly Connection $connection
+    ) {
     }
 
     public function whenConsumerRestarted(): void
@@ -18,10 +20,8 @@ final class OrganizerProjection implements ExternalEventConsumer
         $this->connection->executeQuery('DELETE FROM billing_organizers WHERE 1');
     }
 
-    public function whenExternalEventReceived(
-        string $eventType,
-        array $eventData,
-    ): void {
+    public function whenExternalEventReceived(string $eventType, array $eventData,): void
+    {
         if ($eventType !== 'user.signed_up') {
             return;
         }
@@ -34,7 +34,7 @@ final class OrganizerProjection implements ExternalEventConsumer
         // This is a new organizer
         $this->connection->insert('billing_organizers', [
             'organizerId' => Mapping::getString($eventData, 'id'),
-            'name' => Mapping::getString($eventData, 'name')
+            'name' => Mapping::getString($eventData, 'name'),
         ]);
     }
 }

@@ -36,9 +36,7 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
         $user = $this->session->getLoggedInUser();
         Assert::that($user)->notNull();
 
-        $this->application->rsvpForMeetup(
-            new RsvpForMeetup($postData['meetupId'], $user->userId()->asString())
-        );
+        $this->application->rsvpForMeetup(new RsvpForMeetup($postData['meetupId'], $user->userId()->asString()));
 
         return new RedirectResponse(
             $this->router->generateUri('meetup_details', [

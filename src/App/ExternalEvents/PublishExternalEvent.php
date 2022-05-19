@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\ExternalEvents;
@@ -17,9 +18,11 @@ final class PublishExternalEvent
         $this->publisher->publish(
             'user.signed_up',
             [
-                'id' => $event->userId()->asString(),
+                'id' => $event->userId()
+                    ->asString(),
                 'name' => $event->name(),
-                'type' => $event->userType()->value
+                'type' => $event->userType()
+                    ->value,
             ]
         );
     }

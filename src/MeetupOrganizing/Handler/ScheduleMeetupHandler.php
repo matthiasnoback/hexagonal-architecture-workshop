@@ -6,11 +6,10 @@ namespace MeetupOrganizing\Handler;
 
 use App\Session;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
-use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
-use MeetupOrganizing\Entity\ScheduledDate;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -48,9 +47,12 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
             if ($formData['description'] === '') {
                 $formErrors['description'][] = 'Provide a description';
             }
-            try {
-                ScheduledDate::fromString($formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']);
-            } catch (Exception) {
+
+            $dateTime = DateTimeImmutable::createFromFormat(
+                'Y-m-d H:i',
+                $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+            );
+            if ($dateTime === false) {
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 

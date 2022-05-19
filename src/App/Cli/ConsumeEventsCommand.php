@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Cli;
@@ -18,7 +19,7 @@ final class ConsumeEventsCommand extends Command
      */
     public function __construct(
         private readonly Consumer $consumer,
-        private array $externalEventConsumers,
+        private readonly array $externalEventConsumers,
     ) {
         parent::__construct();
     }
@@ -39,10 +40,7 @@ final class ConsumeEventsCommand extends Command
             function (string $eventName, array $eventData) use ($externalEventConsumer, $output) {
                 $output->writeln('Consuming external event: ' . $eventName);
 
-                $externalEventConsumer->whenExternalEventReceived(
-                    $eventName,
-                    $eventData,
-                );
+                $externalEventConsumer->whenExternalEventReceived($eventName, $eventData,);
             }
         );
 
@@ -61,7 +59,8 @@ final class ConsumeEventsCommand extends Command
         }
 
         throw new RuntimeException(
-            sprintf('There is no external event consumer with class "%s", first add it to the list of consumers in ConfigProvider under "external_event_consumers"',
+            sprintf(
+                'There is no external event consumer with class "%s", first add it to the list of consumers in ConfigProvider under "external_event_consumers"',
                 $consumerServiceClass
             )
         );

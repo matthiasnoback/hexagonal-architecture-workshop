@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
@@ -10,11 +11,6 @@ trait EventRecordingCapabilities
      */
     private array $events = [];
 
-    private function recordThat(object $event): void
-    {
-        $this->events[] = $event;
-    }
-
     /**
      * @return array<object>
      */
@@ -25,5 +21,10 @@ trait EventRecordingCapabilities
         $this->events = [];
 
         return $events;
+    }
+
+    private function recordThat(object $event): void
+    {
+        $this->events[] = $event;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\ExternalEvents;
@@ -18,9 +19,6 @@ final class ExternalEventConsumersFactory
 
         $serviceIds = $config['external_event_consumers'] ?? [];
 
-        return array_map(
-            fn (string $id) => $container->get($id),
-            $serviceIds
-        );
+        return array_map(fn (string $id) => $container->get($id), $serviceIds);
     }
 }

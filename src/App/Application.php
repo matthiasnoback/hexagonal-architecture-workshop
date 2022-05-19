@@ -40,9 +40,7 @@ final class Application implements ApplicationInterface
 
         $this->userRepository->save($user);
 
-        $this->eventDispatcher->dispatchAll(
-            $user->releaseEvents()
-        );
+        $this->eventDispatcher->dispatchAll($user->releaseEvents());
 
         return $user->userId()
             ->asString();

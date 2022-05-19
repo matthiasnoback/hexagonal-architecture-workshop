@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace AppTest;
@@ -9,6 +10,11 @@ use Symfony\Component\BrowserKit\Response;
 
 final class SuccessfulResponse extends Constraint
 {
+    public function toString(): string
+    {
+        return ' was a successful response';
+    }
+
     protected function matches($other): bool
     {
         Assertion::isInstanceOf($other, Response::class);
@@ -33,17 +39,11 @@ final class SuccessfulResponse extends Constraint
         $content = $other->getContent();
         $endOfErrorMessage = strpos($content, '-->');
         if ($endOfErrorMessage === false) {
-
             $showContent = substr($content, 0, 500);
         } else {
             $showContent = substr($content, 0, $endOfErrorMessage);
         }
 
         return trim($showContent) . ' [...] ' . $this->toString();
-    }
-
-    public function toString(): string
-    {
-        return ' was a successful response';
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\ExternalEvents;
@@ -20,13 +21,13 @@ final class EventStreamConfigProvider
     public function getDependencies(): array
     {
         return [
-            'factories'  => [
-                Consumer::class => function (ContainerInterface $container) {
-                    return new Consumer($this->getStreamFilePath($container));
-                },
-                Producer::class => function (ContainerInterface $container) {
-                    return new Producer($this->getStreamFilePath($container));
-                },
+            'factories' => [
+                Consumer::class => fn (ContainerInterface $container) => new Consumer($this->getStreamFilePath(
+                    $container
+                )),
+                Producer::class => fn (ContainerInterface $container) => new Producer($this->getStreamFilePath(
+                    $container
+                )),
             ],
         ];
     }

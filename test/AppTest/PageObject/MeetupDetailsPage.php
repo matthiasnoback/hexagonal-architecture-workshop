@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AppTest\PageObject;
 
-use AppTest\SuccessfulResponse;
-use PHPUnit\Framework\Assert;
 use Symfony\Component\BrowserKit\HttpBrowser;
 
 final class MeetupDetailsPage extends AbstractPageObject

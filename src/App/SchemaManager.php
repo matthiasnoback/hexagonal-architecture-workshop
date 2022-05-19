@@ -18,7 +18,8 @@ final class SchemaManager
     public function updateSchema(): void
     {
         $schemaDiff = (new Comparator())->compare(
-            $this->connection->getSchemaManager()->createSchema(),
+            $this->connection->getSchemaManager()
+                ->createSchema(),
             $this->provideSchema()
         );
 
@@ -98,7 +99,9 @@ final class SchemaManager
         ]);
         $outboxTable->addColumn('messageType', 'string');
         $outboxTable->addColumn('messageData', 'string');
-        $outboxTable->addColumn('wasPublished', 'integer', ['default' => 0]);
+        $outboxTable->addColumn('wasPublished', 'integer', [
+            'default' => 0,
+        ]);
         $outboxTable->setPrimaryKey(['messageId']);
 
         return $schema;
