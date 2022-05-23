@@ -12,14 +12,13 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\CouldNotFindMeetup;
+use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Rsvp;
-use MeetupOrganizing\Entity\RsvpId;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
-use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
-use RuntimeException;
 
 final class Application implements ApplicationInterface
 {
@@ -56,39 +55,47 @@ final class Application implements ApplicationInterface
 
     public function rsvpForMeetup(RsvpForMeetup $command): void
     {
-        $statement = $this->connection
-            ->createQueryBuilder()
-            ->select('*')
-            ->from('meetups')
-            ->where('meetupId = :meetupId')
-            ->setParameter('meetupId', $command->meetupId())
-            ->execute();
-        Assert::that($statement)->isInstanceOf(Statement::class);
+        try {
+            $rsvp = $this->rsvpRepository->getByMeetupAndUserId($command->meetupId(), $command->userId());
 
-        $record = $statement->fetchAssociative();
+            $rsvp->yes();
+        } catch (CouldNotFindRsvp) {
+            $statement = $this->connection
+                ->createQueryBuilder()
+                ->select('*')
+                ->from('meetups')
+                ->where('meetupId = :meetupId')
+                ->setParameter('meetupId', $command->meetupId())
+                ->execute();
+            Assert::that($statement)->isInstanceOf(Statement::class);
 
-        if ($record === false) {
-            throw new RuntimeException('Meetup not found');
+            $record = $statement->fetchAssociative();
+
+            if ($record === false) {
+                throw CouldNotFindMeetup::withId($command->meetupId());
+            }
+
+            $rsvp = Rsvp::forMeetup(
+                $this->rsvpRepository->nextIdentity(),
+                $command->meetupId(),
+                $command->userId()
+            );
         }
 
-        $rsvp = Rsvp::create(
-            $this->rsvpRepository->nextIdentity(),
-            $command->meetupId(), $command->userId()
-        );
         $this->rsvpRepository->save($rsvp);
 
-        $this->eventDispatcher->dispatch(
-            new UserHasRsvpd($command->meetupId(), $command->userId(), $rsvp->rsvpId())
+        $this->eventDispatcher->dispatchAll(
+            $rsvp->releaseEvents()
         );
     }
 
-    public function cancelRsvp(string $rsvpId, string $userId): void
+    public function cancelRsvp(string $meetupId, string $userId): void
     {
-        $rsvp = $this->rsvpRepository->getById(RsvpId::fromString($rsvpId));
+        $userId = UserId::fromString($userId);
 
-        $user = $this->userRepository->getById(UserId::fromString($userId));
+        $rsvp = $this->rsvpRepository->getByMeetupAndUserId($meetupId, $userId);
 
-        $rsvp->cancel($user->userId());
+        $rsvp->no();
 
         $this->rsvpRepository->save($rsvp);
 

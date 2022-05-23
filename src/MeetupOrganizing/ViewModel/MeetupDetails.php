@@ -7,7 +7,7 @@ namespace MeetupOrganizing\ViewModel;
 final class MeetupDetails
 {
     /**
-     * @param array<Rsvp> $rsvps
+     * @param array<string,string> $rsvps
      */
     public function __construct(
         private readonly string $meetupId,
@@ -45,10 +45,15 @@ final class MeetupDetails
     }
 
     /**
-     * @return array<Rsvp>
+     * @return array<string,string>
      */
     public function rsvps(): array
     {
         return $this->rsvps;
+    }
+
+    public function hasRsvpedForMeetup(string $userId): bool
+    {
+        return isset($this->rsvps[$userId]);
     }
 }

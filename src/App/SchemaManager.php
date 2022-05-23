@@ -78,7 +78,7 @@ final class SchemaManager
         $rsvpsTable->addColumn('rsvpId', 'string');
         $rsvpsTable->addColumn('meetupId', 'string');
         $rsvpsTable->addColumn('userId', 'string');
-        $rsvpsTable->addColumn('wasCancelled', 'integer');
+        $rsvpsTable->addColumn('answer', 'string');
         $rsvpsTable->setPrimaryKey(['rsvpId']);
 
         $billingOrganizersTable = $schema->createTable('billing_organizers');

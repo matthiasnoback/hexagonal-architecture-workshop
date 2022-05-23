@@ -48,6 +48,14 @@ final class Session
         }
     }
 
+    public function getLoggedInUserId(): ?string
+    {
+        $userId = $this->sessionData[self::LOGGED_IN_USER_ID] ?? null;
+        Assert::that($userId)->nullOr()->string();
+
+        return $userId;
+    }
+
     public function isLoggedInUserAdmin(): bool
     {
         return $this->isLoggedInUserType(UserType::Administrator);

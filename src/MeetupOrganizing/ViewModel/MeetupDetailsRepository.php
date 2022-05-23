@@ -6,6 +6,7 @@ namespace MeetupOrganizing\ViewModel;
 
 use App\Mapping;
 use Doctrine\DBAL\Connection;
+use MeetupOrganizing\Entity\Answer;
 use RuntimeException;
 
 final class MeetupDetailsRepository
@@ -26,8 +27,8 @@ final class MeetupDetailsRepository
         }
 
         $rsvpRecords = $this->connection->fetchAllAssociative(
-            'SELECT r.rsvpId, r.userId, u.name as userName FROM rsvps r INNER JOIN users u ON r.userId = u.userId WHERE r.meetupId = ? AND r.wasCancelled = 0',
-            [$meetupId]
+            'SELECT r.rsvpId, r.userId, u.name as userName FROM rsvps r INNER JOIN users u ON r.userId = u.userId WHERE r.meetupId = ? AND r.answer = ?',
+            [$meetupId, Answer::Yes->value]
         );
 
         return new MeetupDetails(
@@ -36,13 +37,9 @@ final class MeetupDetailsRepository
             Mapping::getString($record, 'description'),
             Mapping::getString($record, 'scheduledFor'),
             new Organizer(Mapping::getString($record, 'organizerId'), Mapping::getString($record, 'organizerName')),
-            array_map(
-                fn (array $rsvpRecord) => new Rsvp(
-                    Mapping::getString($rsvpRecord, 'rsvpId'),
-                    Mapping::getString($rsvpRecord, 'userId'),
-                    Mapping::getString($rsvpRecord, 'userName'),
-                ),
-                $rsvpRecords
+            array_combine(
+                array_column($rsvpRecords, 'userId'),
+                array_column($rsvpRecords, 'userName'),
             ),
         );
     }

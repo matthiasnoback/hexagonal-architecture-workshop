@@ -28,14 +28,14 @@ final class CancelRsvpHandler implements RequestHandlerInterface
         $postData = $request->getParsedBody();
         Assert::that($postData)->isArray();
 
-        if (! isset($postData['rsvpId'], $postData['meetupId'])) {
+        if (! isset($postData['meetupId'])) {
             throw new RuntimeException('Bad request');
         }
 
         $user = $this->session->getLoggedInUser();
         Assert::that($user)->notNull('You need to be logged in');
 
-        $this->application->cancelRsvp($postData['rsvpId'], $user->userId()->asString());
+        $this->application->cancelRsvp($postData['meetupId'], $user->userId()->asString());
 
         return new RedirectResponse(
             $this->router->generateUri('meetup_details', [

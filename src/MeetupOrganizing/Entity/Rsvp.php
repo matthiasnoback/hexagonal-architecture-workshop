@@ -7,55 +7,59 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\EventRecordingCapabilities;
 use App\Entity\UserId;
 use App\Mapping;
-use RuntimeException;
 
 final class Rsvp
 {
     use EventRecordingCapabilities;
 
-    private bool $wasCancelled = false;
-
     private function __construct(
         private readonly RsvpId $rsvpId,
         private readonly string $meetupId,
-        private readonly UserId $userId
+        private readonly UserId $userId,
+        private Answer $answer,
     ) {
     }
 
-    public static function create(RsvpId $rsvpId, string $meetupId, UserId $userId): self
+    public static function forMeetup(RsvpId $rsvpId, string $meetupId, UserId $userId): self
     {
-        return new self($rsvpId, $meetupId, $userId);
+        $rsvp = new self($rsvpId, $meetupId, $userId, Answer::Unknown);
+
+        $rsvp->yes();
+
+        return $rsvp;
+    }
+
+    public function yes(): void
+    {
+        if ($this->answer !== Answer::Yes) {
+            $this->answer = Answer::Yes;
+
+            $this->recordThat(new UserHasRsvpd($this->meetupId, $this->userId, $this->rsvpId));
+        }
+    }
+
+    public function no(): void
+    {
+        if ($this->answer !== Answer::No) {
+            $this->answer = Answer::No;
+
+            $this->recordThat(new RsvpWasCancelled($this->rsvpId));
+        }
     }
 
     public static function fromDatabaseRecord(array $record): self
     {
-        $rsvp = new self(
+        return new self(
             RsvpId::fromString(Mapping::getString($record, 'rsvpId')),
             Mapping::getString($record, 'meetupId'),
             UserId::fromString(Mapping::getString($record, 'userId')),
+            Answer::from(Mapping::getString($record, 'answer')),
         );
-
-        $rsvp->wasCancelled = (bool) Mapping::getInt($record, 'wasCancelled');
-
-        return $rsvp;
     }
 
     public function rsvpId(): RsvpId
     {
         return $this->rsvpId;
-    }
-
-    public function cancel(UserId $cancelledBy): void
-    {
-        if (!$this->userId->equals($cancelledBy)) {
-            throw new RuntimeException(sprintf('User "%s" can not cancel this RSVP', $cancelledBy->asString()));
-        }
-
-        $this->wasCancelled = true;
-
-        $this->recordThat(
-            new RsvpWasCancelled($this->rsvpId)
-        );
     }
 
     public function meetupId(): string
@@ -77,7 +81,7 @@ final class Rsvp
             'rsvpId' => $this->rsvpId->asString(),
             'meetupId' => $this->meetupId,
             'userId' => $this->userId()->asString(),
-            'wasCancelled' => (int) $this->wasCancelled,
+            'answer' => $this->answer->value,
         ];
     }
 }

@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Infrastructure;
 
+use App\Entity\UserId;
 use Doctrine\DBAL\Connection;
+use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpId;
 use MeetupOrganizing\Entity\RsvpRepository;
@@ -46,6 +48,23 @@ final class RsvpRepositoryUsingDbal implements RsvpRepository
         return RsvpId::fromString(Uuid::uuid4()->toString());
     }
 
+    public function getByMeetupAndUserId(string $meetupId, UserId $userId): Rsvp
+    {
+        $record = $this->connection->fetchAssociative(
+            'SELECT * FROM rsvps WHERE meetupId = ? AND userId = ?',
+            [$meetupId, $userId->asString()]
+        );
+        if ($record === false) {
+            throw CouldNotFindRsvp::withMeetupAndUserId($meetupId, $userId);
+        }
+
+        $rsvp =  Rsvp::fromDatabaseRecord($record);
+
+        $this->savedRsvpIds[$rsvp->rsvpId()->asString()] = true;
+
+        return $rsvp;
+    }
+
     public function getById(RsvpId $rsvpId): Rsvp
     {
         $record = $this->connection->fetchAssociative(
@@ -53,11 +72,13 @@ final class RsvpRepositoryUsingDbal implements RsvpRepository
             [$rsvpId->asString()]
         );
         if ($record === false) {
-            throw new RuntimeException(sprintf('RSVP with ID "%s" found', $rsvpId->asString()));
+            throw CouldNotFindRsvp::withId($rsvpId);
         }
 
-        $this->savedRsvpIds[$rsvpId->asString()] = true;
+        $rsvp =  Rsvp::fromDatabaseRecord($record);
 
-        return Rsvp::fromDatabaseRecord($record);
+        $this->savedRsvpIds[$rsvp->rsvpId()->asString()] = true;
+
+        return $rsvp;
     }
 }
