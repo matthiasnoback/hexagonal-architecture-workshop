@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\User;
+use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -12,7 +13,9 @@ use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\Rsvp;
+use MeetupOrganizing\Entity\RsvpId;
 use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
@@ -68,11 +71,29 @@ final class Application implements ApplicationInterface
             throw new RuntimeException('Meetup not found');
         }
 
-        $rsvp = Rsvp::create($command->meetupId(), $command->userId());
+        $rsvp = Rsvp::create(
+            $this->rsvpRepository->nextIdentity(),
+            $command->meetupId(), $command->userId()
+        );
         $this->rsvpRepository->save($rsvp);
 
         $this->eventDispatcher->dispatch(
             new UserHasRsvpd($command->meetupId(), $command->userId(), $rsvp->rsvpId())
+        );
+    }
+
+    public function cancelRsvp(string $rsvpId, string $userId): void
+    {
+        $rsvp = $this->rsvpRepository->getById(RsvpId::fromString($rsvpId));
+
+        $user = $this->userRepository->getById(UserId::fromString($userId));
+
+        $rsvp->cancel($user->userId());
+
+        $this->rsvpRepository->save($rsvp);
+
+        $this->eventDispatcher->dispatch(
+            new RsvpWasCancelled($rsvp->rsvpId())
         );
     }
 }

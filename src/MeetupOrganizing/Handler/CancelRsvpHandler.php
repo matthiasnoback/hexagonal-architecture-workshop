@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
@@ -15,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
-final class RsvpForMeetupHandler implements RequestHandlerInterface
+final class CancelRsvpHandler implements RequestHandlerInterface
 {
     public function __construct(
         private readonly Session $session,
@@ -29,14 +28,14 @@ final class RsvpForMeetupHandler implements RequestHandlerInterface
         $postData = $request->getParsedBody();
         Assert::that($postData)->isArray();
 
-        if (! isset($postData['meetupId'])) {
+        if (! isset($postData['rsvpId'], $postData['meetupId'])) {
             throw new RuntimeException('Bad request');
         }
 
         $user = $this->session->getLoggedInUser();
         Assert::that($user)->notNull('You need to be logged in');
 
-        $this->application->rsvpForMeetup(new RsvpForMeetup($postData['meetupId'], $user->userId()->asString()));
+        $this->application->cancelRsvp($postData['rsvpId'], $user->userId()->asString());
 
         return new RedirectResponse(
             $this->router->generateUri('meetup_details', [

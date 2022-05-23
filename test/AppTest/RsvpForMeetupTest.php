@@ -25,11 +25,24 @@ final class RsvpForMeetupTest extends AbstractBrowserTest
         $this->listOfAttendeesShouldContain('Coding Dojo', 'Regular user');
     }
 
-    private function rsvpForMeetup(string $name): void
+    public function testCancelRsvp(): void
     {
-        $this->listMeetupsPage()
-            ->upcomingMeetup($name)
-            ->readMore($this->browser)
-            ->rsvpToMeetup($this->browser);
+        $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
+        $this->login('organizer@gmail.com');
+
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+
+        $this->logout();
+
+        $this->signUp('Regular user', 'user@gmail.com', 'RegularUser');
+        $this->login('user@gmail.com');
+
+        $this->rsvpForMeetup('Coding Dojo');
+
+        $this->listOfAttendeesShouldContain('Coding Dojo', 'Regular user');
+
+        $this->cancelRsvp('Coding Dojo');
+
+        $this->listOfAttendeesShouldNotContain('Coding Dojo', 'Regular user');
     }
 }

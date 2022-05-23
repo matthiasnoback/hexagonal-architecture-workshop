@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Entity\CouldNotFindUser;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
@@ -39,7 +40,12 @@ final class Session
         $loggedInUserId = $this->sessionData[self::LOGGED_IN_USER_ID];
         Assert::that($loggedInUserId)->string();
 
-        return $this->userRepository->getById(UserId::fromString($loggedInUserId));
+        try {
+            return $this->userRepository->getById(UserId::fromString($loggedInUserId));
+        } catch (CouldNotFindUser) {
+            $this->logout();
+            return null;
+        }
     }
 
     public function isLoggedInUserAdmin(): bool

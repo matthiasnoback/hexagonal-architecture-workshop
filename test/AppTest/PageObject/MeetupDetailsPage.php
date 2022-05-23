@@ -31,17 +31,28 @@ final class MeetupDetailsPage extends AbstractPageObject
     {
         return array_map(
             fn (DOMNode $node) => trim($node->textContent),
-            iterator_to_array($this->crawler->filter('.attendees li'))
+            iterator_to_array($this->crawler->filter('.attendees li .name'))
         );
     }
 
     public function rescheduleMeetup(HttpBrowser $browser): RescheduleMeetupPage
     {
-        return new RescheduleMeetupPage($browser->clickLink('Reschedule this meetup'));
+        $page = new RescheduleMeetupPage($browser->clickLink('Reschedule this meetup'));
+
+        self::assertSuccessfulResponse($browser);
+
+        return $page;
     }
 
     public function assertScheduledFor(string $expected): void
     {
         Assert::assertEquals($expected, trim($this->crawler->filter('.meetup-scheduled-for')->text()));
+    }
+
+    public function cancelRsvp(HttpBrowser $browser): void
+    {
+        $browser->submitForm('Cancel RSVP');
+
+        self::assertSuccessfulResponse($browser);
     }
 }

@@ -1,12 +1,11 @@
 <?php
-
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace MeetupOrganizing\Entity;
 
 use Assert\Assert;
 
-final class UserId
+final class RsvpId
 {
     private function __construct(
         private readonly string $id
@@ -22,10 +21,5 @@ final class UserId
     public function asString(): string
     {
         return $this->id;
-    }
-
-    public function equals(UserId $other): bool
-    {
-        return $this->id === $other->id;
     }
 }

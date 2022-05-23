@@ -15,4 +15,6 @@ interface ApplicationInterface
     public function meetupDetails(string $id): MeetupDetails;
 
     public function rsvpForMeetup(RsvpForMeetup $command): void;
+
+    public function cancelRsvp(string $rsvpId, string $userId): void;
 }

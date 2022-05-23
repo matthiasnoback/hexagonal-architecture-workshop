@@ -33,11 +33,13 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
+use MeetupOrganizing\Handler\CancelRsvpHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -121,6 +123,11 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
+                CancelRsvpHandler::class => fn (ContainerInterface $container) => new CancelRsvpHandler(
+                    $container->get(Session::class),
+                    $container->get(RouterInterface::class),
+                    $container->get(ApplicationInterface::class),
+                ),
                 ListOrganizersHandler::class => fn (ContainerInterface $container) => new ListOrganizersHandler(
                     $container->get(Connection::class),
                     $container->get(TemplateRendererInterface::class)
@@ -156,7 +163,7 @@ class ConfigProvider
                 UserRepository::class => fn (ContainerInterface $container) => new UserRepositoryUsingDbal(
                     $container->get(Connection::class)
                 ),
-                RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepository($container->get(
+                RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepositoryUsingDbal($container->get(
                     Connection::class
                 )),
                 MeetupDetailsRepository::class => fn (ContainerInterface $container) => new MeetupDetailsRepository(

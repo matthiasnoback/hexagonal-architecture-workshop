@@ -46,17 +46,13 @@ abstract class AbstractBrowserTest extends TestCase
 
     protected function cancelMeetup(string $name): void
     {
-        $this->listMeetupsPage()
-            ->upcomingMeetup($name)
-            ->readMore($this->browser)
+        $this->meetupDetails($name)
             ->cancelMeetup($this->browser);
     }
 
     protected function rescheduleMeetup(string $name, string $date, string $time): void
     {
-        $this->listMeetupsPage()
-            ->upcomingMeetup($name)
-            ->readMore($this->browser)
+        $this->meetupDetails($name)
             ->rescheduleMeetup($this->browser)
             ->reschedule($this->browser, $date, $time);
     }
@@ -104,14 +100,36 @@ abstract class AbstractBrowserTest extends TestCase
         $this->browser->request('POST', '/logout');
     }
 
+    protected function rsvpForMeetup(string $name): void
+    {
+        $this->meetupDetails($name)->rsvpToMeetup($this->browser);
+    }
+
+    protected function cancelRsvp(string $name): void
+    {
+        $this->meetupDetails($name)->cancelRsvp($this->browser);
+    }
+
     protected function listOfAttendeesShouldContain(string $meetupName, string $attendeeName): void
     {
         self::assertContains(
             $attendeeName,
-            $this->listMeetupsPage()
-                ->upcomingMeetup($meetupName)
-                ->readMore($this->browser)
-                ->attendees()
+            $this->meetupDetails($meetupName)->attendees()
         );
+    }
+
+    protected function listOfAttendeesShouldNotContain(string $meetupName, string $attendeeName): void
+    {
+        self::assertNotContains(
+            $attendeeName,
+            $this->meetupDetails($meetupName)->attendees()
+        );
+    }
+
+    private function meetupDetails(string $meetupName): PageObject\MeetupDetailsPage
+    {
+        return $this->listMeetupsPage()
+            ->upcomingMeetup($meetupName)
+            ->readMore($this->browser);
     }
 }

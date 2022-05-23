@@ -9,10 +9,19 @@
     <p>{{ meetupDetails.description }}</p>
 
     <h3>Attendees</h3>
-    {% if meetupDetails.attendeeNames|length > 0 %}
+    {% if meetupDetails.rsvps|length > 0 %}
         <ul class="attendees">
-        {% for attendeeName in meetupDetails.attendeeNames %}
-            <li>{{ attendeeName }}</li>
+        {% for rsvp in meetupDetails.rsvps %}
+            <li>
+                <span class="name">{{ rsvp.userName }}</span>
+                {% if session.isLoggedInUser(rsvp.userId) %}
+                    <form action="{{ path('cancel_rsvp') }}" method="post">
+                        <input type="hidden" name="rsvpId" value="{{ rsvp.rsvpId }}">
+                        <input type="hidden" name="meetupId" value="{{ meetupDetails.meetupId }}">
+                        <button class="btn btn-sm btn-danger">Cancel RSVP</button>
+                    </form>
+                {% endif %}
+            </li>
         {% endfor %}
         </ul>
     {% else %}

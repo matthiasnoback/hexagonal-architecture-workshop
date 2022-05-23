@@ -12,7 +12,7 @@ final class UserHasRsvpd
     public function __construct(
         private readonly string $meetupId,
         private readonly UserId $userId,
-        private readonly UuidInterface $rsvpId
+        private readonly RsvpId $rsvpId
     ) {
     }
 
@@ -21,7 +21,7 @@ final class UserHasRsvpd
         return $this->meetupId;
     }
 
-    public function rsvpId(): UuidInterface
+    public function rsvpId(): RsvpId
     {
         return $this->rsvpId;
     }

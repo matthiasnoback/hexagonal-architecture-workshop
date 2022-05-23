@@ -58,7 +58,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
             if ($formErrors === []) {
                 $user = $this->session->getLoggedInUser();
-                Assert::that($user)->notNull();
+                Assert::that($user)->notNull('You need to be logged in');
 
                 $record = [
                     'organizerId' => $user
