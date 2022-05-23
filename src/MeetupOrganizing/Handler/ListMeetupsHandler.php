@@ -22,7 +22,7 @@ final class ListMeetupsHandler implements RequestHandlerInterface
 
     public function handle(Request $request): ResponseInterface
     {
-        $now = new DateTimeImmutable();
+        $now = new DateTimeImmutable($_SERVER['HTTP_CURRENT_TIME'] ?? 'now');
 
         $showPastMeetups = ($request->getQueryParams()['showPastMeetups'] ?? 'no') === 'yes';
 

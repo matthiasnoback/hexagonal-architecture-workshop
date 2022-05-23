@@ -11,6 +11,8 @@ use AppTest\PageObject\LoginPage;
 use AppTest\PageObject\MeetupSnippet;
 use AppTest\PageObject\ScheduleMeetupPage;
 use AppTest\PageObject\SignUpPage;
+use DateTimeImmutable;
+use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -36,6 +38,7 @@ abstract class AbstractBrowserTest extends TestCase
 
         self::$baseUri = 'http://web_testing:80';
         $this->browser = self::createHttpBrowserClient();
+        $this->setServerTime(new DateTimeImmutable());
     }
 
     protected function scheduleMeetup(string $name, string $description, string $date, string $time): void
@@ -127,5 +130,15 @@ abstract class AbstractBrowserTest extends TestCase
         return $this->listMeetupsPage()
             ->upcomingMeetup($meetupName)
             ->readMore($this->browser);
+    }
+
+    protected function setServerTime(DateTimeImmutable $dateTime): void
+    {
+        self::assertInstanceOf(HttpBrowser::class, self::$httpBrowserClient);
+
+        self::$httpBrowserClient->setServerParameter(
+            'HTTP_CURRENT_TIME',
+            $dateTime->format(DateTimeInterface::ATOM)
+        );
     }
 }
