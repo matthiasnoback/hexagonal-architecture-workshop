@@ -3,6 +3,7 @@
 {% block title %}{{ meetupDetails.name }}{% endblock %}
 
 {% block content %}
+    <p><a href="{{ path('list_meetups') }}">&laquo; Back to the list</a></p>
     <h2>{{ meetupDetails.organizer.name }} presents: {{ meetupDetails.name }}</h2>
 
     <p class="meetup-scheduled-for"><small>{{ meetupDetails.scheduledFor|date() }}</small></p>
