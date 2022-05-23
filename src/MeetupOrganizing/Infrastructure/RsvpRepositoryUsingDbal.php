@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MeetupOrganizing\Infrastructure;
@@ -10,7 +11,6 @@ use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpId;
 use MeetupOrganizing\Entity\RsvpRepository;
 use Ramsey\Uuid\Uuid;
-use RuntimeException;
 
 final class RsvpRepositoryUsingDbal implements RsvpRepository
 {
@@ -31,14 +31,12 @@ final class RsvpRepositoryUsingDbal implements RsvpRepository
                 'rsvps',
                 $rsvp->asDatabaseRecord(),
                 [
-                    'rsvpId' => $rsvp->rsvpId()->asString()
+                    'rsvpId' => $rsvp->rsvpId()
+                        ->asString(),
                 ]
             );
         } else {
-            $this->connection->insert(
-                'rsvps',
-                $rsvp->asDatabaseRecord(),
-            );
+            $this->connection->insert('rsvps', $rsvp->asDatabaseRecord(),);
             $this->savedRsvpIds[$rsvp->rsvpId()->asString()] = true;
         }
     }
@@ -58,24 +56,7 @@ final class RsvpRepositoryUsingDbal implements RsvpRepository
             throw CouldNotFindRsvp::withMeetupAndUserId($meetupId, $userId);
         }
 
-        $rsvp =  Rsvp::fromDatabaseRecord($record);
-
-        $this->savedRsvpIds[$rsvp->rsvpId()->asString()] = true;
-
-        return $rsvp;
-    }
-
-    public function getById(RsvpId $rsvpId): Rsvp
-    {
-        $record = $this->connection->fetchAssociative(
-            'SELECT * FROM rsvps WHERE rsvpId = ?',
-            [$rsvpId->asString()]
-        );
-        if ($record === false) {
-            throw CouldNotFindRsvp::withId($rsvpId);
-        }
-
-        $rsvp =  Rsvp::fromDatabaseRecord($record);
+        $rsvp = Rsvp::fromDatabaseRecord($record);
 
         $this->savedRsvpIds[$rsvp->rsvpId()->asString()] = true;
 

@@ -84,9 +84,7 @@ final class Application implements ApplicationInterface
 
         $this->rsvpRepository->save($rsvp);
 
-        $this->eventDispatcher->dispatchAll(
-            $rsvp->releaseEvents()
-        );
+        $this->eventDispatcher->dispatchAll($rsvp->releaseEvents());
     }
 
     public function cancelRsvp(string $meetupId, string $userId): void
@@ -99,8 +97,6 @@ final class Application implements ApplicationInterface
 
         $this->rsvpRepository->save($rsvp);
 
-        $this->eventDispatcher->dispatch(
-            new RsvpWasCancelled($rsvp->rsvpId())
-        );
+        $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
 }

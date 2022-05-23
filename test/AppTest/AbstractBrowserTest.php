@@ -102,28 +102,24 @@ abstract class AbstractBrowserTest extends TestCase
 
     protected function rsvpForMeetup(string $name): void
     {
-        $this->meetupDetails($name)->rsvpToMeetup($this->browser);
+        $this->meetupDetails($name)
+            ->rsvpToMeetup($this->browser);
     }
 
     protected function cancelRsvp(string $name): void
     {
-        $this->meetupDetails($name)->cancelRsvp($this->browser);
+        $this->meetupDetails($name)
+            ->cancelRsvp($this->browser);
     }
 
     protected function listOfAttendeesShouldContain(string $meetupName, string $attendeeName): void
     {
-        self::assertContains(
-            $attendeeName,
-            $this->meetupDetails($meetupName)->attendees()
-        );
+        self::assertContains($attendeeName, $this->meetupDetails($meetupName) ->attendees());
     }
 
     protected function listOfAttendeesShouldNotContain(string $meetupName, string $attendeeName): void
     {
-        self::assertNotContains(
-            $attendeeName,
-            $this->meetupDetails($meetupName)->attendees()
-        );
+        self::assertNotContains($attendeeName, $this->meetupDetails($meetupName) ->attendees());
     }
 
     private function meetupDetails(string $meetupName): PageObject\MeetupDetailsPage

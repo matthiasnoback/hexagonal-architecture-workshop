@@ -24,7 +24,7 @@ final class UserId
         return $this->id;
     }
 
-    public function equals(UserId $other): bool
+    public function equals(self $other): bool
     {
         return $this->id === $other->id;
     }

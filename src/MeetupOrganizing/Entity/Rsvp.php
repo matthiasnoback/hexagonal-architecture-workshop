@@ -80,7 +80,8 @@ final class Rsvp
         return [
             'rsvpId' => $this->rsvpId->asString(),
             'meetupId' => $this->meetupId,
-            'userId' => $this->userId()->asString(),
+            'userId' => $this->userId()
+                ->asString(),
             'answer' => $this->answer->value,
         ];
     }

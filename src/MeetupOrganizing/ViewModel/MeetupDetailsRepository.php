@@ -37,10 +37,7 @@ final class MeetupDetailsRepository
             Mapping::getString($record, 'description'),
             Mapping::getString($record, 'scheduledFor'),
             new Organizer(Mapping::getString($record, 'organizerId'), Mapping::getString($record, 'organizerName')),
-            array_combine(
-                array_column($rsvpRecords, 'userId'),
-                array_column($rsvpRecords, 'userName'),
-            ),
+            array_combine(array_column($rsvpRecords, 'userId'), array_column($rsvpRecords, 'userName'),),
         );
     }
 }

@@ -163,9 +163,11 @@ class ConfigProvider
                 UserRepository::class => fn (ContainerInterface $container) => new UserRepositoryUsingDbal(
                     $container->get(Connection::class)
                 ),
-                RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepositoryUsingDbal($container->get(
+                RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepositoryUsingDbal(
+                    $container->get(
                     Connection::class
-                )),
+                )
+                ),
                 MeetupDetailsRepository::class => fn (ContainerInterface $container) => new MeetupDetailsRepository(
                     $container->get(Connection::class)
                 ),

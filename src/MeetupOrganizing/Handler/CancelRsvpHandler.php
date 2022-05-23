@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
@@ -7,7 +8,6 @@ use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
 use Laminas\Diactoros\Response\RedirectResponse;
-use MeetupOrganizing\Application\RsvpForMeetup;
 use Mezzio\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

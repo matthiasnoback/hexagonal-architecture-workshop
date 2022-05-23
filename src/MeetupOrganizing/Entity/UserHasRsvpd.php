@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use App\Entity\UserId;
-use Ramsey\Uuid\UuidInterface;
 
 final class UserHasRsvpd
 {

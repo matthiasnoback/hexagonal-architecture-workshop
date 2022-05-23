@@ -12,10 +12,6 @@ interface RsvpRepository
 
     public function nextIdentity(): RsvpId;
 
-    public function getById(RsvpId $rsvpId): Rsvp;
 
-    /**
-     *
-     */
     public function getByMeetupAndUserId(string $meetupId, UserId $userId): Rsvp;
 }
