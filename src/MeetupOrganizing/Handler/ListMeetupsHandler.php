@@ -34,11 +34,11 @@ final class ListMeetupsHandler implements RequestHandlerInterface
             $parameters[] = $now->format('Y-m-d H:i');
         }
 
-        $upcomingMeetups = $this->connection->fetchAllAssociative($query, $parameters);
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
 
         return new HtmlResponse(
             $this->renderer->render('app::list-meetups.html.twig', [
-                'upcomingMeetups' => $upcomingMeetups,
+                'meetups' => $meetups,
                 'showPastMeetups' => $showPastMeetups,
             ])
         );
