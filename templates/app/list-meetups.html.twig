@@ -7,7 +7,17 @@
         <p><a href="{{ path("schedule_meetup") }}" class="btn btn-primary">Schedule meetup</a></p>
     {% endif %}
 
-    <h1>Upcoming meetups</h1>
+    <h1>Meetups</h1>
+
+    <form action="#" method="get" class="form-inline mb-3">
+        <div class="form-check mr-3">
+            <input type="checkbox" value="yes" id="showPastMeetups" name="showPastMeetups" class="form-check-input"{% if showPastMeetups %} checked{% endif %}>
+            <label class="form-check-label" for="showPastMeetups">Show past meetups</label>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-outline-primary">Update list</button>
+        </div>
+    </form>
 
     <div class="upcoming-meetups">
     {% for meetup in upcomingMeetups %}
@@ -28,7 +38,7 @@
             </div>
         </div>
     {% else %}
-        <p>No upcoming meetups</p>
+        <p>No meetups found</p>
     {% endfor %}
     </div>
 {% endblock %}

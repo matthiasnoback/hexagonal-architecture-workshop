@@ -26,14 +26,20 @@ final class ListMeetupsHandler implements RequestHandlerInterface
     {
         $now = new DateTimeImmutable();
 
-        $statement = $this->connection->createQueryBuilder()
+        $showPastMeetups = ($request->getQueryParams()['showPastMeetups'] ?? 'no') === 'yes';
+
+        $queryBuilder = $this->connection->createQueryBuilder()
             ->select('*')
             ->from('meetups')
-            ->where('scheduledFor >= :now')
-            ->setParameter('now', $now->format('Y-m-d H:i'))
             ->andWhere('wasCancelled = :wasNotCancelled')
-            ->setParameter('wasNotCancelled', 0)
-            ->execute();
+            ->setParameter('wasNotCancelled', 0);
+
+        if (!$showPastMeetups) {
+            $queryBuilder->andWhere('scheduledFor >= :now')
+                ->setParameter('now', $now->format('Y-m-d H:i'));
+        }
+
+        $statement = $queryBuilder->execute();
         Assert::that($statement)->isInstanceOf(Statement::class);
 
         $upcomingMeetups = $statement->fetchAllAssociative();
@@ -41,6 +47,7 @@ final class ListMeetupsHandler implements RequestHandlerInterface
         return new HtmlResponse(
             $this->renderer->render('app::list-meetups.html.twig', [
                 'upcomingMeetups' => $upcomingMeetups,
+                'showPastMeetups' => $showPastMeetups,
             ])
         );
     }
