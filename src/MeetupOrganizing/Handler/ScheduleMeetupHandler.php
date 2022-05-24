@@ -90,7 +90,8 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                     'formData' => $formData,
                     'formErrors' => $formErrors,
                 ]
-            )
+            ),
+            $formErrors === [] ? 200 : 422
         );
     }
 }

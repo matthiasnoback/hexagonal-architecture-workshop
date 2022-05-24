@@ -41,10 +41,22 @@ abstract class AbstractBrowserTest extends TestCase
         $this->setServerTime(new DateTimeImmutable());
     }
 
+    protected function tearDown(): void
+    {
+        $this->logout();
+    }
+
     protected function scheduleMeetup(string $name, string $description, string $date, string $time): void
     {
         (new ScheduleMeetupPage($this->browser->request('GET', '/schedule-meetup')))
             ->scheduleMeetup($this->browser, $name, $description, $date, $time);
+    }
+
+    protected function scheduleMeetupProducesFormError(string $name, string $description, string $date, string $time, string $expectedError): void
+    {
+        (new ScheduleMeetupPage($this->browser->request('GET', '/schedule-meetup')))
+            ->scheduleMeetupUnsuccessfully($this->browser, $name, $description, $date, $time)
+            ->assertFormErrorsContains($expectedError);
     }
 
     protected function cancelMeetup(string $name): void

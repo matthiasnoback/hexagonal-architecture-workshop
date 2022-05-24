@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppTest\PageObject;
 
 use AppTest\SuccessfulResponse;
+use AppTest\UnsuccessfulResponse;
 use DOMNode;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\BrowserKit\HttpBrowser;
@@ -27,7 +28,7 @@ abstract class AbstractPageObject
         }
 
         return array_map(
-            fn (DOMNode $node) => new static(new Crawler($node, $filter->getUri())),
+            fn(DOMNode $node) => new static(new Crawler($node, $filter->getUri())),
             iterator_to_array($filter)
         );
     }
@@ -35,5 +36,10 @@ abstract class AbstractPageObject
     protected static function assertSuccessfulResponse(HttpBrowser $browser): void
     {
         Assert::assertThat($browser->getInternalResponse(), new SuccessfulResponse());
+    }
+
+    protected static function assertUnsuccessfulResponse(HttpBrowser $browser): void
+    {
+        Assert::assertThat($browser->getInternalResponse(), new UnsuccessfulResponse());
     }
 }
