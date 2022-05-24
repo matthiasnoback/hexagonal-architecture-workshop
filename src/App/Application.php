@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -134,7 +135,7 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($userId));
+        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($userId), new DateTimeImmutable('now'));
 
         $this->meetupRepository->save($meetup);
     }

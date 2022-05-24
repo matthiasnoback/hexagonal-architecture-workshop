@@ -7,6 +7,7 @@ use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assert;
 use DateTimeImmutable;
+use LogicException;
 use RuntimeException;
 
 final class Meetup
@@ -77,8 +78,16 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(ScheduledDate $newDate, UserId $userId): void
+    public function reschedule(ScheduledDate $newDate, UserId $userId, DateTimeImmutable $now): void
     {
+        if ($this->wasCancelled) {
+            throw new LogicException('Can not reschedule a cancelled meetup');
+        }
+
+        if ($newDate->isInThePast($now)) {
+            throw new LogicException('Can not reschedule a meetup that already took place');
+        }
+
         if (!$userId->equals($this->organizerId)) {
             throw new RuntimeException('Only the organizer can cancel');
         }

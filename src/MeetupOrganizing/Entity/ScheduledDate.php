@@ -27,4 +27,9 @@ final class ScheduledDate
     {
         return $this->dateTime->format(self::FORMAT);
     }
+
+    public function isInThePast(DateTimeImmutable $now): bool
+    {
+        return $this->dateTime < $now;
+    }
 }
