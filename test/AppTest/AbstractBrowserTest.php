@@ -149,7 +149,7 @@ abstract class AbstractBrowserTest extends TestCase
         self::assertInstanceOf(HttpBrowser::class, self::$httpBrowserClient);
 
         self::$httpBrowserClient->setServerParameter(
-            'HTTP_CURRENT_TIME',
+            'HTTP_X-CURRENT-TIME',
             $dateTime->format(DateTimeInterface::ATOM)
         );
     }
