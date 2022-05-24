@@ -15,6 +15,7 @@ use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -101,7 +102,15 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
 
-    public function scheduleMeetup(ScheduleMeetup $command): int {
+    public function scheduleMeetup(ScheduleMeetup $command): int
+    {
+        $meetup = Meetup::schedule(
+            $command->organizerId,
+            $command->name,
+            $command->description,
+            $command->scheduledFor,
+        );
+
         $record = [
             'organizerId' => $command->organizerId,
             'name' => $command->name,
@@ -111,6 +120,6 @@ final class Application implements ApplicationInterface
         ];
         $this->connection->insert('meetups', $record);
 
-        return (int) $this->connection->lastInsertId();
+        return (int)$this->connection->lastInsertId();
     }
 }
