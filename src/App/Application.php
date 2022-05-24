@@ -21,6 +21,7 @@ use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -112,7 +113,7 @@ final class Application implements ApplicationInterface
             UserId::fromString($command->organizerId),
             $command->name,
             $command->description,
-            $command->scheduledFor,
+            ScheduledDate::fromString($command->scheduledFor),
         );
 
         $this->meetupRepository->save($meetup);
@@ -133,10 +134,7 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $dateTimeImmutable = \DateTimeImmutable::createFromFormat('Y-m-d H:i', $scheduleFor);
-        Assert::that($dateTimeImmutable)->isInstanceOf(\DateTimeImmutable::class);
-
-        $meetup->reschedule($dateTimeImmutable, UserId::fromString($userId));
+        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($userId));
 
         $this->meetupRepository->save($meetup);
     }
