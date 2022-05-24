@@ -8,9 +8,9 @@ use Assert\Assert;
 final class Meetup
 {
     const SCHEDULED_FOR_FORMAT = 'Y-m-d H:i';
-    private int $meetupId;
 
     private function __construct(
+        private MeetupId $meetupId,
         private string $organizerId,
         private string $name,
         private string $description,
@@ -19,6 +19,7 @@ final class Meetup
     }
 
     public static function schedule(
+        MeetupId $meetupId,
         string $organizerId,
         string $name,
         string $description,
@@ -31,15 +32,7 @@ final class Meetup
         $dt = \DateTimeImmutable::createFromFormat(self::SCHEDULED_FOR_FORMAT, $scheduledFor);
         Assert::that($dt)->isInstanceOf(\DateTimeImmutable::class);
 
-        return new self($organizerId, $name, $description, $dt);
-    }
-
-    /**
-     * @internal Only to be used by MeetupRepository
-     */
-    public function setMeetupId(int $meetupId): void
-    {
-        $this->meetupId = $meetupId;
+        return new self($meetupId, $organizerId, $name, $description, $dt);
     }
 
     /**
@@ -48,6 +41,7 @@ final class Meetup
     public function asDatabaseRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId,
             'name' => $this->name,
             'description' => $this->description,
@@ -56,7 +50,7 @@ final class Meetup
         ];
     }
 
-    public function meetupId(): int
+    public function meetupId(): MeetupId
     {
         return $this->meetupId;
     }

@@ -8,7 +8,6 @@ use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
 use DateTimeImmutable;
-use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use MeetupOrganizing\Application\ScheduleMeetup;
@@ -75,7 +74,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                 return new RedirectResponse(
                     $this->router->generateUri('meetup_details', [
-                        'id' => $meetupId,
+                        'id' => $meetupId->asString(),
                     ])
                 );
             }
