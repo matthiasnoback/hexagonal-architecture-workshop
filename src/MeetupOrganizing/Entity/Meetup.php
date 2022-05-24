@@ -85,4 +85,13 @@ final class Meetup
 
         $this->wasCancelled = true;
     }
+
+    public function reschedule(DateTimeImmutable $newDate, UserId $userId): void
+    {
+        if (!$userId->equals($this->organizerId)) {
+            throw new RuntimeException('Only the organizer can cancel');
+        }
+
+        $this->scheduledFor = $newDate;
+    }
 }

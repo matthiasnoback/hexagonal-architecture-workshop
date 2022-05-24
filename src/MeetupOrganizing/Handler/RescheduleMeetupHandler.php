@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\ApplicationInterface;
 use App\Mapping;
 use App\Session;
 use Assert\Assert;
@@ -27,6 +28,7 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
         private readonly RouterInterface $router,
         private readonly ResponseFactory $responseFactory,
         private readonly TemplateRendererInterface $renderer,
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -35,9 +37,12 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
         $loggedInUser = $this->session->getLoggedInUser();
         Assert::that($loggedInUser)->notNull();
 
+        $meetupId = $request->getAttribute('id');
+        Assert::that($meetupId)->string();
+
         $record = $this->connection->fetchAssociative(
             'SELECT * FROM meetups WHERE meetupId = ?',
-            [$request->getAttribute('id')]
+            [$meetupId]
         );
 
         if ($record === false) {
@@ -67,21 +72,13 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
             }
 
             if ($formErrors === []) {
-                $numberOfAffectedRows = $this->connection->update(
-                    'meetups',
-                    [
-                        'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    ],
-                    [
-                        'meetupId' => $record['meetupId'],
-                        'organizerId' => $loggedInUser->userId()
-                            ->asString(),
-                    ]
+                $this->application->rescheduleMeetup(
+                    $meetupId,
+                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                    $loggedInUser->userId()->asString(),
                 );
 
-                if ($numberOfAffectedRows > 0) {
-                    $this->session->addSuccessFlash('You have rescheduled the meetup');
-                }
+                $this->session->addSuccessFlash('You have rescheduled the meetup');
 
                 return new RedirectResponse($this->router->generateUri('list_meetups'));
             }
