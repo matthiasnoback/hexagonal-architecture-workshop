@@ -16,6 +16,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -30,6 +31,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher $eventDispatcher,
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
+        private readonly MeetupRepository $meetupRepository,
     ) {
     }
 
@@ -111,15 +113,8 @@ final class Application implements ApplicationInterface
             $command->scheduledFor,
         );
 
-        $record = [
-            'organizerId' => $command->organizerId,
-            'name' => $command->name,
-            'description' => $command->description,
-            'scheduledFor' => $command->scheduledFor,
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
+        $this->meetupRepository->save($meetup);
 
-        return (int)$this->connection->lastInsertId();
+        return $meetup->meetupId();
     }
 }
