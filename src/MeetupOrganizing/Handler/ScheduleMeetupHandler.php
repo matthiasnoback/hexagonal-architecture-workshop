@@ -11,6 +11,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\Application\ScheduleMeetup;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -62,10 +63,12 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 Assert::that($user)->notNull('You need to be logged in');
 
                 $meetupId = $this->application->scheduleMeetup(
-                    $user->userId()->asString(),
-                    $formData['name'],
-                    $formData['description'],
-                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                    new ScheduleMeetup(
+                        $user->userId()->asString(),
+                        $formData['name'],
+                        $formData['description'],
+                        $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
+                    ),
                 );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');

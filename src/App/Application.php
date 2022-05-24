@@ -11,6 +11,7 @@ use Assert\Assert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
+use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
@@ -100,17 +101,12 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
 
-    public function scheduleMeetup(
-        string $organizerId,
-        string $name,
-        string $description,
-        string $scheduledFor,
-    ): int {
+    public function scheduleMeetup(ScheduleMeetup $command): int {
         $record = [
-            'organizerId' => $organizerId,
-            'name' => $name,
-            'description' => $description,
-            'scheduledFor' => $scheduledFor,
+            'organizerId' => $command->organizerId,
+            'name' => $command->name,
+            'description' => $command->description,
+            'scheduledFor' => $command->scheduledFor,
             'wasCancelled' => 0,
         ];
         $this->connection->insert('meetups', $record);
