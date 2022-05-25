@@ -38,7 +38,7 @@ abstract class AbstractBrowserTest extends TestCase
 
         self::$baseUri = 'http://web_testing:80';
         $this->browser = self::createHttpBrowserClient();
-        $this->setServerTime(new DateTimeImmutable());
+        $this->setServerTime('now');
     }
 
     protected function tearDown(): void
@@ -144,13 +144,13 @@ abstract class AbstractBrowserTest extends TestCase
             ->readMore($this->browser);
     }
 
-    protected function setServerTime(DateTimeImmutable $dateTime): void
+    protected function setServerTime(string $dateTime): void
     {
         self::assertInstanceOf(HttpBrowser::class, self::$httpBrowserClient);
 
         self::$httpBrowserClient->setServerParameter(
-            'HTTP_X-CURRENT-TIME',
-            $dateTime->format(DateTimeInterface::ATOM)
+            'HTTP_X_CURRENT_TIME',
+            (new DateTimeImmutable($dateTime))->format(DateTimeInterface::ATOM)
         );
     }
 }
