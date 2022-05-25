@@ -39,4 +39,12 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
 
         $this->scheduleMeetupProducesFormError('Some name', '', '2024-10-10', '20:00', 'Provide a description');
     }
+
+    public function testDateShouldNotBeInThePast(): void
+    {
+        $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
+        $this->login('organizer@gmail.com');
+
+        $this->scheduleMeetupProducesFormError('A name', 'A description', '2020-10-10', '20:00', 'A meetup can only be scheduled on a future date');
+    }
 }

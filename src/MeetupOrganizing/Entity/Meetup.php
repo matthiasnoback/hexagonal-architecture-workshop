@@ -12,8 +12,6 @@ use RuntimeException;
 
 final class Meetup
 {
-    const SCHEDULED_FOR_FORMAT = 'Y-m-d H:i';
-
     private function __construct(
         private MeetupId $meetupId,
         private UserId $organizerId,
@@ -33,6 +31,10 @@ final class Meetup
     ): self {
         Assert::that($name)->notBlank();
         Assert::that($description)->notBlank();
+
+        if ($scheduledFor->isInThePast(new DateTimeImmutable('now'))) {
+            throw CouldNotScheduleMeetup::becauseTheDateIsInThePast();
+        }
 
         return new self($meetupId, $organizerId, $name, $description, $scheduledFor, false);
     }
