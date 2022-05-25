@@ -150,7 +150,7 @@ abstract class AbstractBrowserTest extends TestCase
 
         self::$httpBrowserClient->setServerParameter(
             'HTTP_X_CURRENT_TIME',
-            (new DateTimeImmutable($dateTime))->format(DateTimeInterface::ATOM)
+            (new DateTimeImmutable($dateTime))->format(DateTimeInterface::ATOM),
         );
     }
 }

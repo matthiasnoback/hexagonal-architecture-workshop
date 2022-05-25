@@ -28,11 +28,12 @@ final class Meetup
         string $name,
         string $description,
         ScheduledDate $scheduledFor,
+        DateTimeImmutable $now,
     ): self {
         Assert::that($name)->notBlank();
         Assert::that($description)->notBlank();
 
-        if ($scheduledFor->isInThePast(new DateTimeImmutable('now'))) {
+        if ($scheduledFor->isInThePast($now)) {
             throw CouldNotScheduleMeetup::becauseTheDateIsInThePast();
         }
 
