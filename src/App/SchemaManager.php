@@ -56,6 +56,9 @@ final class SchemaManager
         $meetupsTable->addColumn('name', 'string');
         $meetupsTable->addColumn('description', 'string');
         $meetupsTable->addColumn('scheduledFor', 'string');
+        $meetupsTable->addColumn('numberOfAttendees', 'integer', [
+            'default' => 0,
+        ]);
         $meetupsTable->addColumn('wasCancelled', 'integer', [
             'default' => 0,
         ]);
