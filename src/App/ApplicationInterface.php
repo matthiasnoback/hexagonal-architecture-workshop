@@ -9,6 +9,7 @@ use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 interface ApplicationInterface
 {
@@ -25,4 +26,9 @@ interface ApplicationInterface
     public function rescheduleMeetup(string $meetupId, string $scheduleFor, string $userId): void;
 
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    /**
+     * @return array<MeetupForList>
+     */
+    public function listMeetups(bool $showPastMeetups): array;
 }

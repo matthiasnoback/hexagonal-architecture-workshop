@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -25,6 +24,7 @@ use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 final class Application implements ApplicationInterface
 {
@@ -142,5 +142,21 @@ final class Application implements ApplicationInterface
         $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($userId), $this->clock->currentTime());
 
         $this->meetupRepository->save($meetup);
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $this->clock->currentTime()->format('Y-m-d H:i');
+        }
+
+        return array_map(
+            [MeetupForList::class, 'fromDatabaseRecord'],
+            $this->connection->fetchAllAssociative($query, $parameters)
+        );
     }
 }
