@@ -48,7 +48,7 @@ final class ScheduleMeetupPage extends AbstractPageObject
 
     public function assertFormErrorsContains(string $expectedError): void
     {
-        $feedback = $this->crawler->filter('.invalid-feedback');
+        $feedback = $this->crawler->filter('.form-error');
         if (count($feedback) === 0) {
             throw new LogicException('No form errors found');
         }

@@ -6,12 +6,15 @@
     <h1>Schedule a meetup</h1>
 
     <form method="post" action="{{ path('schedule_meetup') }}">
+        {% for error in formErrors["general"]|default({}) %}
+            <div class="alert alert-danger form-error">{{ error }}</div>
+        {% endfor %}
         <div class="form-group{% if formErrors["name"] is defined %} has-error{% endif %}">
             <label for="name">Name:</label>
             <input class="form-control{% if formErrors["name"] is defined %} is-invalid{% endif %}" id="name" name="name" type="text"
                    value="{{ formData["name"]|default("") }}"/>
             {% for error in formErrors["name"]|default({}) %}
-                <div class="invalid-feedback">{{ error }}</div>
+                <div class="invalid-feedback form-error">{{ error }}</div>
             {% endfor %}
         </div>
         <div class="form-group{% if formErrors["description"] is defined %} has-error{% endif %}">
@@ -19,7 +22,7 @@
             <textarea class="form-control{% if formErrors["description"] is defined %} is-invalid{% endif %}" id="description"
                       name="description">{{ formData["description"]|default("") }}</textarea>
             {% for error in formErrors["description"]|default({}) %}
-                <div class="invalid-feedback">{{ error }}</div>
+                <div class="invalid-feedback form-error">{{ error }}</div>
             {% endfor %}
         </div>
         <div class="form-group {% if formErrors["scheduleForDate"] is defined %} has-error{% endif %}">
@@ -32,7 +35,7 @@
             <input class="form-control{% if formErrors["scheduleFor"] is defined %} is-invalid{% endif %}" name="scheduleForTime" id="scheduleForTime" type="time"
                    value="{{ formData["scheduleForTime"]|default("") }}">
             {% for error in formErrors["scheduleFor"]|default({}) %}
-                <div class="invalid-feedback">{{ error }}</div>
+                <div class="invalid-feedback form-error">{{ error }}</div>
             {% endfor %}
         </div>
 
