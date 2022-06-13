@@ -39,6 +39,15 @@ final class UserRepositoryUsingDbal implements UserRepository
         return User::fromDatabaseRecord($record);
     }
 
+    public function exists(string $id): UserId
+    {
+        $userId = UserId::fromString($id);
+
+        $this->getById($userId);
+
+        return $userId;
+    }
+
     public function getByEmailAddress(string $emailAddress): User
     {
         $result = $this->connection->executeQuery('SELECT * FROM users WHERE emailAddress = ?', [$emailAddress]);

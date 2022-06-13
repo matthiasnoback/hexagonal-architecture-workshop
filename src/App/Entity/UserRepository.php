@@ -13,6 +13,8 @@ interface UserRepository
 
     public function getById(UserId $id): User;
 
+    public function exists(string $id): UserId;
+
     public function getByEmailAddress(string $emailAddress): User;
 
     /**
