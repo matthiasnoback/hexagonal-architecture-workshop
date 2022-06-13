@@ -95,6 +95,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(ResponseFactory::class),
                     $container->get(TemplateRendererInterface::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),

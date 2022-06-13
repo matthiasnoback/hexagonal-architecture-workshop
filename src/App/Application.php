@@ -129,4 +129,16 @@ final class Application implements ApplicationInterface
 
         $this->meetups->save($meetup);
     }
+
+    public function rescheduleMeetup(string $meetupId, string $currentUserId, string $dateAndTime): void
+    {
+        $meetup = $this->meetups->get($meetupId);
+
+        $meetup->reschedule(
+            UserId::fromString($currentUserId),
+            $dateAndTime
+        );
+
+        $this->meetups->save($meetup);
+    }
 }

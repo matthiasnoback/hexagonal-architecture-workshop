@@ -24,12 +24,7 @@ final class Meetup
         Assertion::notEmpty($this->name, 'Name cannot be empty');
         Assertion::notEmpty($this->description, 'Description cannot be empty');
 
-        $scheduledDateTime = DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            $scheduledDateTime
-        );
-        Assertion::isInstanceOf($scheduledDateTime, DateTimeImmutable::class);
-        $this->scheduledDateTime = $scheduledDateTime;
+        $this->scheduledDateTime = self::dateAndTimeOutOfString($scheduledDateTime);
     }
 
     public static function schedule(
@@ -82,5 +77,24 @@ final class Meetup
         Assertion::true($this->organizerId->equals($currentUserId));
 
         $this->wasCancelled = true;
+    }
+
+    public function reschedule(UserId $currentUserId, string $dateAndTime): void
+    {
+        Assertion::true($this->organizerId->equals($currentUserId));
+
+        $this->scheduledDateTime = self::dateAndTimeOutOfString($dateAndTime);
+    }
+
+    private static function dateAndTimeOutOfString(
+        string $scheduledDateTime
+    ): DateTimeImmutable {
+        $scheduledDateTime = DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i',
+            $scheduledDateTime
+        );
+        Assertion::isInstanceOf($scheduledDateTime, DateTimeImmutable::class);
+
+        return $scheduledDateTime;
     }
 }
