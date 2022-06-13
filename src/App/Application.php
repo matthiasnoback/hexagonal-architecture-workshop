@@ -116,8 +116,17 @@ final class Application implements ApplicationInterface
             $command->scheduledDateTime
         );
 
-        $this->meetups->add($meetup);
+        $this->meetups->save($meetup);
 
         return $meetup->meetupId()->asString();
+    }
+
+    public function cancelMeetup(string $meetupId, string $currentUserId): void
+    {
+        $meetup = $this->meetups->get($meetupId);
+
+        $meetup->cancel(UserId::fromString($currentUserId));
+
+        $this->meetups->save($meetup);
     }
 }

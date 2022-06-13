@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use App\Entity\UserId;
+use App\Mapping;
 use Assert\Assertion;
 use DateTimeImmutable;
 
@@ -17,7 +18,7 @@ final class Meetup
         private readonly string $name,
         private readonly string $description,
         string $scheduledDateTime,
-        private readonly bool $wasCancelled = false,
+        private bool $wasCancelled = false,
     )
     {
         Assertion::notEmpty($this->name, 'Name cannot be empty');
@@ -41,6 +42,20 @@ final class Meetup
         return new self($meetupId, $organizerId, $name, $description, $scheduledDateTime);
     }
 
+    public static function fromArray(array $record): self
+    {
+        return new self(
+            MeetupId::fromString(
+                Mapping::getString($record, 'meetupId')
+            ),
+            UserId::fromString($record['organizerId']),
+            $record['name'],
+            $record['description'],
+            $record['scheduledFor'],
+            (bool) $record['wasCancelled'],
+        );
+    }
+
     /**
      * @return array<string,string|int>
      */
@@ -60,5 +75,12 @@ final class Meetup
     public function meetupId(): MeetupId
     {
         return $this->meetupId;
+    }
+
+    public function cancel(UserId $currentUserId): void
+    {
+        Assertion::true($this->organizerId->equals($currentUserId));
+
+        $this->wasCancelled = true;
     }
 }

@@ -8,7 +8,9 @@ namespace MeetupOrganizing\Entity;
  */
 interface Meetups
 {
-    public function add(Meetup $meetup): void;
-
     public function nextMeetupId(): MeetupId;
+
+    public function get(string $meetupId): Meetup;
+
+    public function save(Meetup $meetup): void;
 }

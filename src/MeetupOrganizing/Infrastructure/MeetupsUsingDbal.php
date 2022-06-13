@@ -16,15 +16,42 @@ final class MeetupsUsingDbal implements Meetups
 
     }
 
-    public function add(Meetup $meetup): void
-    {
-        $record = $meetup->toArray();
-
-        $this->connection->insert('meetups', $record);
-    }
-
     public function nextMeetupId(): MeetupId
     {
         return MeetupId::fromString(Uuid::uuid4()->toString());
+    }
+
+    public function get(string $meetupId): Meetup
+    {
+        $record = $this->connection->fetchAssociative(
+            'SELECT * FROM meetups WHERE meetupId = ?',
+            [
+                $meetupId
+            ]
+        );
+
+        if ($record === false) {
+            throw new \RuntimeException('Meetup not found');
+        }
+
+        return Meetup::fromArray($record);
+    }
+
+    public function save(Meetup $meetup): void
+    {
+        try {
+            $this->get($meetup->meetupId()->asString());
+        } catch (\RuntimeException) {
+            $this->connection->insert('meetups', $meetup->toArray());
+            return;
+        }
+
+        $this->connection->update(
+            'meetups',
+            $meetup->toArray(),
+            [
+                'meetupId' => $meetup->meetupId()->asString()
+            ]
+        );
     }
 }
