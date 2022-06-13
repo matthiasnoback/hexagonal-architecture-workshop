@@ -11,17 +11,8 @@ final class Meetup
 {
     private DateTimeImmutable $scheduledDateTime;
 
-    private int $meetupId;
-
-    /**
-     * @internal Only to be used by the repository
-     */
-    public function setMeetupId(int $meetupId): void
-    {
-        $this->meetupId = $meetupId;
-    }
-
     private function __construct(
+        private readonly MeetupId $meetupId,
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
@@ -41,12 +32,13 @@ final class Meetup
     }
 
     public static function schedule(
+        MeetupId $meetupId,
         UserId $organizerId,
         string $name,
         string $description,
         string $scheduledDateTime
     ): self {
-        return new self($organizerId, $name, $description, $scheduledDateTime);
+        return new self($meetupId, $organizerId, $name, $description, $scheduledDateTime);
     }
 
     /**
@@ -55,6 +47,7 @@ final class Meetup
     public function toArray(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
@@ -64,7 +57,7 @@ final class Meetup
         ];
     }
 
-    public function meetupId(): int
+    public function meetupId(): MeetupId
     {
         return $this->meetupId;
     }

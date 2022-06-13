@@ -9,4 +9,6 @@ namespace MeetupOrganizing\Entity;
 interface Meetups
 {
     public function add(Meetup $meetup): void;
+
+    public function nextMeetupId(): MeetupId;
 }

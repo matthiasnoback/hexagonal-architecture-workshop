@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use Assert\Assert;
+use Ramsey\Uuid\Uuid;
 
 final class MeetupId
 {

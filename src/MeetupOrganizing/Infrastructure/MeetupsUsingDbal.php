@@ -5,7 +5,9 @@ namespace MeetupOrganizing\Infrastructure;
 
 use Doctrine\DBAL\Connection;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\Meetups;
+use Ramsey\Uuid\Uuid;
 
 final class MeetupsUsingDbal implements Meetups
 {
@@ -19,7 +21,10 @@ final class MeetupsUsingDbal implements Meetups
         $record = $meetup->toArray();
 
         $this->connection->insert('meetups', $record);
+    }
 
-        $meetup->setMeetupId((int) $this->connection->lastInsertId());
+    public function nextMeetupId(): MeetupId
+    {
+        return MeetupId::fromString(Uuid::uuid4()->toString());
     }
 }
