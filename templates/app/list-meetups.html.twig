@@ -30,6 +30,7 @@
             <div class="card-body">
                 <p>
                     {{ meetup.scheduledFor|date() }}
+                    <strong>({{ meetup.attendees }} attendee(s))</strong>
                     {% if session.isLoggedInUser(meetup.organizerId) %}
                         <span class="badge badge-success">Organized by you!</span>
                     {% endif %}

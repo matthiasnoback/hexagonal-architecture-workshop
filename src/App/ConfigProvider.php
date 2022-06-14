@@ -31,6 +31,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\Meetups;
+use MeetupOrganizing\IncrementNumberOfAttendees;
 use MeetupOrganizing\Infrastructure\MeetupsUsingDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -64,7 +65,10 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [IncrementNumberOfAttendees::class, 'whenUserHasRsvpd'],
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -81,6 +85,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(ApplicationInterface::class)
                 ),
+                IncrementNumberOfAttendees::class =>  fn (ContainerInterface $container) => new IncrementNumberOfAttendees($container->get(Connection::class)),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),
                     $container->get(TemplateRendererInterface::class)
