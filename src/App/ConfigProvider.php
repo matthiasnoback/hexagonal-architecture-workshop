@@ -19,6 +19,7 @@ use App\Handler\LoginHandler;
 use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
+use App\Infrastructure\SystemClock;
 use App\Twig\SessionExtension;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
@@ -99,8 +100,10 @@ class ConfigProvider
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(Clock::class),
                 ),
+                Clock::class => fn () => new SystemClock(),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
                     $container->get(UserRepository::class),
                     $container->get(Session::class),
@@ -159,6 +162,7 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(Meetups::class),
+                    $container->get(Clock::class),
                 ),
                 Meetups::class => fn (ContainerInterface $container) => new MeetupsUsingDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,

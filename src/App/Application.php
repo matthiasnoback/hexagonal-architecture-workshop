@@ -8,20 +8,17 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
-use Assert\Assertion;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
-use MeetupOrganizing\Entity\CouldNotScheduleMeetup;
 use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\Meetups;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
-use MeetupOrganizing\Entity\ValidationException;
 use MeetupOrganizing\ValueObjects\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
@@ -35,6 +32,7 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly Meetups $meetups,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -116,7 +114,8 @@ final class Application implements ApplicationInterface
             $organizerId,
             $command->name,
             $command->description,
-            ScheduledDate::create($command->scheduledDateTime)
+            ScheduledDate::create($command->scheduledDateTime),
+            $this->clock
         );
 
         $this->meetups->save($meetup);
@@ -139,7 +138,8 @@ final class Application implements ApplicationInterface
 
         $meetup->reschedule(
             UserId::fromString($currentUserId),
-            ScheduledDate::create($dateAndTime)
+            ScheduledDate::create($dateAndTime),
+            $this->clock
         );
 
         $this->meetups->save($meetup);

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\ValueObjects;
 
+use App\Clock;
 use Assert\Assertion;
 use DateTimeImmutable;
 
@@ -30,8 +31,8 @@ final class ScheduledDate
         return $this->dateTimeImmutable->format(self::FORMAT);
     }
 
-    public function inThePast(): bool
+    public function inThePast(Clock $clock): bool
     {
-        return $this->dateTimeImmutable < new DateTimeImmutable('now');
+        return $this->dateTimeImmutable < $clock->now();
     }
 }

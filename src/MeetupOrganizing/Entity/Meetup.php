@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Entity;
 
+use App\Clock;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
@@ -28,9 +29,10 @@ final class Meetup
         UserId $organizerId,
         string $name,
         string $description,
-        ScheduledDate $scheduledDateTime
+        ScheduledDate $scheduledDateTime,
+        Clock $clock,
     ): self {
-        if ($scheduledDateTime->inThePast()) {
+        if ($scheduledDateTime->inThePast($clock)) {
             throw CouldNotScheduleMeetup::becauseTheDateIsInThePast();
         }
 
@@ -78,12 +80,12 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $currentUserId, ScheduledDate $dateAndTime): void
+    public function reschedule(UserId $currentUserId, ScheduledDate $dateAndTime, Clock $clock): void
     {
         Assertion::true($this->organizerId->equals($currentUserId));
         Assertion::false($this->wasCancelled, 'Meetup cannot be rescheduled because it was cancelled');
-        Assertion::false($this->scheduledDateTime->inThePast(), 'Meetup cannot be rescheduled because it already took place');
-        Assertion::false($dateAndTime->inThePast(), 'Meetup cannot be rescheduled because the new date is in the past');
+        Assertion::false($this->scheduledDateTime->inThePast($clock), 'Meetup cannot be rescheduled because it already took place');
+        Assertion::false($dateAndTime->inThePast($clock), 'Meetup cannot be rescheduled because the new date is in the past');
 
         $this->scheduledDateTime = $dateAndTime;
     }
