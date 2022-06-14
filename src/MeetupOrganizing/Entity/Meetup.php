@@ -30,6 +30,10 @@ final class Meetup
         string $description,
         ScheduledDate $scheduledDateTime
     ): self {
+        if ($scheduledDateTime->inThePast()) {
+            throw CouldNotScheduleMeetup::becauseTheDateIsInThePast();
+        }
+
         return new self($meetupId, $organizerId, $name, $description, $scheduledDateTime);
     }
 

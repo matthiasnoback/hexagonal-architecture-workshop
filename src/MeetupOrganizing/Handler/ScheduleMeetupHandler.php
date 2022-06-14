@@ -11,6 +11,7 @@ use Assert\Assert;
 use DateTimeImmutable;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\Entity\CouldNotScheduleMeetup;
 use MeetupOrganizing\ValueObjects\ScheduledDate;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -61,22 +62,25 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull('You need to be logged in');
 
-                $meetupId = $this->application->scheduleMeetup(
-                    new ScheduleMeetup(
-                        $user->userId()->asString(),
-                        $formData['name'],
-                        $formData['description'],
-                        $dateTime
-                    )
-                );
+                try {
+                    $meetupId = $this->application->scheduleMeetup(
+                        new ScheduleMeetup(
+                            $user->userId()->asString(),
+                            $formData['name'],
+                            $formData['description'],
+                            $dateTime
+                        )
+                    );
+                    $this->session->addSuccessFlash('Your meetup was scheduled successfully');
 
-                $this->session->addSuccessFlash('Your meetup was scheduled successfully');
-
-                return new RedirectResponse(
-                    $this->router->generateUri('meetup_details', [
-                        'id' => $meetupId,
-                    ])
-                );
+                    return new RedirectResponse(
+                        $this->router->generateUri('meetup_details', [
+                            'id' => $meetupId,
+                        ])
+                    );
+                } catch (CouldNotScheduleMeetup $exception) {
+                    $formErrors['general'][] = $exception;
+                }
             }
         }
 

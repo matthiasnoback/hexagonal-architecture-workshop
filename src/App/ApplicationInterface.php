@@ -6,6 +6,7 @@ namespace App;
 
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\CouldNotScheduleMeetup;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 
 interface ApplicationInterface
@@ -18,6 +19,9 @@ interface ApplicationInterface
 
     public function cancelRsvp(string $meetupId, string $userId): void;
 
+    /**
+     * @throws CouldNotScheduleMeetup
+     */
     public function scheduleMeetup(ScheduleMeetup $command): string;
 
     public function cancelMeetup(string $meetupId, string $currentUserId): void;
