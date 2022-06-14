@@ -6,25 +6,21 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
-use DateTimeImmutable;
+use MeetupOrganizing\ValueObjects\ScheduledDate;
 
 final class Meetup
 {
-    private DateTimeImmutable $scheduledDateTime;
-
     private function __construct(
         private readonly MeetupId $meetupId,
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
-        string $scheduledDateTime,
+        private ScheduledDate $scheduledDateTime,
         private bool $wasCancelled = false,
     )
     {
         Assertion::notEmpty($this->name, 'Name cannot be empty');
         Assertion::notEmpty($this->description, 'Description cannot be empty');
-
-        $this->scheduledDateTime = self::dateAndTimeOutOfString($scheduledDateTime);
     }
 
     public static function schedule(
@@ -32,7 +28,7 @@ final class Meetup
         UserId $organizerId,
         string $name,
         string $description,
-        string $scheduledDateTime
+        ScheduledDate $scheduledDateTime
     ): self {
         return new self($meetupId, $organizerId, $name, $description, $scheduledDateTime);
     }
@@ -46,7 +42,7 @@ final class Meetup
             UserId::fromString($record['organizerId']),
             $record['name'],
             $record['description'],
-            $record['scheduledFor'],
+            ScheduledDate::create($record['scheduledFor']),
             (bool) $record['wasCancelled'],
         );
     }
@@ -61,8 +57,7 @@ final class Meetup
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledDateTime
-                ->format('Y-m-d H:i'),
+            'scheduledFor' => $this->scheduledDateTime->asString(),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
     }
@@ -79,22 +74,10 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $currentUserId, string $dateAndTime): void
+    public function reschedule(UserId $currentUserId, ScheduledDate $dateAndTime): void
     {
         Assertion::true($this->organizerId->equals($currentUserId));
 
-        $this->scheduledDateTime = self::dateAndTimeOutOfString($dateAndTime);
-    }
-
-    private static function dateAndTimeOutOfString(
-        string $scheduledDateTime
-    ): DateTimeImmutable {
-        $scheduledDateTime = DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            $scheduledDateTime
-        );
-        Assertion::isInstanceOf($scheduledDateTime, DateTimeImmutable::class);
-
-        return $scheduledDateTime;
+        $this->scheduledDateTime = $dateAndTime;
     }
 }

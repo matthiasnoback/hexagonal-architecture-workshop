@@ -11,6 +11,7 @@ use Assert\Assert;
 use DateTimeImmutable;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\ValueObjects\ScheduledDate;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -49,11 +50,10 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $formErrors['description'][] = 'Provide a description';
             }
 
-            $dateTime = DateTimeImmutable::createFromFormat(
-                'Y-m-d H:i',
-                $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-            );
-            if ($dateTime === false) {
+            $dateTime = $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'];
+            try {
+                ScheduledDate::create($dateTime);
+            } catch (\InvalidArgumentException) {
                 $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 
@@ -66,7 +66,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                         $user->userId()->asString(),
                         $formData['name'],
                         $formData['description'],
-                        $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+                        $dateTime
                     )
                 );
 

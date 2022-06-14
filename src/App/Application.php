@@ -15,11 +15,11 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
-use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\Meetups;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\ValueObjects\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -113,7 +113,7 @@ final class Application implements ApplicationInterface
             $organizerId,
             $command->name,
             $command->description,
-            $command->scheduledDateTime
+            ScheduledDate::create($command->scheduledDateTime)
         );
 
         $this->meetups->save($meetup);
@@ -136,7 +136,7 @@ final class Application implements ApplicationInterface
 
         $meetup->reschedule(
             UserId::fromString($currentUserId),
-            $dateAndTime
+            ScheduledDate::create($dateAndTime)
         );
 
         $this->meetups->save($meetup);
