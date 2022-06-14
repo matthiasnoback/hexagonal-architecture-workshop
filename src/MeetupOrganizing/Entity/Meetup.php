@@ -77,6 +77,9 @@ final class Meetup
     public function reschedule(UserId $currentUserId, ScheduledDate $dateAndTime): void
     {
         Assertion::true($this->organizerId->equals($currentUserId));
+        Assertion::false($this->wasCancelled, 'Meetup cannot be rescheduled because it was cancelled');
+        Assertion::false($this->scheduledDateTime->inThePast(), 'Meetup cannot be rescheduled because it already took place');
+        Assertion::false($dateAndTime->inThePast(), 'Meetup cannot be rescheduled because the new date is in the past');
 
         $this->scheduledDateTime = $dateAndTime;
     }
