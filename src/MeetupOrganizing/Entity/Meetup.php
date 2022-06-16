@@ -16,7 +16,7 @@ final class Meetup
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
-        private readonly DateTimeImmutable $scheduledFor,
+        private DateTimeImmutable $scheduledFor,
     ) {
         if ($name === '') {
             throw new InvalidArgumentException('...');
@@ -92,5 +92,16 @@ final class Meetup
         }
 
         $this->wasCancelled = true;
+    }
+
+    public function reschedule(UserId $userId, DateTimeImmutable $newScheduledForDate): void
+    {
+        if (! $this->organizerId()->equals($userId)) {
+            throw new \Exception('...');
+        }
+
+        // if the date is different, record event "meetup was rescheduled"
+
+        $this->scheduledFor = $newScheduledForDate;
     }
 }

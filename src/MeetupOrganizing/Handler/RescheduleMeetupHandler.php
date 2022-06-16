@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\ApplicationInterface;
 use App\Mapping;
 use App\Session;
 use Assert\Assert;
@@ -27,6 +28,7 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
         private readonly RouterInterface $router,
         private readonly ResponseFactory $responseFactory,
         private readonly TemplateRendererInterface $renderer,
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -67,21 +69,14 @@ final class RescheduleMeetupHandler implements RequestHandlerInterface
             }
 
             if ($formErrors === []) {
-                $numberOfAffectedRows = $this->connection->update(
-                    'meetups',
-                    [
-                        'scheduledFor' => $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'],
-                    ],
-                    [
-                        'meetupId' => $record['meetupId'],
-                        'organizerId' => $loggedInUser->userId()
-                            ->asString(),
-                    ]
+                $this->application->rescheduleMeetup(
+                    Mapping::getString($record, 'meetupId'),
+                    $loggedInUser->userId()
+                        ->asString(),
+                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
                 );
 
-                if ($numberOfAffectedRows > 0) {
-                    $this->session->addSuccessFlash('You have rescheduled the meetup');
-                }
+                $this->session->addSuccessFlash('You have rescheduled the meetup');
 
                 return new RedirectResponse($this->router->generateUri('list_meetups'));
             }

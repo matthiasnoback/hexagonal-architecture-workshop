@@ -136,4 +136,21 @@ final class Application implements ApplicationInterface
 
         $this->meetupRepository->save($meetup);
     }
+
+    public function rescheduleMeetup(string $meetupId, string $userId, string $newScheduledForDate): void
+    {
+        $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
+
+        $scheduledFor = DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i',
+            $newScheduledForDate
+        );
+        if ($scheduledFor === false) {
+            throw new InvalidArgumentException('Sorry, could not create DateTimeImmutable from newScheduledForDate');
+        }
+
+        $meetup->reschedule(UserId::fromString($userId), $scheduledFor);
+
+        $this->meetupRepository->save($meetup);
+    }
 }

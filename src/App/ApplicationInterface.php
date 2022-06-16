@@ -24,4 +24,6 @@ interface ApplicationInterface
      * @method-type port
      */
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    public function rescheduleMeetup(string $meetupId, string $userId, string $newScheduledForDate): void;
 }
