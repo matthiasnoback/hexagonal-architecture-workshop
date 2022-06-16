@@ -19,4 +19,9 @@ interface ApplicationInterface
     public function cancelRsvp(string $meetupId, string $userId): void;
 
     public function scheduleMeetup(ScheduleMeetup $command): string;
+
+    /**
+     * @method-type port
+     */
+    public function cancelMeetup(string $meetupId, string $userId): void;
 }

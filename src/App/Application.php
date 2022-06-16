@@ -127,4 +127,13 @@ final class Application implements ApplicationInterface
 
         return $meetup->meetupId()->asString();
     }
+
+    public function cancelMeetup(string $meetupId, string $userId): void
+    {
+        $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
+
+        $meetup->cancel(UserId::fromString($userId));
+
+        $this->meetupRepository->save($meetup);
+    }
 }

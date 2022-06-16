@@ -85,7 +85,7 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class)
                 ),

@@ -11,4 +11,6 @@ interface MeetupRepository
     public function save(Meetup $meetup): void;
 
     public function nextId(): MeetupId;
+
+    public function getById(MeetupId $meetupId): Meetup;
 }
