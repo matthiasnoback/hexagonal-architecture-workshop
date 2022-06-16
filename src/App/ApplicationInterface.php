@@ -18,10 +18,5 @@ interface ApplicationInterface
 
     public function cancelRsvp(string $meetupId, string $userId): void;
 
-    public function scheduleMeetup(
-        string $organizerId,
-        string $name,
-        string $description,
-        string $scheduledFor,
-    ): int;
+    public function scheduleMeetup(ScheduleMeetup $command): int;
 }
