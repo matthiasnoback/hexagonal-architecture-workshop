@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use App\Entity\UserId;
-use DateTimeImmutable;
 use InvalidArgumentException;
 
 final class Meetup
@@ -16,7 +15,7 @@ final class Meetup
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
-        private DateTimeImmutable $scheduledFor,
+        private ScheduledDate $scheduledFor,
     ) {
         if ($name === '') {
             throw new InvalidArgumentException('...');
@@ -28,17 +27,12 @@ final class Meetup
 
     public static function fromDatabaseRecord(array $record): self
     {
-        $scheduledFor = DateTimeImmutable::createFromFormat('Y-m-d H:i', $record['scheduledFor']);
-        if ($scheduledFor === false) {
-            throw new InvalidArgumentException('...');
-        }
-
         return new self(
             MeetupId::fromString($record['meetupId']),
             UserId::fromString($record['organizerId']),
             $record['name'],
             $record['description'],
-            $scheduledFor
+            ScheduledDate::fromString($record['scheduledFor'])
         );
     }
 
@@ -47,7 +41,7 @@ final class Meetup
         UserId $organizerId,
         string $name,
         string $description,
-        DateTimeImmutable $scheduledFor,
+        ScheduledDate $scheduledFor,
     ): self {
         // TODO validate scheduledFor; should be in the future
 
@@ -70,7 +64,7 @@ final class Meetup
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
+            'scheduledFor' => $this->scheduledFor->asString(),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
     }
@@ -94,7 +88,7 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $userId, DateTimeImmutable $newScheduledForDate): void
+    public function reschedule(UserId $userId, ScheduledDate $newScheduledForDate): void
     {
         if (! $this->organizerId()->equals($userId)) {
             throw new \Exception('...');
