@@ -8,12 +8,15 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use InvalidArgumentException;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -101,6 +104,21 @@ final class Application implements ApplicationInterface
     }
 
     public function scheduleMeetup(ScheduleMeetup $command): int {
+        $scheduledFor = DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i',
+            $command->scheduledFor
+        );
+        if ($scheduledFor === false) {
+            throw new InvalidArgumentException('Sorry, could not create DateTimeImmutable from scheduledFor');
+        }
+
+        Meetup::schedule(
+            UserId::fromString($command->organizerId),
+            $command->name,
+            $command->description,
+            $scheduledFor
+        );
+
         $record = [
             'organizerId' => $command->organizerId,
             'name' => $command->name,
