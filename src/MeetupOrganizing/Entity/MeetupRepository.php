@@ -8,5 +8,7 @@ namespace MeetupOrganizing\Entity;
  */
 interface MeetupRepository
 {
-    public function save(Meetup $meetup): int;
+    public function save(Meetup $meetup): void;
+
+    public function nextId(): MeetupId;
 }
