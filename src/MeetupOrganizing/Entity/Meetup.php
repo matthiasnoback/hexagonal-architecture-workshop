@@ -38,4 +38,18 @@ final class Meetup
             $scheduledFor,
         );
     }
+
+    /**
+     * @return array<string,string|int>
+     */
+    public function toDatabaseRecord(): array
+    {
+        return [
+            'organizerId' => $this->organizerId->asString(),
+            'name' => $this->name,
+            'description' => $this->description,
+            'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
+            'wasCancelled' => 0,
+        ];
+    }
 }

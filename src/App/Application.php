@@ -17,6 +17,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -31,6 +32,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher $eventDispatcher,
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
+        private readonly MeetupRepository $meetupRepository,
     ) {
     }
 
@@ -112,22 +114,13 @@ final class Application implements ApplicationInterface
             throw new InvalidArgumentException('Sorry, could not create DateTimeImmutable from scheduledFor');
         }
 
-        Meetup::schedule(
+        $meetup = Meetup::schedule(
             UserId::fromString($command->organizerId),
             $command->name,
             $command->description,
             $scheduledFor
         );
 
-        $record = [
-            'organizerId' => $command->organizerId,
-            'name' => $command->name,
-            'description' => $command->description,
-            'scheduledFor' => $command->scheduledFor,
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
-
-        return (int) $this->connection->lastInsertId();
+        return $this->meetupRepository->save($meetup);
     }
 }

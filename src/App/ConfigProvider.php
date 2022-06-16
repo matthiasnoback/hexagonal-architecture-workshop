@@ -29,6 +29,7 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -39,6 +40,7 @@ use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
@@ -155,7 +157,9 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
+                    $container->get(MeetupRepository::class),
                 ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class
