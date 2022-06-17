@@ -43,7 +43,9 @@ final class Meetup
         string $description,
         ScheduledDate $scheduledFor,
     ): self {
-        // TODO validate scheduledFor; should be in the future
+        if ($scheduledFor->hasAlreadyPassed()) {
+            throw new \Exception('The meetup date has already passed');
+        }
 
         return new self(
             $meetupId,

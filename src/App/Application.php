@@ -106,9 +106,13 @@ final class Application implements ApplicationInterface
     }
 
     public function scheduleMeetup(ScheduleMeetup $command): string {
+        $organizerId = UserId::fromString($command->organizerId);
+
+        $this->userRepository->getById($organizerId);
+
         $meetup = Meetup::schedule(
             $this->meetupRepository->nextId(),
-            UserId::fromString($command->organizerId),
+            $organizerId,
             $command->name,
             $command->description,
             ScheduledDate::fromString($command->scheduledFor)
