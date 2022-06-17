@@ -9,13 +9,13 @@ use App\Entity\UserId;
 final class UserHasRsvpd
 {
     public function __construct(
-        private readonly string $meetupId,
+        private readonly MeetupId $meetupId,
         private readonly UserId $userId,
         private readonly RsvpId $rsvpId
     ) {
     }
 
-    public function meetupId(): string
+    public function meetupId(): MeetupId
     {
         return $this->meetupId;
     }

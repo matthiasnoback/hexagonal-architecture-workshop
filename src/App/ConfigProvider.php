@@ -33,6 +33,7 @@ use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
@@ -44,6 +45,8 @@ use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
+use MeetupOrganizing\MeetupRsvpCountRepository;
+use MeetupOrganizing\UpdateRsvpCountListener;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -65,7 +68,13 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [UpdateRsvpCountListener::class, 'whenUserHasRsvpd'],
+                ],
+                RsvpWasCancelled::class => [
+                    [UpdateRsvpCountListener::class, 'whenRsvpWasCancelled'],
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -76,6 +85,8 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                UpdateRsvpCountListener::class => fn (ContainerInterface $container) => new UpdateRsvpCountListener($container->get(MeetupRsvpCountRepository::class)),
+                MeetupRsvpCountRepository::class => fn (ContainerInterface $container) => $container->get(MeetupRepositoryUsingDbal::class),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
@@ -165,7 +176,8 @@ class ConfigProvider
                     $container->get(Clock::class),
                 ),
                 Clock::class => fn () => new ProductionClock(),
-                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal($container->get(Connection::class)),
+                MeetupRepository::class => fn (ContainerInterface $container) => $container->get(MeetupRepositoryUsingDbal::class),
+                MeetupRepositoryUsingDbal::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class

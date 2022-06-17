@@ -59,6 +59,9 @@ final class SchemaManager
         $meetupsTable->addColumn('wasCancelled', 'integer', [
             'default' => 0,
         ]);
+        $meetupsTable->addColumn('rsvpCount', 'integer', [
+            'default' => 0,
+        ]);
         $meetupsTable->setPrimaryKey(['meetupId']);
 
         $invoicesTable = $schema->createTable('invoices');

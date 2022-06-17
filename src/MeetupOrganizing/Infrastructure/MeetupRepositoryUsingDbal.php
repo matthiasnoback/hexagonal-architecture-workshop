@@ -7,10 +7,11 @@ use Doctrine\DBAL\Connection;
 use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
+use MeetupOrganizing\MeetupRsvpCountRepository;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 
-final class MeetupRepositoryUsingDbal implements MeetupRepository
+final class MeetupRepositoryUsingDbal implements MeetupRepository, MeetupRsvpCountRepository
 {
     public function __construct(private readonly Connection $connection)
     {
@@ -56,5 +57,25 @@ final class MeetupRepositoryUsingDbal implements MeetupRepository
         // keep the ID
 
         return Meetup::fromDatabaseRecord($record);
+    }
+
+    public function increaseRsvpCount(MeetupId $meetupId): void
+    {
+        $this->connection->executeQuery(
+            'UPDATE meetups SET rsvpCount = rsvpCount + 1 WHERE meetupId = ?',
+            [
+                $meetupId->asString()
+            ]
+        );
+    }
+
+    public function decreaseRsvpCount(MeetupId $meetupId): void
+    {
+        $this->connection->executeQuery(
+            'UPDATE meetups SET rsvpCount = rsvpCount - 1 WHERE meetupId = ?',
+            [
+                $meetupId->asString()
+            ]
+        );
     }
 }

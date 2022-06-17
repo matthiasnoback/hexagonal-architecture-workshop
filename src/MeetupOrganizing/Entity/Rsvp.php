@@ -34,7 +34,8 @@ final class Rsvp
         if ($this->answer !== Answer::Yes) {
             $this->answer = Answer::Yes;
 
-            $this->recordThat(new UserHasRsvpd($this->meetupId, $this->userId, $this->rsvpId));
+            $this->recordThat(new UserHasRsvpd(
+                MeetupId::fromString($this->meetupId), $this->userId, $this->rsvpId));
         }
     }
 
@@ -43,7 +44,7 @@ final class Rsvp
         if ($this->answer !== Answer::No) {
             $this->answer = Answer::No;
 
-            $this->recordThat(new RsvpWasCancelled($this->rsvpId));
+            $this->recordThat(new RsvpWasCancelled($this->rsvpId, MeetupId::fromString($this->meetupId)));
         }
     }
 
