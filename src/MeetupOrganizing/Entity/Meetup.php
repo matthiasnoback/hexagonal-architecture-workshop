@@ -85,6 +85,10 @@ final class Meetup
             throw new \Exception('...');
         }
 
+        if ($this->wasCancelled) {
+            throw new \Exception('This meetup was already cancelled');
+        }
+
         $this->wasCancelled = true;
     }
 
@@ -92,6 +96,18 @@ final class Meetup
     {
         if (! $this->organizerId()->equals($userId)) {
             throw new \Exception('...');
+        }
+
+        if ($this->wasCancelled) {
+            throw new \Exception('This meetup was already cancelled');
+        }
+
+        if ($this->scheduledFor->hasAlreadyPassed()) {
+            throw new \Exception('This meetup was already took place');
+        }
+
+        if ($newScheduledForDate->hasAlreadyPassed()) {
+            throw new \Exception('The new meetup date has already passed');
         }
 
         // if the date is different, record event "meetup was rescheduled"

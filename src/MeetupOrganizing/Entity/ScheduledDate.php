@@ -31,4 +31,9 @@ final class ScheduledDate
     {
         return $this->dateTimeImmutable->format(self::FORMAT);
     }
+
+    public function hasAlreadyPassed(): bool
+    {
+        return $this->dateTimeImmutable < (new DateTimeImmutable('now'));
+    }
 }
