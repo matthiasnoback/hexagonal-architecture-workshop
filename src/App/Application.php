@@ -24,6 +24,7 @@ use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupInAList;
 
 final class Application implements ApplicationInterface
 {
@@ -146,5 +147,23 @@ final class Application implements ApplicationInterface
         );
 
         $this->meetupRepository->save($meetup);
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $this->clock->whatIsTheTime()->format('Y-m-d H:i');
+        }
+
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+
+        return array_map(
+            [MeetupInAList::class, 'fromDatabaseRecord'],
+            $meetups
+        );
     }
 }

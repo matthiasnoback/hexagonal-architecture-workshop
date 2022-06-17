@@ -7,6 +7,7 @@ namespace App;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupInAList;
 
 interface ApplicationInterface
 {
@@ -26,4 +27,9 @@ interface ApplicationInterface
     public function cancelMeetup(string $meetupId, string $userId): void;
 
     public function rescheduleMeetup(string $meetupId, string $userId, string $newScheduledForDate): void;
+
+    /**
+     * @return array<MeetupInAList>
+     */
+    public function listMeetups(bool $showPastMeetups): array;
 }

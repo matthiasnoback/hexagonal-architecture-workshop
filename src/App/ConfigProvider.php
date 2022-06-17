@@ -111,9 +111,8 @@ class ConfigProvider
                     $container->get(ApplicationInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
-                    $container->get(Connection::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(Clock::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
                     $container->get(UserRepository::class),
