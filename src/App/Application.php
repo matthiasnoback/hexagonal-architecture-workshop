@@ -20,11 +20,10 @@ use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
-use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
-use MeetupOrganizing\ViewModel\MeetupInAList;
+use MeetupOrganizing\ViewModel\MeetupInAListRepository;
 
 final class Application implements ApplicationInterface
 {
@@ -36,6 +35,7 @@ final class Application implements ApplicationInterface
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
         private readonly Clock $clock,
+        private readonly MeetupInAListRepository $meetupInAListRepository,
     ) {
     }
 
@@ -151,19 +151,6 @@ final class Application implements ApplicationInterface
 
     public function listMeetups(bool $showPastMeetups): array
     {
-        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
-        $parameters = [];
-
-        if (!$showPastMeetups) {
-            $query .= ' AND scheduledFor >= ?';
-            $parameters[] = $this->clock->whatIsTheTime()->format('Y-m-d H:i');
-        }
-
-        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
-
-        return array_map(
-            [MeetupInAList::class, 'fromDatabaseRecord'],
-            $meetups
-        );
+        return $this->meetupInAListRepository->listMeetups($showPastMeetups);
     }
 }

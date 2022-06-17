@@ -43,11 +43,13 @@ use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\MeetupInAListRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\MeetupRsvpCountRepository;
 use MeetupOrganizing\UpdateRsvpCountListener;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupInAListRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -172,6 +174,11 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
+                    $container->get(Clock::class),
+                    $container->get(MeetupInAListRepository::class),
+                ),
+                MeetupInAListRepository::class => fn (ContainerInterface $container) => new MeetupInAListRepositoryUsingDbal(
+                    $container->get(Connection::class),
                     $container->get(Clock::class),
                 ),
                 Clock::class => fn () => new ProductionClock(),
