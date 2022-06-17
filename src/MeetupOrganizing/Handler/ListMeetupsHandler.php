@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\Core\Time\Clock;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -16,14 +17,13 @@ final class ListMeetupsHandler implements RequestHandlerInterface
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly TemplateRendererInterface $renderer
+        private readonly TemplateRendererInterface $renderer,
+        private readonly Clock $clock,
     ) {
     }
 
     public function handle(Request $request): ResponseInterface
     {
-        $now = new DateTimeImmutable($_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now');
-
         $showPastMeetups = ($request->getQueryParams()['showPastMeetups'] ?? 'no') === 'yes';
 
         $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
@@ -31,7 +31,7 @@ final class ListMeetupsHandler implements RequestHandlerInterface
 
         if (!$showPastMeetups) {
             $query .= ' AND scheduledFor >= ?';
-            $parameters[] = $now->format('Y-m-d H:i');
+            $parameters[] = $this->clock->whatIsTheTime()->format('Y-m-d H:i');
         }
 
         $meetups = $this->connection->fetchAllAssociative($query, $parameters);

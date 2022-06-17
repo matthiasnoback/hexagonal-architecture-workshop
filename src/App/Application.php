@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Core\Time\Clock;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
@@ -33,6 +34,7 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -115,7 +117,8 @@ final class Application implements ApplicationInterface
             $organizerId,
             $command->name,
             $command->description,
-            ScheduledDate::fromString($command->scheduledFor)
+            ScheduledDate::fromString($command->scheduledFor),
+            $this->clock
         );
 
         $this->meetupRepository->save($meetup);
@@ -138,7 +141,8 @@ final class Application implements ApplicationInterface
 
         $meetup->reschedule(
             UserId::fromString($userId),
-            ScheduledDate::fromString($newScheduledForDate)
+            ScheduledDate::fromString($newScheduledForDate),
+            $this->clock
         );
 
         $this->meetupRepository->save($meetup);

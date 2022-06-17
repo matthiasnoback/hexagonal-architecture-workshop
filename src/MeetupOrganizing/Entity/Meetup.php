@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Entity;
 
+use App\Core\Time\Clock;
 use App\Entity\UserId;
+use DateTimeImmutable;
 use InvalidArgumentException;
 
 final class Meetup
@@ -42,8 +44,11 @@ final class Meetup
         string $name,
         string $description,
         ScheduledDate $scheduledFor,
+        Clock $clock,
     ): self {
-        if ($scheduledFor->hasAlreadyPassed()) {
+        if ($scheduledFor->hasAlreadyPassed(
+            $clock->whatIsTheTime()
+        )) {
             throw new \Exception('The meetup date has already passed');
         }
 
@@ -94,8 +99,11 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $userId, ScheduledDate $newScheduledForDate): void
-    {
+    public function reschedule(
+        UserId $userId,
+        ScheduledDate $newScheduledForDate,
+        Clock $clock,
+    ): void {
         if (! $this->organizerId()->equals($userId)) {
             throw new \Exception('...');
         }
@@ -104,11 +112,15 @@ final class Meetup
             throw new \Exception('This meetup was already cancelled');
         }
 
-        if ($this->scheduledFor->hasAlreadyPassed()) {
+        if ($this->scheduledFor->hasAlreadyPassed(
+            $clock->whatIsTheTime()
+        )) {
             throw new \Exception('This meetup was already took place');
         }
 
-        if ($newScheduledForDate->hasAlreadyPassed()) {
+        if ($newScheduledForDate->hasAlreadyPassed(
+            $clock->whatIsTheTime()
+        )) {
             throw new \Exception('The new meetup date has already passed');
         }
 

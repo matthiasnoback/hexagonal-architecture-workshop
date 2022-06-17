@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Entity;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use InvalidArgumentException;
 
 final class ScheduledDate
@@ -32,8 +33,8 @@ final class ScheduledDate
         return $this->dateTimeImmutable->format(self::FORMAT);
     }
 
-    public function hasAlreadyPassed(): bool
+    public function hasAlreadyPassed(DateTimeInterface $now): bool
     {
-        return $this->dateTimeImmutable < (new DateTimeImmutable('now'));
+        return $this->dateTimeImmutable < $now;
     }
 }
