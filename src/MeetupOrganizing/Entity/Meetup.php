@@ -9,6 +9,7 @@ use Webmozart\Assert\Assert;
 final class Meetup
 {
     private function __construct(
+        public readonly MeetupId $meetupId,
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
@@ -20,21 +21,26 @@ final class Meetup
     }
 
     public static function schedule(
+        MeetupId $meetupId,
         UserId $organizerId,
         string $name,
         string $description,
         \DateTimeImmutable $scheduledFor,
     ): self
     {
-        return new self($organizerId,
+        return new self(
+            $meetupId,
+            $organizerId,
             $name,
             $description,
-            $scheduledFor);
+            $scheduledFor
+        );
     }
 
     public function asDatabaseRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,

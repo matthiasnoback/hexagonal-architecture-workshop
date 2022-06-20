@@ -6,6 +6,7 @@ namespace App;
 
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 
 interface ApplicationInterface
@@ -20,5 +21,5 @@ interface ApplicationInterface
 
     public function scheduleMeetup(
         ScheduleMeetup $command
-    ): int;
+    ): string;
 }
