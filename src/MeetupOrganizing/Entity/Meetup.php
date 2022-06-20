@@ -15,7 +15,7 @@ final class Meetup
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
-        private readonly \DateTimeImmutable $scheduledFor,
+        private \DateTimeImmutable $scheduledFor,
         private bool $wasCancelled = false,
     ) {
         Assert::notEq($name, '');
@@ -77,5 +77,23 @@ final class Meetup
             'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
+    }
+
+    /**
+     * Command method on entity:
+     * - Return early
+     * - Throw exception
+     * - Record any number of events
+     * - State change
+     */
+    public function reschedule(UserId $userId, \DateTimeImmutable $newDateTime): void
+    {
+        Assertion::true($userId->equals($this->organizerId));
+
+        if ($newDateTime->getTimestamp() === $this->scheduledFor->getTimestamp()) {
+            return;
+        }
+
+        $this->scheduledFor = $newDateTime;
     }
 }

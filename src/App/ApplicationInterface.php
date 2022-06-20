@@ -24,4 +24,6 @@ interface ApplicationInterface
     ): string;
 
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    public function rescheduleMeetup(string $meetupId, string $userId, string $newDate): void;
 }
