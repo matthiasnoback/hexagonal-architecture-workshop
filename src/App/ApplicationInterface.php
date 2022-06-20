@@ -22,4 +22,6 @@ interface ApplicationInterface
     public function scheduleMeetup(
         ScheduleMeetup $command
     ): string;
+
+    public function cancelMeetup(string $meetupId, string $userId): void;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Handler;
 
+use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
 use Doctrine\DBAL\Connection;
@@ -17,9 +18,9 @@ use RuntimeException;
 final class CancelMeetupHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection $connection,
+        private readonly ApplicationInterface $application,
         private readonly Session $session,
-        private readonly RouterInterface $router
+        private readonly RouterInterface $router,
     ) {
     }
 
@@ -36,21 +37,10 @@ final class CancelMeetupHandler implements RequestHandlerInterface
         }
         $meetupId = $parsedBody['meetupId'];
 
-        $numberOfAffectedRows = $this->connection->update(
-            'meetups',
-            [
-                'wasCancelled' => 1,
-            ],
-            [
-                'meetupId' => $meetupId,
-                'organizerId' => $loggedInUser->userId()
-                    ->asString(),
-            ]
-        );
+        $this->application->cancelMeetup($meetupId, $loggedInUser->userId()
+            ->asString());
 
-        if ($numberOfAffectedRows > 0) {
-            $this->session->addSuccessFlash('You have cancelled the meetup');
-        }
+        $this->session->addSuccessFlash('You have cancelled the meetup');
 
         return new RedirectResponse($this->router->generateUri('list_meetups'));
     }

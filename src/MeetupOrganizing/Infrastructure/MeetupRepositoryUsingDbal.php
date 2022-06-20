@@ -20,11 +20,38 @@ final class MeetupRepositoryUsingDbal implements MeetupRepository
 
     public function save(Meetup $meetup): void
     {
-        $this->connection->insert('meetups', $meetup->asDatabaseRecord());
+        try {
+            $this->getById($meetup->meetupId);
+            $this->connection->update(
+                'meetups',
+                $meetup->asDatabaseRecord(),
+                [
+                    'meetupId' => $meetup->meetupId->asString()
+                ]
+            );
+        } catch (\RuntimeException) {
+            $this->connection->insert('meetups', $meetup->asDatabaseRecord());
+            // remember ID
+        }
     }
 
     public function nextIdentity(): MeetupId
     {
         return MeetupId::fromString(Uuid::uuid4()->toString());
+    }
+
+    public function getById(MeetupId $meetupId): Meetup
+    {
+        $record = $this->connection->fetchAssociative(
+            'SELECT * FROM meetups WHERE meetupId = ?',
+            [$meetupId->asString()]
+        );
+        if ($record === false) {
+            throw new \RuntimeException('Meetup not found');
+        }
+
+        // remember ID
+
+        return Meetup::fromDatabaseRecord($record);
     }
 }
