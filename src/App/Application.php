@@ -8,12 +8,11 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
-use Assert\Assertion;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Domain\Model\Meetup\ScheduledDate;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
@@ -110,18 +109,12 @@ final class Application implements ApplicationInterface
     {
         $user = $this->userRepository->getById(UserId::fromString($command->organizerId));
 
-        $dateTime = DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            $command->scheduledFor
-        );
-        Assertion::isInstanceOf($dateTime, DateTimeImmutable::class);
-
         $meetup = Meetup::schedule(
             $this->meetupRepository->nextIdentity(),
             $user->userId(),
             $command->name,
             $command->description,
-            $dateTime
+            ScheduledDate::fromString($command->scheduledFor),
         );
 
         $this->meetupRepository->save($meetup);
@@ -142,13 +135,10 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $dateTime = DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            $newDate
+        $meetup->reschedule(
+            UserId::fromString($userId),
+            ScheduledDate::fromString($newDate)
         );
-        Assertion::isInstanceOf($dateTime, DateTimeImmutable::class);
-
-        $meetup->reschedule(UserId::fromString($userId), $dateTime);
 
         $this->meetupRepository->save($meetup);
     }

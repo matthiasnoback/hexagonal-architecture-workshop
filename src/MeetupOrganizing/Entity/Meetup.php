@@ -6,6 +6,7 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
+use MeetupOrganizing\Domain\Model\Meetup\ScheduledDate;
 use Webmozart\Assert\Assert;
 
 final class Meetup
@@ -15,7 +16,7 @@ final class Meetup
         private readonly UserId $organizerId,
         private readonly string $name,
         private readonly string $description,
-        private \DateTimeImmutable $scheduledFor,
+        private ScheduledDate $scheduledFor,
         private bool $wasCancelled = false,
     ) {
         Assert::notEq($name, '');
@@ -27,7 +28,7 @@ final class Meetup
         UserId $organizerId,
         string $name,
         string $description,
-        \DateTimeImmutable $scheduledFor,
+        ScheduledDate $scheduledFor,
     ): self
     {
         return new self(
@@ -51,18 +52,12 @@ final class Meetup
 
     public static function fromDatabaseRecord(array $record): self
     {
-        $dateTime = \DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            Mapping::getString($record, 'scheduledFor')
-        );
-        Assertion::isInstanceOf($dateTime, \DateTimeImmutable::class);
-
         return new self(
             MeetupId::fromString(Mapping::getString($record, 'meetupId')),
             UserId::fromString(Mapping::getString($record, 'organizerId')),
             Mapping::getString($record, 'name'),
             Mapping::getString($record, 'description'),
-            $dateTime,
+            ScheduledDate::fromString(Mapping::getString($record, 'scheduledFor')),
             (bool) Mapping::getInt($record, 'wasCancelled'),
         );
     }
@@ -74,7 +69,7 @@ final class Meetup
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
+            'scheduledFor' => $this->scheduledFor->asString(),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
     }
@@ -86,11 +81,11 @@ final class Meetup
      * - Record any number of events
      * - State change
      */
-    public function reschedule(UserId $userId, \DateTimeImmutable $newDateTime): void
+    public function reschedule(UserId $userId, ScheduledDate $newDateTime): void
     {
         Assertion::true($userId->equals($this->organizerId));
 
-        if ($newDateTime->getTimestamp() === $this->scheduledFor->getTimestamp()) {
+        if ($newDateTime->equals($this->scheduledFor)) {
             return;
         }
 
