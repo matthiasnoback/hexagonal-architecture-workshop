@@ -30,6 +30,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\MeetupRepository;
+use App\Time\Clock;
 use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -42,6 +43,7 @@ use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
+use MeetupOrganizing\Infrastructure\TheRealClock;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -159,7 +161,9 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
+                    $container->get(Clock::class),
                 ),
+                Clock::class => fn () => new TheRealClock(),
                 MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(

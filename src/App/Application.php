@@ -21,6 +21,7 @@ use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use App\Time\Clock;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -33,6 +34,7 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -115,7 +117,7 @@ final class Application implements ApplicationInterface
             $command->name,
             $command->description,
             ScheduledDate::fromString($command->scheduledFor),
-            new \DateTimeImmutable('now'),
+            $this->clock->getCurrentTime()
         );
 
         $this->meetupRepository->save($meetup);
@@ -139,7 +141,7 @@ final class Application implements ApplicationInterface
         $meetup->reschedule(
             UserId::fromString($userId),
             ScheduledDate::fromString($newDate),
-            new \DateTimeImmutable('now')
+            $this->clock->getCurrentTime()
         );
 
         $this->meetupRepository->save($meetup);
