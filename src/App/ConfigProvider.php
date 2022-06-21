@@ -31,6 +31,7 @@ use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\MeetupRepository;
 use App\Time\Clock;
+use MeetupOrganizing\FindABetterName;
 use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -65,7 +66,10 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [FindABetterName::class, 'whenUserHasRsvpd'],
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -76,6 +80,7 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                FindABetterName::class => fn (ContainerInterface $container) => new FindABetterName($container->get(Connection::class)),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
