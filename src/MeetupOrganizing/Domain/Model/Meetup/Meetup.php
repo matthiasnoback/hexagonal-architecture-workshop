@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace MeetupOrganizing\Entity;
+namespace MeetupOrganizing\Domain\Model\Meetup;
 
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
 use DateTimeImmutable;
-use MeetupOrganizing\Domain\Model\Meetup\ScheduledDate;
+use MeetupOrganizing\Entity\CouldNotRescheduleMeetup;
+use MeetupOrganizing\Entity\MeetupId;
 use Webmozart\Assert\Assert;
 
+/**
+ * @object-type Aggregate
+ */
 final class Meetup
 {
     private function __construct(
@@ -30,8 +34,12 @@ final class Meetup
         string $name,
         string $description,
         ScheduledDate $scheduledFor,
+        DateTimeImmutable $now,
     ): self
     {
+        if ($scheduledFor->isBefore($now)) {
+            throw new \RuntimeException('...');
+        }
         return new self(
             $meetupId,
             $organizerId,
@@ -51,6 +59,9 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
+    /**
+     * @internal
+     */
     public static function fromDatabaseRecord(array $record): self
     {
         return new self(
@@ -63,6 +74,9 @@ final class Meetup
         );
     }
 
+    /**
+     * @internal
+     */
     public function asDatabaseRecord(): array
     {
         return [

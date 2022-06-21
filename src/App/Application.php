@@ -15,7 +15,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Domain\Model\Meetup\ScheduledDate;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
-use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Domain\Model\Meetup\Meetup;
 use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
@@ -115,6 +115,7 @@ final class Application implements ApplicationInterface
             $command->name,
             $command->description,
             ScheduledDate::fromString($command->scheduledFor),
+            new \DateTimeImmutable('now'),
         );
 
         $this->meetupRepository->save($meetup);
