@@ -32,6 +32,7 @@ use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\MeetupRepository;
 use App\Time\Clock;
 use MeetupOrganizing\FindABetterName;
+use MeetupOrganizing\Infrastructure\MeetupListRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
@@ -46,6 +47,7 @@ use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\TheRealClock;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupListRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -167,7 +169,9 @@ class ConfigProvider
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
                     $container->get(Clock::class),
+                    $container->get(MeetupListRepository::class),
                 ),
+                MeetupListRepository::class => fn (ContainerInterface $container) => new MeetupListRepositoryUsingDbal($container->get(Clock::class), $container->get(Connection::class)),
                 Clock::class => fn () => new TheRealClock(),
                 MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,
