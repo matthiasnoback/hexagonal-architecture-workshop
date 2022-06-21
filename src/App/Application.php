@@ -137,7 +137,8 @@ final class Application implements ApplicationInterface
 
         $meetup->reschedule(
             UserId::fromString($userId),
-            ScheduledDate::fromString($newDate)
+            ScheduledDate::fromString($newDate),
+            new \DateTimeImmutable('now')
         );
 
         $this->meetupRepository->save($meetup);

@@ -6,6 +6,7 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
+use DateTimeImmutable;
 use MeetupOrganizing\Domain\Model\Meetup\ScheduledDate;
 use Webmozart\Assert\Assert;
 
@@ -80,10 +81,21 @@ final class Meetup
      * - Throw exception
      * - Record any number of events
      * - State change
+     *
+     * @param UserId $userId
+     * @param ScheduledDate $newDateTime
+     * @throws CouldNotRescheduleMeetup
      */
-    public function reschedule(UserId $userId, ScheduledDate $newDateTime): void
+    public function reschedule(UserId $userId, ScheduledDate $newDateTime, DateTimeImmutable $now): void
     {
         Assertion::true($userId->equals($this->organizerId));
+        if ($this->wasCancelled) {
+            throw CouldNotRescheduleMeetup::becauseTheMeetupWasCancelled($this->meetupId);
+        }
+
+        if ($this->scheduledFor->isBefore($now)) {
+            throw CouldNotRescheduleMeetup::becauseTheMeetupAlreadyTookPlace($this->meetupId);
+        }
 
         if ($newDateTime->equals($this->scheduledFor)) {
             return;

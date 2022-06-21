@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Domain\Model\Meetup;
 
-use Assert\Assertion;
 use DateTimeImmutable;
 
 final class ScheduledDate
@@ -34,5 +33,10 @@ final class ScheduledDate
     public function asString(): string
     {
         return $this->dateTime->format('Y-m-d H:i');
+    }
+
+    public function isBefore(DateTimeImmutable $otherTime): bool
+    {
+        return $this->dateTime < $otherTime;
     }
 }
