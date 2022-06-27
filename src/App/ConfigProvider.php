@@ -24,6 +24,8 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
+use Billing\MeetupDataForBillingForDbal;
+use Billing\MeetupDataForBillingInterface;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -76,7 +78,7 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
-                    $container->get(Connection::class)
+                    $container->get(ApplicationInterface::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),
@@ -95,7 +97,7 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
@@ -137,11 +139,12 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
                 ),
+                MeetupDataForBillingInterface::class => fn (ContainerInterface $container) => new MeetupDataForBillingForDbal($container->get(Connection::class)),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
@@ -155,6 +158,7 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
+                    $container->get(MeetupDataForBillingInterface::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(

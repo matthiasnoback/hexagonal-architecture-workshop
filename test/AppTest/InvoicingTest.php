@@ -22,7 +22,7 @@ final class InvoicingTest extends AbstractBrowserTest
 
         $this->listOrganizersPage()
             ->firstOrganizer()
-            ->createInvoice($this->browser)
+            ->goToCreateInvoicePage($this->browser)
             ->createInvoice($this->browser, '2022', '1');
         $this->flashMessagesShouldContain('Invoice created');
 

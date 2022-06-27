@@ -8,7 +8,7 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 
 final class OrganizerSnippet extends AbstractPageObject
 {
-    public function createInvoice(HttpBrowser $browser): CreateInvoicePage
+    public function goToCreateInvoicePage(HttpBrowser $browser): CreateInvoicePage
     {
         return new CreateInvoicePage($browser->click($this->crawler->filter('.create-invoice')->link()));
     }

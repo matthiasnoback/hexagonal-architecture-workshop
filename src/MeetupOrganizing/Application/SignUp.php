@@ -11,7 +11,7 @@ final class SignUp
     public function __construct(
         private readonly string $name,
         private readonly string $emailAddress,
-        private readonly string $userType,
+        public readonly string $userType,
     ) {
     }
 
