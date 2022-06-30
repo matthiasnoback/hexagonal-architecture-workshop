@@ -8,4 +8,6 @@ interface MeetupRepository
     public function save(Meetup $meetup): void;
 
     public function nextIdentity(): MeetupId;
+
+    public function getById(MeetupId $meetupId): Meetup;
 }

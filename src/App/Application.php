@@ -18,6 +18,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
@@ -129,5 +130,17 @@ final class Application implements ApplicationInterface
         $this->meetupRepository->save($meetup);
 
         return $meetupId->asString();
+    }
+
+    public function cancelMeetup(string $meetupId, string $currentUserId): void
+    {
+        $meetup = $this->meetupRepository->getById(
+            MeetupId::fromString($meetupId)
+        );
+
+        // Tell, Don't Ask
+        $meetup->cancel(UserId::fromString($currentUserId));
+
+        $this->meetupRepository->save($meetup);
     }
 }
