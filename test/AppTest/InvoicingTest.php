@@ -13,9 +13,11 @@ final class InvoicingTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->signUp('Administrator', 'administrator@gmail.com', 'Administrator');
 
+        $this->setServerTime('2022-07-01');
+
         $this->login('organizer@gmail.com');
-        $this->scheduleMeetup('Meetup 1', 'Description', '2022-01-10', '20:00');
-        $this->scheduleMeetup('Meetup 2', 'Description', '2022-01-17', '20:00');
+        $this->scheduleMeetup('Meetup 1', 'Description', '2022-08-10', '20:00');
+        $this->scheduleMeetup('Meetup 2', 'Description', '2022-08-17', '20:00');
         $this->logout();
 
         $this->login('administrator@gmail.com');
@@ -23,13 +25,13 @@ final class InvoicingTest extends AbstractBrowserTest
         $this->listOrganizersPage()
             ->firstOrganizer()
             ->goToCreateInvoicePage($this->browser)
-            ->createInvoice($this->browser, '2022', '1');
+            ->createInvoice($this->browser, '2022', '8');
         $this->flashMessagesShouldContain('Invoice created');
 
         $invoicesPage = $this->listOrganizersPage()
             ->firstOrganizer()
             ->listInvoices($this->browser);
-        self::assertEquals('10.00', $invoicesPage->invoiceAmountForPeriod('1/2022'));
+        self::assertEquals('10.00', $invoicesPage->invoiceAmountForPeriod('8/2022'));
     }
 
     private function listOrganizersPage(): ListOrganizersPage

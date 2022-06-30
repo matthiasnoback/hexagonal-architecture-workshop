@@ -31,6 +31,11 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
+use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Infrastructure\MeetupListRepositoryForDbal;
+use MeetupOrganizing\UpdateAttendeesListener;
+use MeetupOrganizing\Entity\MeetupRepository;
+use MeetupOrganizing\Entity\MeetupRepositoryForDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -43,6 +48,7 @@ use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupListRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -63,7 +69,13 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [UpdateAttendeesListener::class, 'whenUserHasRsvped']
+                ],
+                RsvpWasCancelled::class => [
+                    [UpdateAttendeesListener::class, 'whenRsvpWasCancelled']
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -74,6 +86,7 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                UpdateAttendeesListener::class => fn (ContainerInterface $container) => new UpdateAttendeesListener($container->get(Connection::class)),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
@@ -85,7 +98,7 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class)
                 ),
@@ -95,6 +108,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class),
                     $container->get(ResponseFactory::class),
                     $container->get(TemplateRendererInterface::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(ApplicationInterface::class),
@@ -159,7 +173,16 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupDataForBillingInterface::class),
+                    $container->get(MeetupRepository::class),
+                    $container->get(CurrentTimeAccessor::class),
+                    $container->get(MeetupListRepository::class),
                 ),
+                CurrentTimeAccessor::class => fn () => new CurrentServerTime(),
+                MeetupListRepository::class => fn (ContainerInterface $container) => new MeetupListRepositoryForDbal(
+                    $container->get(Connection::class),
+                    $container->get(CurrentTimeAccessor::class),
+                ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryForDbal($container->get(Connection::class)),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class

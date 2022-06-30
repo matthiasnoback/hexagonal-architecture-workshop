@@ -43,7 +43,7 @@ final class Rsvp
         if ($this->answer !== Answer::No) {
             $this->answer = Answer::No;
 
-            $this->recordThat(new RsvpWasCancelled($this->rsvpId));
+            $this->recordThat(new RsvpWasCancelled($this->rsvpId, $this->meetupId));
         }
     }
 

@@ -12,6 +12,7 @@ return [
             ExternalEventPublisher::class => fn (ContainerInterface $container) => new SynchronousExternalEventPublisher(
                 $container->get('external_event_consumers')
             ),
+            \App\CurrentTimeAccessor::class => fn () => new \AppTest\FakeTime($_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now'),
         ],
     ],
 ];

@@ -10,19 +10,20 @@ use App\Entity\UserRepository;
 use App\Entity\UserType;
 use Assert\Assert;
 use Billing\MeetupDataForBillingInterface;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
-use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
-use MeetupOrganizing\ViewModel\MeetupForList;
+use MeetupOrganizing\ViewModel\MeetupListRepository;
 
 final class Application implements ApplicationInterface
 {
@@ -33,6 +34,9 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupDataForBillingInterface $meetupDataForBilling,
+        private readonly MeetupRepository $meetupRepository,
+        private readonly CurrentTimeAccessor $currentTimeAccessor,
+        private readonly MeetupListRepository $meetupListRepository,
     ) {
     }
 
@@ -102,7 +106,7 @@ final class Application implements ApplicationInterface
 
         $this->rsvpRepository->save($rsvp);
 
-        $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
+        $this->eventDispatcher->dispatchAll($rsvp->releaseEvents());
     }
 
     public function scheduleMeetup(
@@ -110,41 +114,49 @@ final class Application implements ApplicationInterface
         string $name,
         string $description,
         string $scheduledFor,
-    ): int
+    ): string
     {
-        $record = [
-            'organizerId' => $organizerId,
-            'name' => $name,
-            'description' => $description,
-            'scheduledFor' => $scheduledFor,
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
+        $organizer = $this->userRepository->getById(UserId::fromString($organizerId));
 
-        return (int) $this->connection->lastInsertId();
+        $meetup = Meetup::schedule(
+            $this->meetupRepository->nextId(),
+            $organizer->userId(),
+            $name,
+            $description,
+            ScheduledDate::fromString($scheduledFor),
+            $this->currentTimeAccessor->getCurrentTime()
+        );
+
+        $this->meetupRepository->save($meetup);
+
+        return $meetup->meetupId()->asString();
     }
 
-    public function listMeetups(bool $showPastMeetups, string $now): array
+    public function cancelMeetup(string $meetupId, string $userId): void
     {
-        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
-        $parameters = [];
+        $meetup = $this->meetupRepository->getById($meetupId);
 
-        if (!$showPastMeetups) {
-            $query .= ' AND scheduledFor >= ?';
-            $parameters[] = (new DateTimeImmutable($now))->format('Y-m-d H:i');
-        }
+        $meetup->cancel(UserId::fromString($userId));
 
-        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+        $this->meetupRepository->save($meetup);
+    }
 
-        return array_map(
-            fn (array $record) => new MeetupForList(
-                Mapping::getString($record, 'meetupId'),
-                Mapping::getString($record, 'name'),
-                Mapping::getString($record, 'scheduledFor'),
-                Mapping::getString($record, 'organizerId'),
-            ),
-            $meetups
+    public function rescheduleMeetup(string $meetupId, string $userId, string $newDate): void
+    {
+        $meetup = $this->meetupRepository->getById($meetupId);
+
+        $meetup->reschedule(
+            UserId::fromString($userId),
+            ScheduledDate::fromString($newDate),
+            $this->currentTimeAccessor->getCurrentTime()
         );
+
+        $this->meetupRepository->save($meetup);
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        return $this->meetupListRepository->listMeetups($showPastMeetups);
     }
 
     public function createInvoice(string $organizerId, int $year, int $month): void

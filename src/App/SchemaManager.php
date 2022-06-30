@@ -51,14 +51,15 @@ final class SchemaManager
         $accountsTable->addUniqueIndex(['emailAddress']);
 
         $meetupsTable = $schema->createTable('meetups');
-        $meetupsTable->addColumn('meetupId', 'integer', [
-            'autoincrement' => true,
-        ]);
+        $meetupsTable->addColumn('meetupId', 'string');
         $meetupsTable->addColumn('organizerId', 'string');
         $meetupsTable->addColumn('name', 'string');
         $meetupsTable->addColumn('description', 'string');
         $meetupsTable->addColumn('scheduledFor', 'string');
         $meetupsTable->addColumn('wasCancelled', 'integer', [
+            'default' => 0,
+        ]);
+        $meetupsTable->addColumn('attendees', 'integer', [
             'default' => 0,
         ]);
         $meetupsTable->setPrimaryKey(['meetupId']);

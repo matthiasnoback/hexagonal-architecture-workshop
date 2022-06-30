@@ -7,6 +7,7 @@ namespace App;
 use DateTimeImmutable;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupForList;
 
@@ -25,12 +26,16 @@ interface ApplicationInterface
         string $name,
         string $description,
         string $scheduledFor,
-    ): int;
+    ): string;
+
+    public function cancelMeetup(string $meetupId, string $userId): void;
+
+    public function rescheduleMeetup(string $meetupId, string $userId, string $newDate): void;
 
     /**
      * @return list<MeetupForList>
      */
-    public function listMeetups(bool $showPastMeetups, string $now): array;
+    public function listMeetups(bool $showPastMeetups): array;
 
     /**
      * @throws InvoiceNotRequired

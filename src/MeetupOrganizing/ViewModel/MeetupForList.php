@@ -10,6 +10,7 @@ final class MeetupForList
         public readonly string $name,
         public readonly string $scheduledFor,
         public readonly string $organizerId,
+        public readonly int $attendees,
     ) {
     }
 }

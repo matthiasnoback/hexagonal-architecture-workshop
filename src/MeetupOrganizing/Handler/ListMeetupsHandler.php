@@ -23,11 +23,9 @@ final class ListMeetupsHandler implements RequestHandlerInterface
     {
         $showPastMeetups = ($request->getQueryParams()['showPastMeetups'] ?? 'no') === 'yes';
 
-        $now = $_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now';
-
         return new HtmlResponse(
             $this->renderer->render('app::list-meetups.html.twig', [
-                'meetups' => $this->application->listMeetups($showPastMeetups, $now),
+                'meetups' => $this->application->listMeetups($showPastMeetups),
                 'showPastMeetups' => $showPastMeetups,
             ])
         );
