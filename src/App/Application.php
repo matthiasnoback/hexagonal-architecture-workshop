@@ -8,6 +8,8 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Assert\Assertion;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -15,6 +17,8 @@ use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -23,12 +27,15 @@ use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
 final class Application implements ApplicationInterface
 {
+    const DATE_TIME_FORMAT = 'Y-m-d H:i';
+
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
         private readonly EventDispatcher $eventDispatcher,
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
+        private readonly MeetupRepository $meetupRepository,
     ) {
     }
 
@@ -103,15 +110,19 @@ final class Application implements ApplicationInterface
 
     public function scheduleMeetup(ScheduleMeetup $command): string
     {
-        $record = [
-            'organizerId' => $command->organizerId,
-            'name' => $command->name,
-            'description' => $command->description,
-            'scheduledFor' => $command->scheduledFor,
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
+        $scheduledFor = DateTimeImmutable::createFromFormat(
+            self::DATE_TIME_FORMAT,
+            $command->scheduledFor
+        );
+        Assertion::isInstanceOf($scheduledFor, DateTimeImmutable::class);
 
-        return (string) $this->connection->lastInsertId();
+        $meetup = Meetup::schedule(
+            UserId::fromString($command->organizerId),
+            $command->name,
+            $command->description,
+            $scheduledFor,
+        );
+
+        return $this->meetupRepository->save($meetup);
     }
 }
