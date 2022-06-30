@@ -15,8 +15,10 @@ final class Meetup
     private string $description;
     private DateTimeImmutable $scheduledFor;
     private bool $wasCancelled = false;
+    private MeetupId $meetupId;
 
     private function __construct(
+        MeetupId $meetupId,
         UserId $organizerId,
         string $name,
         string $description,
@@ -24,6 +26,7 @@ final class Meetup
     ) {
         // pre-conditions
 
+        $this->meetupId = $meetupId;
         $this->organizerId = $organizerId;
         $this->name = $name;
         $this->description = $description;
@@ -31,6 +34,7 @@ final class Meetup
     }
 
     public static function schedule(
+        MeetupId $meetupId,
         UserId $organizerId,
         string $name,
         string $description,
@@ -42,7 +46,7 @@ final class Meetup
         // TODO check if organizer exists
         // TODO check if date is in the future
 
-        return new self($organizerId, $name, $description, $scheduledFor);
+        return new self($meetupId, $organizerId, $name, $description, $scheduledFor);
     }
 
     /**
@@ -52,6 +56,7 @@ final class Meetup
     public function toDatabaseRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,

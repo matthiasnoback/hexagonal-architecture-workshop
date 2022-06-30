@@ -116,13 +116,18 @@ final class Application implements ApplicationInterface
         );
         Assertion::isInstanceOf($scheduledFor, DateTimeImmutable::class);
 
+        $meetupId = $this->meetupRepository->nextIdentity();
+
         $meetup = Meetup::schedule(
+            $meetupId,
             UserId::fromString($command->organizerId),
             $command->name,
             $command->description,
             $scheduledFor,
         );
 
-        return $this->meetupRepository->save($meetup);
+        $this->meetupRepository->save($meetup);
+
+        return $meetupId->asString();
     }
 }
