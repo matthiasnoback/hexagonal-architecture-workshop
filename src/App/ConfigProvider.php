@@ -32,6 +32,7 @@ use Laminas\Diactoros\ResponseFactory;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\RsvpRepository;
+use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
 use MeetupOrganizing\Handler\CancelMeetupHandler;
@@ -42,6 +43,7 @@ use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
+use MeetupOrganizing\UpdateNumberOfAttendees;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -63,8 +65,16 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
-                UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [UpdateNumberOfAttendees::class, 'whenUserHasRsvpd'],
+                ],
+                RsvpWasCancelled::class => [
+                    [UpdateNumberOfAttendees::class, 'whenRsvpWasCancelled'],
+                ],
+                UserHasSignedUp::class => [
+                    [PublishExternalEvent::class, 'whenUserHasSignedUp']
+                ],
             ],
         ];
     }
@@ -74,6 +84,9 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                UpdateNumberOfAttendees::class => fn (ContainerInterface $container) => new UpdateNumberOfAttendees(
+                    $container->get(Connection::class),
+                ),
                 Clock::class => fn () => new RealTimeClock(),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),

@@ -106,7 +106,7 @@ final class Application implements ApplicationInterface
 
         $this->rsvpRepository->save($rsvp);
 
-        $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
+        $this->eventDispatcher->dispatchAll($rsvp->releaseEvents());
     }
 
     public function scheduleMeetup(ScheduleMeetup $command): string
