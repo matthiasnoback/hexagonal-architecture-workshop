@@ -41,7 +41,8 @@ final class Meetup
         ScheduledDateTime $scheduledFor,
     ): self {
         // TODO check if organizer exists
-        // TODO check if date is in the future
+
+        Assertion::true($scheduledFor->isInTheFuture(), 'Date should be in the future');
 
         return new self($meetupId, $organizerId, $name, $description, $scheduledFor);
     }

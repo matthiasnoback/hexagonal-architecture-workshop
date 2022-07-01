@@ -7,7 +7,9 @@ namespace App;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
+use App\Entity\UserType;
 use Assert\Assert;
+use Assert\Assertion;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -110,9 +112,12 @@ final class Application implements ApplicationInterface
     {
         $meetupId = $this->meetupRepository->nextIdentity();
 
+        $organizer = $this->userRepository->getById(UserId::fromString($command->organizerId));
+        Assertion::true($organizer->userTypeIs(UserType::Organizer));
+
         $meetup = Meetup::schedule(
             $meetupId,
-            UserId::fromString($command->organizerId),
+            $organizer->userId(),
             $command->name,
             $command->description,
             ScheduledDateTime::fromString($command->scheduledFor),
