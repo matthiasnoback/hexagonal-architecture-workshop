@@ -143,4 +143,22 @@ final class Application implements ApplicationInterface
 
         $this->meetupRepository->save($meetup);
     }
+
+    public function rescheduleMeetup(string $meetupId, string $currentUserId, string $scheduledFor): void
+    {
+        $meetup = $this->meetupRepository->getById(
+            MeetupId::fromString($meetupId)
+        );
+
+        $scheduledFor = DateTimeImmutable::createFromFormat(
+            self::DATE_TIME_FORMAT,
+            $scheduledFor
+        );
+        Assertion::isInstanceOf($scheduledFor, DateTimeImmutable::class);
+
+        // Tell, Don't Ask
+        $meetup->reschedule(UserId::fromString($currentUserId), $scheduledFor);
+
+        $this->meetupRepository->save($meetup);
+    }
 }

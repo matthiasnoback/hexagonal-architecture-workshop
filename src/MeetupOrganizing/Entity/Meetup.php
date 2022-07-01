@@ -93,7 +93,14 @@ final class Meetup
     public function cancel(UserId $currentUserId): void
     {
         Assertion::true($currentUserId->equals($this->organizerId));
-        
+
         $this->wasCancelled = true;
+    }
+
+    public function reschedule(UserId $currentUserId, DateTimeImmutable $scheduledFor): void
+    {
+        Assertion::true($currentUserId->equals($this->organizerId));
+
+        $this->scheduledFor = $scheduledFor;
     }
 }
