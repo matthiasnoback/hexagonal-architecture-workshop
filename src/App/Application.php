@@ -8,8 +8,6 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
-use Assert\Assertion;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -23,13 +21,12 @@ use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Entity\ScheduledDateTime;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
 final class Application implements ApplicationInterface
 {
-    const DATE_TIME_FORMAT = 'Y-m-d H:i';
-
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
@@ -111,12 +108,6 @@ final class Application implements ApplicationInterface
 
     public function scheduleMeetup(ScheduleMeetup $command): string
     {
-        $scheduledFor = DateTimeImmutable::createFromFormat(
-            self::DATE_TIME_FORMAT,
-            $command->scheduledFor
-        );
-        Assertion::isInstanceOf($scheduledFor, DateTimeImmutable::class);
-
         $meetupId = $this->meetupRepository->nextIdentity();
 
         $meetup = Meetup::schedule(
@@ -124,7 +115,7 @@ final class Application implements ApplicationInterface
             UserId::fromString($command->organizerId),
             $command->name,
             $command->description,
-            $scheduledFor,
+            ScheduledDateTime::fromString($command->scheduledFor),
         );
 
         $this->meetupRepository->save($meetup);
@@ -150,14 +141,11 @@ final class Application implements ApplicationInterface
             MeetupId::fromString($meetupId)
         );
 
-        $scheduledFor = DateTimeImmutable::createFromFormat(
-            self::DATE_TIME_FORMAT,
-            $scheduledFor
-        );
-        Assertion::isInstanceOf($scheduledFor, DateTimeImmutable::class);
-
         // Tell, Don't Ask
-        $meetup->reschedule(UserId::fromString($currentUserId), $scheduledFor);
+        $meetup->reschedule(
+            UserId::fromString($currentUserId),
+            ScheduledDateTime::fromString($scheduledFor)
+        );
 
         $this->meetupRepository->save($meetup);
     }
