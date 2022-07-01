@@ -29,4 +29,14 @@ final class ScheduledDateTime
     {
         return $this->dateTimeImmutable->format(self::DATE_TIME_FORMAT);
     }
+
+    public function isInThePast(): bool
+    {
+        return $this->dateTimeImmutable < new DateTimeImmutable('now');
+    }
+
+    public function isInTheFuture(): bool
+    {
+        return ! $this->isInThePast();
+    }
 }

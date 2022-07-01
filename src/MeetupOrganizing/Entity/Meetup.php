@@ -89,10 +89,18 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $currentUserId, ScheduledDateTime $scheduledFor): void
+    public function reschedule(UserId $currentUserId, ScheduledDateTime $newScheduledFor): void
     {
         Assertion::true($currentUserId->equals($this->organizerId));
+        Assertion::false($this->wasCancelled);
+        Assertion::true($newScheduledFor->isInTheFuture());
+        Assertion::false($this->meetupAlreadyTookPlace());
 
-        $this->scheduledFor = $scheduledFor;
+        $this->scheduledFor = $newScheduledFor;
+    }
+
+    private function meetupAlreadyTookPlace(): bool
+    {
+        return $this->scheduledFor->isInThePast();
     }
 }
