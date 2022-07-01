@@ -30,13 +30,13 @@ final class ScheduledDateTime
         return $this->dateTimeImmutable->format(self::DATE_TIME_FORMAT);
     }
 
-    public function isInThePast(): bool
+    public function isBefore(DateTimeImmutable $otherTime): bool
     {
-        return $this->dateTimeImmutable < new DateTimeImmutable('now');
+        return $this->dateTimeImmutable < $otherTime;
     }
 
-    public function isInTheFuture(): bool
+    public function isAfter(DateTimeImmutable $currentTime): bool
     {
-        return ! $this->isInThePast();
+        return ! $this->isBefore($currentTime);
     }
 }

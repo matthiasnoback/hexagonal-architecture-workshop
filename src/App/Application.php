@@ -36,6 +36,7 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -121,6 +122,7 @@ final class Application implements ApplicationInterface
             $command->name,
             $command->description,
             ScheduledDateTime::fromString($command->scheduledFor),
+            $this->clock->getCurrentTime(),
         );
 
         $this->meetupRepository->save($meetup);
@@ -149,7 +151,8 @@ final class Application implements ApplicationInterface
         // Tell, Don't Ask
         $meetup->reschedule(
             UserId::fromString($currentUserId),
-            ScheduledDateTime::fromString($scheduledFor)
+            ScheduledDateTime::fromString($scheduledFor),
+            $this->clock->getCurrentTime(),
         );
 
         $this->meetupRepository->save($meetup);

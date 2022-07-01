@@ -12,6 +12,7 @@ return [
             ExternalEventPublisher::class => fn (ContainerInterface $container) => new SynchronousExternalEventPublisher(
                 $container->get('external_event_consumers')
             ),
+            \App\Clock::class => fn () => new \App\FakeClock(),
         ],
     ],
 ];

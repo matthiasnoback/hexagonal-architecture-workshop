@@ -6,6 +6,7 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assertion;
+use DateTimeImmutable;
 
 final class Meetup
 {
@@ -39,10 +40,11 @@ final class Meetup
         string $name,
         string $description,
         ScheduledDateTime $scheduledFor,
+        DateTimeImmutable $currentTime,
     ): self {
         // TODO check if organizer exists
 
-        Assertion::true($scheduledFor->isInTheFuture(), 'Date should be in the future');
+        Assertion::true($scheduledFor->isAfter($currentTime), 'Date should be in the future');
 
         return new self($meetupId, $organizerId, $name, $description, $scheduledFor);
     }
@@ -90,18 +92,18 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(UserId $currentUserId, ScheduledDateTime $newScheduledFor): void
+    public function reschedule(UserId $currentUserId, ScheduledDateTime $newScheduledFor, DateTimeImmutable $currentTime): void
     {
         Assertion::true($currentUserId->equals($this->organizerId));
         Assertion::false($this->wasCancelled);
-        Assertion::true($newScheduledFor->isInTheFuture());
-        Assertion::false($this->meetupAlreadyTookPlace());
+        Assertion::true($newScheduledFor->isAfter($currentTime));
+        Assertion::false($this->meetupAlreadyTookPlace($currentTime));
 
         $this->scheduledFor = $newScheduledFor;
     }
 
-    private function meetupAlreadyTookPlace(): bool
+    private function meetupAlreadyTookPlace(DateTimeImmutable $currentTime): bool
     {
-        return $this->scheduledFor->isInThePast();
+        return $this->scheduledFor->isBefore($currentTime);
     }
 }
