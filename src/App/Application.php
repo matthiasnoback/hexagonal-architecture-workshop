@@ -22,8 +22,8 @@ use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
-use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDateTime;
+use MeetupOrganizing\ViewModel\ListMeetupRepository;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -37,6 +37,7 @@ final class Application implements ApplicationInterface
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
         private readonly Clock $clock,
+        private readonly ListMeetupRepository $listMeetupRepository,
     ) {
     }
 
@@ -156,5 +157,10 @@ final class Application implements ApplicationInterface
         );
 
         $this->meetupRepository->save($meetup);
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        return $this->listMeetupRepository->listMeetups($showPastMeetups);
     }
 }

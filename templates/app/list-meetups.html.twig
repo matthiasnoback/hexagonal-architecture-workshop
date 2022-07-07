@@ -24,8 +24,9 @@
         <div class="card meetup">
             <div class="card-header">
                 <h3 class="card-title mb-0">
-                    <a href="{{ path("meetup_details", { 'id' : meetup.meetupId }) }}" class="name">{{ meetup.name }} ({{ meetup.numberOfAttendees }})</a>
+                    <a href="{{ path("meetup_details", { 'id' : meetup.meetupId }) }}" class="name">{{ meetup.name }}</a>
                 </h3>
+                ({{ meetup.numberOfAttendees }})
             </div>
             <div class="card-body">
                 <p>

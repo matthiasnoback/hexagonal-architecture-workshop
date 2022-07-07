@@ -42,8 +42,10 @@ use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\ListMeetupRepositoryUsingDbal;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\UpdateNumberOfAttendees;
+use MeetupOrganizing\ViewModel\ListMeetupRepository;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -112,9 +114,8 @@ class ConfigProvider
                     $container->get(ApplicationInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(Clock::class)
                 ),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
                     $container->get(UserRepository::class),
@@ -174,6 +175,11 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
+                    $container->get(Clock::class),
+                    $container->get(ListMeetupRepository::class),
+                ),
+                ListMeetupRepository::class => fn (ContainerInterface $container) => new ListMeetupRepositoryUsingDbal(
+                    $container->get(Connection::class),
                     $container->get(Clock::class),
                 ),
                 MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal(
