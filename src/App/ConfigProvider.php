@@ -38,7 +38,7 @@ use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
-use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Handler\ScheduleMeetupController;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
@@ -72,11 +72,11 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
-                ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
+                ScheduleMeetupController::class => fn (ContainerInterface $container) => new ScheduleMeetupController(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
                     $container->get(RouterInterface::class),
-                    $container->get(Connection::class)
+                    $container->get(ApplicationInterface::class)
                 ),
                 MeetupDetailsHandler::class => fn (ContainerInterface $container) => new MeetupDetailsHandler(
                     $container->get(MeetupDetailsRepository::class),

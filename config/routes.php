@@ -18,13 +18,13 @@ use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
-use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Handler\ScheduleMeetupController;
 use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->route('/schedule-meetup', ScheduleMeetupHandler::class, ['GET', 'POST'], 'schedule_meetup');
+    $app->route('/schedule-meetup', ScheduleMeetupController::class, ['GET', 'POST'], 'schedule_meetup');
     $app->route('/meetup-details/{id:.+}', MeetupDetailsHandler::class, ['GET'], 'meetup_details');
     $app->route('/rsvp-for-meetup', RsvpForMeetupHandler::class, ['POST'], 'rsvp_for_meetup');
     $app->route('/cancel-rsvp', CancelRsvpHandler::class, ['POST'], 'cancel_rsvp');
