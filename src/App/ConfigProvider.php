@@ -29,6 +29,8 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
+use MeetupOrganizing\Entity\MeetupRepository;
+use MeetupOrganizing\Infrastructure\DatabaseMeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -72,6 +74,7 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                MeetupRepository::class => fn (ContainerInterface $container) => new DatabaseMeetupRepository($container->get(Connection::class)),
                 ScheduleMeetupController::class => fn (ContainerInterface $container) => new ScheduleMeetupController(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),
@@ -155,6 +158,7 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
+                    $container->get(MeetupRepository::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
