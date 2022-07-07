@@ -10,6 +10,7 @@ use DateTimeImmutable;
 final class Meetup
 {
     private function __construct(
+        private MeetupId $meetupId,
         private UserId $organizerId,
         private string $name,
         private string $description,
@@ -19,6 +20,7 @@ final class Meetup
     }
 
     public static function schedule(
+        MeetupId $meetupId,
         UserId $organizerId,
         string $name,
         string $description,
@@ -28,6 +30,7 @@ final class Meetup
         Assert::that($description)->notBlank();
 
         return new self(
+            $meetupId,
             $organizerId,
             $name,
             $description,
@@ -42,12 +45,18 @@ final class Meetup
     public function asDatabaseRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
             'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
+    }
+
+    public function meetupId(): MeetupId
+    {
+        return $this->meetupId;
     }
 }
 

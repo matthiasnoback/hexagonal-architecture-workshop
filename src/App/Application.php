@@ -107,8 +107,7 @@ final class Application implements ApplicationInterface
 
     public function scheduleMeetup(
         ScheduleMeetup $command
-    ): int {
-
+    ): string {
         $scheduledFor = DateTimeImmutable::createFromFormat(
             'Y-m-d H:i',
             $command->scheduledFor
@@ -116,12 +115,15 @@ final class Application implements ApplicationInterface
         Assert::that($scheduledFor)->isInstanceOf(DateTimeImmutable::class);
 
         $meetup = Meetup::schedule(
+            $this->meetupRepository->nextIdentity(),
             UserId::fromString($command->organizerId),
             $command->name,
             $command->description,
             $scheduledFor
         );
 
-        return $this->meetupRepository->save($meetup);
+        $this->meetupRepository->save($meetup);
+
+        return $meetup->meetupId()->asString();
     }
 }

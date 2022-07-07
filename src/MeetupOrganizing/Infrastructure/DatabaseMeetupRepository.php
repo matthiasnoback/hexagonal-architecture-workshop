@@ -5,7 +5,9 @@ namespace MeetupOrganizing\Infrastructure;
 
 use Doctrine\DBAL\Connection;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
+use Ramsey\Uuid\Uuid;
 
 final class DatabaseMeetupRepository implements MeetupRepository
 {
@@ -15,13 +17,16 @@ final class DatabaseMeetupRepository implements MeetupRepository
     {
     }
 
-    public function save(Meetup $meetup): int
+    public function save(Meetup $meetup): void
     {
         $this->connection->insert(
             'meetups',
             $meetup->asDatabaseRecord()
         );
+    }
 
-        return (int) $this->connection->lastInsertId();
+    public function nextIdentity(): MeetupId
+    {
+        return MeetupId::fromString(Uuid::uuid4()->toString());
     }
 }
