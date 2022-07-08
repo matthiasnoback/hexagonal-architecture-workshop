@@ -7,7 +7,6 @@ namespace MeetupOrganizing\Handler;
 use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
-use DateTimeImmutable;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use MeetupOrganizing\Application\ScheduleMeetup;
@@ -47,14 +46,6 @@ final class ScheduleMeetupController implements RequestHandlerInterface
             }
             if ($formData['description'] === '') {
                 $formErrors['description'][] = 'Provide a description';
-            }
-
-            $dateTime = DateTimeImmutable::createFromFormat(
-                'Y-m-d H:i',
-                $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-            );
-            if ($dateTime === false) {
-                $formErrors['scheduleFor'][] = 'Invalid date/time';
             }
 
             if ($formErrors === []) {

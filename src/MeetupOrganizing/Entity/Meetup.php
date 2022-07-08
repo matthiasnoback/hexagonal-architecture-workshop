@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\Entity;
 
-use App\Entity\User;
 use App\Entity\UserId;
 use App\Mapping;
 use Assert\Assert;
-use DateTimeImmutable;
 use MeetupOrganizing\Infrastructure\MeetupsTable;
 
 final class Meetup
@@ -18,7 +16,7 @@ final class Meetup
         private UserId $organizerId,
         private string $name,
         private string $description,
-        private DateTimeImmutable $scheduledFor,
+        private ScheduledDate $scheduledFor,
         private bool $wasCancelled,
     ) {
     }
@@ -28,7 +26,7 @@ final class Meetup
         UserId $organizerId,
         string $name,
         string $description,
-        DateTimeImmutable $scheduledFor
+        ScheduledDate $scheduledFor
     ): self {
         Assert::that($name)->notBlank();
         Assert::that($description)->notBlank();
@@ -45,18 +43,12 @@ final class Meetup
 
     public static function fromDatabaseRecord(array $record): self
     {
-        $scheduledFor = DateTimeImmutable::createFromFormat(
-            'Y-m-d H:i',
-            Mapping::getString($record, 'scheduledFor')
-        );
-        Assert::that($scheduledFor)->isInstanceOf(DateTimeImmutable::class);
-
         return new self(
             MeetupId::fromString(Mapping::getString($record, MeetupsTable::MEETUP_ID_COLUMN)),
             UserId::fromString(Mapping::getString($record, 'organizerId')),
             Mapping::getString($record, 'name'),
             Mapping::getString($record, 'description'),
-            $scheduledFor,
+            ScheduledDate::fromString(Mapping::getString($record, 'scheduledFor')),
             (bool) Mapping::getInt($record, 'wasCancelled'),
         );
     }
@@ -71,7 +63,7 @@ final class Meetup
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledFor->format('Y-m-d H:i'),
+            'scheduledFor' => $this->scheduledFor->toString(),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
     }
