@@ -34,7 +34,7 @@ use MeetupOrganizing\Infrastructure\DatabaseMeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
-use MeetupOrganizing\Handler\CancelMeetupHandler;
+use MeetupOrganizing\Handler\CancelMeetupController;
 use MeetupOrganizing\Handler\CancelRsvpHandler;
 use MeetupOrganizing\Handler\ListMeetupsHandler;
 use MeetupOrganizing\Handler\MeetupDetailsHandler;
@@ -85,8 +85,8 @@ class ConfigProvider
                     $container->get(MeetupDetailsRepository::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
-                CancelMeetupHandler::class => fn (ContainerInterface $container) => new CancelMeetupHandler(
-                    $container->get(Connection::class),
+                CancelMeetupController::class => fn (ContainerInterface $container) => new CancelMeetupController(
+                    $container->get(ApplicationInterface::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class)
                 ),
