@@ -29,4 +29,9 @@ final class ScheduledDate
     {
         return $this->dateTimeImmutable->format(self::FORMAT);
     }
+
+    public function isBefore(DateTimeImmutable $param): bool
+    {
+        return $this->dateTimeImmutable < $param;
+    }
 }

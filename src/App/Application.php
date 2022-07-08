@@ -34,6 +34,7 @@ final class Application implements ApplicationInterface
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
         private readonly MeetupRepository $meetupRepository,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -109,12 +110,22 @@ final class Application implements ApplicationInterface
     public function scheduleMeetup(
         ScheduleMeetup $command
     ): string {
+        // The organizer exists
+        $organizer = $this->userRepository->getById(
+            UserId::fromString($command->organizerId)
+        );
+
+        $scheduledDate = ScheduledDate::fromString($command->scheduledFor);
+        if ($scheduledDate->isBefore($this->clock->now())) {
+            throw new \RuntimeException('...');
+        }
+
         $meetup = Meetup::schedule(
             $this->meetupRepository->nextIdentity(),
-            UserId::fromString($command->organizerId),
+            $organizer->userId(),
             $command->name,
             $command->description,
-            ScheduledDate::fromString($command->scheduledFor)
+            $scheduledDate
         );
 
         $this->meetupRepository->save($meetup);

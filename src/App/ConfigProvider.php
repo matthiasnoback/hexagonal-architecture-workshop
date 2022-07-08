@@ -99,7 +99,8 @@ class ConfigProvider
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
                     $container->get(Connection::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(Clock::class),
                 ),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
                     $container->get(UserRepository::class),
@@ -159,7 +160,9 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
+                    $container->get(Clock::class),
                 ),
+                Clock::class => fn () => new SystemClock(),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class

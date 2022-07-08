@@ -18,6 +18,8 @@ final class SignUpCommandTest extends TestCase
 
         $_ENV['APPLICATION_ENV'] = 'end_to_end_testing';
 
+        $_SERVER['HTTP_X_CURRENT_TIME'] = 'now';
+
         /** @var ContainerInterface $container */
         $container = require 'config/container.php';
 
