@@ -29,6 +29,7 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
+use MeetupOrganizing\KeepTrackOfNumberOfAttendees;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Infrastructure\DatabaseMeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
@@ -63,7 +64,10 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [KeepTrackOfNumberOfAttendees::class, 'whenUserHasRsvped'],
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -74,6 +78,7 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                KeepTrackOfNumberOfAttendees::class => fn (ContainerInterface $container) => new KeepTrackOfNumberOfAttendees($container->get(Connection::class)),
                 MeetupRepository::class => fn (ContainerInterface $container) => new DatabaseMeetupRepository($container->get(Connection::class)),
                 ScheduleMeetupController::class => fn (ContainerInterface $container) => new ScheduleMeetupController(
                     $container->get(Session::class),

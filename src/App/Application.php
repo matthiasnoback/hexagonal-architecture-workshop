@@ -24,6 +24,7 @@ use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 final class Application implements ApplicationInterface
 {
@@ -146,5 +147,32 @@ final class Application implements ApplicationInterface
         $meetup->cancel();
 
         $this->meetupRepository->save($meetup);
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $this->clock->now()->format('Y-m-d H:i');
+        }
+
+        $records = $this->connection->fetchAllAssociative($query, $parameters);
+
+        // MeetupForList::createFromEntity();
+        // Meetup::createMeetupForList(): MeetupForList;
+        // This is better:
+        return array_map(
+            fn(array $record) => new MeetupForList(
+                Mapping::getString($record, 'meetupId'),
+                Mapping::getString($record, 'name'),
+                Mapping::getString($record, 'scheduledFor'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'numberOfAttendees'),
+            ),
+            $records
+        );
     }
 }

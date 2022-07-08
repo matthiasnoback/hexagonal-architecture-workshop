@@ -33,6 +33,7 @@
                     {% if session.isLoggedInUser(meetup.organizerId) %}
                         <span class="badge badge-success">Organized by you!</span>
                     {% endif %}
+                    ({{ meetup.numberOfAttendees }})
                 </p>
                 <a href="{{ path("meetup_details", { 'id' : meetup.meetupId }) }}" class="card-link btn btn-outline-primary read-more">Read more</a>
             </div>

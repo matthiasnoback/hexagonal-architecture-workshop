@@ -8,6 +8,7 @@ use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 interface ApplicationInterface
 {
@@ -21,5 +22,14 @@ interface ApplicationInterface
 
     public function scheduleMeetup(ScheduleMeetup $command): string;
 
+    /**
+     * @method-type command
+     */
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    /**
+     * @return array<MeetupForList>
+     * @method-type query
+     */
+    public function listMeetups(bool $showPastMeetups): array;
 }
