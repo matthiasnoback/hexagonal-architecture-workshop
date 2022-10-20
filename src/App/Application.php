@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -20,6 +21,7 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use RuntimeException;
 
 final class Application implements ApplicationInterface
 {
@@ -104,11 +106,19 @@ final class Application implements ApplicationInterface
     public function scheduleMeetup(
         ScheduleMeetup $command
     ): int {
+        $dateTime = DateTimeImmutable::createFromFormat(
+            'Y-m-d H:i',
+            $command->scheduleForDate . ' ' . $command->scheduleForTime
+        );
+        if ($dateTime === false) {
+            throw new RuntimeException('Invalid date/time');
+        }
+
         $record = [
             'organizerId' => $command->userId,
             'name' => $command->name,
             'description' => $command->description,
-            'scheduledFor' => $command->scheduleForDate . ' ' . $command->scheduleForTime,
+            'scheduledFor' => $dateTime->format('Y-m-d H:i'),
             'wasCancelled' => 0,
         ];
         $this->connection->insert('meetups', $record);

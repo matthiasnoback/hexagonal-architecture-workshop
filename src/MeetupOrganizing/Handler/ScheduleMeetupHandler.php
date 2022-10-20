@@ -49,14 +49,6 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $formErrors['description'][] = 'Provide a description';
             }
 
-            $dateTime = DateTimeImmutable::createFromFormat(
-                'Y-m-d H:i',
-                $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
-            );
-            if ($dateTime === false) {
-                $formErrors['scheduleFor'][] = 'Invalid date/time';
-            }
-
             if ($formErrors === []) {
                 $user = $this->session->getLoggedInUser();
                 Assert::that($user)->notNull('You need to be logged in');
