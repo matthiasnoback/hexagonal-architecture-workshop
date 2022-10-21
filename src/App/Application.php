@@ -8,6 +8,9 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Billing\CountMeetups;
+use Billing\InvoiceNotRequired;
+use Billing\ViewModel\Invoice;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
@@ -32,6 +35,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher $eventDispatcher,
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
+        private readonly CountMeetups $service,
     ) {
     }
 
@@ -147,6 +151,42 @@ final class Application implements ApplicationInterface
                 Mapping::getString($record, 'organizerId'),
             ),
             $this->connection->fetchAllAssociative($query, $parameters)
+        );
+    }
+
+    public function createInvoice(int $year, int $month, string $organizerId): void
+    {
+        $numberOfMeetups = $this->service->forOrganizer($year, $month, $organizerId);
+
+        if ($numberOfMeetups === 0) {
+            throw new InvoiceNotRequired();
+        }
+
+        $invoiceAmount = $numberOfMeetups * 5;
+
+        $this->connection->insert('invoices', [
+            'organizerId' => $organizerId,
+            'amount' => number_format($invoiceAmount, 2),
+            'year' => $year,
+            'month' => $month,
+        ]);
+    }
+
+    public function listInvoices(string $organizerId): array
+    {
+        $records = $this->connection->fetchAllAssociative(
+            'SELECT * FROM invoices WHERE organizerId = ?',
+            [$organizerId]
+        );
+
+        return array_map(
+            fn (array $record) => new Invoice(
+                Mapping::getInt($record, 'invoiceId'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getInt($record, 'month') . '/' . Mapping::getInt($record, 'year'),
+                Mapping::getString($record, 'amount'),
+            ),
+            $records
         );
     }
 }
