@@ -12,6 +12,7 @@ use Psr\Container\ContainerInterface;
 abstract class AbstractApplicationTest extends TestCase
 {
     protected ApplicationInterface $application;
+    protected ContainerInterface $container;
 
     protected function setUp(): void
     {
@@ -19,12 +20,13 @@ abstract class AbstractApplicationTest extends TestCase
 
         /** @var ContainerInterface $container */
         $container = require 'config/container.php';
+        $this->container = $container;
 
         /** @var SchemaManager $schemaManager */
-        $schemaManager = $container->get(SchemaManager::class);
+        $schemaManager = $this->container->get(SchemaManager::class);
         $schemaManager->updateSchema();
         $schemaManager->truncateTables();
 
-        $this->application = $container->get(ApplicationInterface::class);
+        $this->application = $this->container->get(ApplicationInterface::class);
     }
 }

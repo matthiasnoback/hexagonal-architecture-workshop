@@ -5,11 +5,10 @@ namespace MeetupOrganizing\Infrastructure;
 
 use App\Mapping;
 use Assert\Assert;
-use Billing\CountMeetups;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 
-final class CountMeetupsUsingDatabase implements CountMeetups
+final class CountMeetupsUsingDatabase
 {
     public function __construct(
         private readonly Connection $connection,

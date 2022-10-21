@@ -21,6 +21,7 @@ use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
 use Billing\CountMeetups;
+use Billing\CountMeetupsUsingApi;
 use MeetupOrganizing\Infrastructure\CountMeetupsUsingDatabase;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
@@ -144,7 +145,7 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                     $container->get(ApplicationInterface::class),
                 ),
-                CountMeetups::class => fn (ContainerInterface $container) => new CountMeetupsUsingDatabase($container->get(Connection::class)),
+                CountMeetups::class => fn (ContainerInterface $container) => new CountMeetupsUsingApi($container->get(ClientInterface::class), $container->get(RequestFactoryInterface::class)),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
@@ -212,7 +213,9 @@ class ConfigProvider
                 ExternalEventPublisher::class => fn (ContainerInterface $container) => new AsynchronousExternalEventPublisher(
                     $container->get(Producer::class)
                 ),
-                ApiCountMeetupsHandler::class => fn () => new ApiCountMeetupsHandler(),
+                ApiCountMeetupsHandler::class => fn (ContainerInterface $container) => new ApiCountMeetupsHandler(
+                    new CountMeetupsUsingDatabase($container->get(Connection::class))
+                ),
                 'external_event_consumers' => fn (ContainerInterface $container) => [
                     $container->get(OrganizerProjection::class),
                 ],

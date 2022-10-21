@@ -13,6 +13,7 @@ return [
                 $container->get('external_event_consumers')
             ),
             // TODO define application test-specific factories here, which will override earlier service definitions
+            \Billing\CountMeetups::class => fn () => new \AppTest\CountMeetupsMock()
         ],
     ],
 ];
