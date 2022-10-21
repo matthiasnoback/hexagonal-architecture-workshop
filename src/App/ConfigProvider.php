@@ -20,6 +20,8 @@ use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
+use Billing\CountMeetups;
+use MeetupOrganizing\Infrastructure\CountMeetupsUsingDatabase;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
@@ -140,8 +142,10 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(CountMeetups::class),
                 ),
+                CountMeetups::class => fn (ContainerInterface $container) => new CountMeetupsUsingDatabase($container->get(Connection::class)),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
