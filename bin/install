@@ -6,13 +6,13 @@ echo "Creating .env file"
 printf "HOST_UID=%s\nHOST_GID=%s\n" "$(id -u)" "$(id -g)" > .env
 
 echo "Pulling Docker images"
-docker-compose pull
+docker compose pull
 
 echo "Installing Composer dependencies"
-docker-compose run --rm composer install --ignore-platform-reqs
+docker compose run --rm composer install --ignore-platform-reqs
 
-echo "Starting all services in docker-compose.yml"
-docker-compose up -d
+echo "Starting all services in docker compose.yml"
+docker compose up -d
 
 echo ""
 echo "Now open http://localhost:8000/ in your browser"
