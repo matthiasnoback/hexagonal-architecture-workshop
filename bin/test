@@ -2,8 +2,8 @@
 
 set -eu
 
-docker-compose run --rm php vendor/bin/phpstan analyze --ansi --no-progress
+docker compose run --rm php vendor/bin/phpstan analyze --ansi --no-progress
 
-docker-compose up -d --force-recreate
+docker compose up -d --force-recreate
 
-docker-compose run --rm php vendor/bin/phpunit --colors
+docker compose run --rm php vendor/bin/phpunit --colors
