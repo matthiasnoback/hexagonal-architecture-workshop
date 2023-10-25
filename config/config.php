@@ -8,6 +8,7 @@ use Laminas\ConfigAggregator\PhpFileProvider;
 use Mezzio\Helper\ConfigProvider;
 
 $aggregator = new ConfigAggregator([
+    \Mezzio\Helper\ConfigProvider::class,
     \Mezzio\Twig\ConfigProvider::class,
     \Mezzio\Tooling\ConfigProvider::class,
     ConfigProvider::class,
