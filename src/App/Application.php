@@ -99,4 +99,24 @@ final class Application implements ApplicationInterface
 
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
+
+    public function scheduleMeeting(
+        string $organizerId,
+        string $name,
+        string $description,
+        string $scheduledFor
+    ): int
+    {
+        // TODO check if organizerId refers to an organizer
+        $record = [
+            'organizerId' => $organizerId,
+            'name' => $name,
+            'description' => $description,
+            'scheduledFor' => $scheduledFor,
+            'wasCancelled' => 0,
+        ];
+        $this->connection->insert('meetups', $record);
+
+        return (int) $this->connection->lastInsertId();
+    }
 }
