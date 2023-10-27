@@ -24,6 +24,8 @@ use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
+use Billing\Meetup;
+use MeetupOrganizing\MethodsForBilling;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -140,7 +142,11 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(Meetup::class),
+                ),
+                Meetup::class => fn (ContainerInterface $container) => new MethodsForBilling(
+                    $container->get(Connection::class)
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
