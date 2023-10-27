@@ -25,5 +25,8 @@ interface ApplicationInterface
         string $scheduledFor
     ): int;
 
+    /**
+     * @return array<MeetupForList>
+     */
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array;
 }

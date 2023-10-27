@@ -24,12 +24,13 @@ use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 final class Application implements ApplicationInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
+        private readonly UserRepository          $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
-        private readonly EventDispatcher $eventDispatcher,
-        private readonly Connection $connection,
-        private readonly RsvpRepository $rsvpRepository,
-    ) {
+        private readonly EventDispatcher         $eventDispatcher,
+        private readonly Connection              $connection,
+        private readonly RsvpRepository          $rsvpRepository,
+    )
+    {
     }
 
     public function signUp(SignUp $command): string
@@ -121,7 +122,7 @@ final class Application implements ApplicationInterface
         ];
         $this->connection->insert('meetups', $record);
 
-        return (int) $this->connection->lastInsertId();
+        return (int)$this->connection->lastInsertId();
     }
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array
@@ -138,6 +139,11 @@ final class Application implements ApplicationInterface
 
         $meetups = $this->connection->fetchAllAssociative($query, $parameters);
 
-        return $meetups;
+        $meetupLists = [];
+        foreach ($meetups as $meetupRecord) {
+            $meetupLists[] = MeetupForList::createFromRecord($meetupRecord);
+        }
+
+        return $meetupLists;
     }
 }
