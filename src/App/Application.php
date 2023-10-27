@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -121,5 +122,22 @@ final class Application implements ApplicationInterface
         $this->connection->insert('meetups', $record);
 
         return (int) $this->connection->lastInsertId();
+    }
+
+    public function listUpcomingMeetups(string $now, bool $showPastMeetups): array
+    {
+        $now = new DateTimeImmutable($now);
+
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $now->format('Y-m-d H:i');
+        }
+
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+
+        return $meetups;
     }
 }

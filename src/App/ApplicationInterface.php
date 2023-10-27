@@ -24,4 +24,6 @@ interface ApplicationInterface
         string $description,
         string $scheduledFor
     ): int;
+
+    public function listUpcomingMeetups(string $now, bool $showPastMeetups): array;
 }
