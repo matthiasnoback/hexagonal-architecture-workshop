@@ -53,6 +53,8 @@ final class SignUpHandler implements RequestHandlerInterface
                 $formErrors['emailAddress'][] = 'Please provide an email address';
             }
 
+            // $signUp = SignUp::fromJson($requestBody);
+
             if ($formErrors === []) {
                 $this->application->signUp(
                     new SignUp($formData['name'], $formData['emailAddress'], $formData['userType'])

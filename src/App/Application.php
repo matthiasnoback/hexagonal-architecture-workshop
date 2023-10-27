@@ -107,7 +107,10 @@ final class Application implements ApplicationInterface
         string $scheduledFor
     ): int
     {
+        // form validation happened?
+
         // TODO check if organizerId refers to an organizer
+        // TODO check many more things, and throw exceptions
         $record = [
             'organizerId' => $organizerId,
             'name' => $name,
