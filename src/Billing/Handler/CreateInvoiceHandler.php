@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
+use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
-use Billing\Meetup;
-use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -20,11 +19,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class CreateInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection                $connection,
         private readonly Session                   $session,
         private readonly RouterInterface           $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly Meetup                    $meetupOrganizing,
+        private readonly ApplicationInterface      $application,
     ) {
     }
 
@@ -49,18 +47,9 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            $numberOfMeetups = $this->meetupOrganizing->numberOfMeetups((int) $year, (int) $month, $organizerId);
+            $invoiceId = $this->application->createInvoice((int) $year, (int) $month, $organizerId);
 
-            if ($numberOfMeetups > 0) {
-                $invoiceAmount = $numberOfMeetups * 5;
-
-                $this->connection->insert('invoices', [
-                    'organizerId' => $organizerId,
-                    'amount' => number_format($invoiceAmount, 2),
-                    'year' => $year,
-                    'month' => $month,
-                ]);
-
+            if ($invoiceId !== null) {
                 $this->session->addSuccessFlash('Invoice created');
             } else {
                 $this->session->addErrorFlash('No need to create an invoice');
