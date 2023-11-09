@@ -173,4 +173,18 @@ final class Application implements ApplicationInterface
 
         return $meetupLists;
     }
+
+    public function cancelMeetup(string $meetupId, string $userId): void
+    {
+        $this->connection->update(
+            'meetups',
+            [
+                'wasCancelled' => 1,
+            ],
+            [
+                'meetupId' => $meetupId,
+                'organizerId' => $userId,
+            ]
+        );
+    }
 }

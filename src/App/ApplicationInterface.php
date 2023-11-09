@@ -26,4 +26,6 @@ interface ApplicationInterface
      * @return array<MeetupForList>
      */
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array;
+
+    public function cancelMeetup(string $meetupId, string $userId): void;
 }
