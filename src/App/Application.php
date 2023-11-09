@@ -18,6 +18,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -33,6 +34,7 @@ final class Application implements ApplicationInterface
         private readonly Connection              $connection,
         private readonly RsvpRepository          $rsvpRepository,
         private readonly BillingMeetup           $meetupOrganizing,
+        private readonly MeetupRepository           $meetupRepository,
     )
     {
     }
@@ -122,16 +124,7 @@ final class Application implements ApplicationInterface
             $scheduleMeetup->getScheduledFor()
         );
 
-        $record = [
-            'organizerId' => $scheduleMeetup->getOrganizerId(),
-            'name' => $scheduleMeetup->getName(),
-            'description' => $scheduleMeetup->getDescription(),
-            'scheduledFor' => $scheduleMeetup->getScheduledFor(),
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
-
-        return (int)$this->connection->lastInsertId();
+        return $this->meetupRepository->save($meetup);
     }
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array

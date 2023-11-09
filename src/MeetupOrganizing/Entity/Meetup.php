@@ -40,4 +40,18 @@ class Meetup
 
         return new self($organizerId, $name, $description, $scheduledFor, false);
     }
+
+    /**
+     * @return array<string,string|int>
+     */
+    public function toRecord(): array
+    {
+        return [
+            'organizerId' => $this->organizerId->asString(),
+            'name' => $this->name,
+            'description' => $this->description,
+            'scheduledFor' => $this->scheduledFor,
+            'wasCancelled' => (int) $this->wasCancelled,
+        ];
+    }
 }
