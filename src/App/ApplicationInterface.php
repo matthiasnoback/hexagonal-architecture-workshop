@@ -7,6 +7,7 @@ namespace App;
 use Billing\ViewModel\Invoice;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 
 interface ApplicationInterface
@@ -21,7 +22,7 @@ interface ApplicationInterface
 
     public function scheduleMeeting(
         ScheduleMeetup $scheduleMeetup
-    ): int;
+    ): MeetupId;
 
     /**
      * @return array<MeetupForList>

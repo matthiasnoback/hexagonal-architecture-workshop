@@ -76,7 +76,7 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
 
                 return new RedirectResponse(
                     $this->router->generateUri('meetup_details', [
-                        'id' => $meetupId,
+                        'id' => $meetupId->asString(),
                     ])
                 );
             }

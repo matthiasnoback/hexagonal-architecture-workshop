@@ -18,6 +18,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
@@ -110,21 +111,25 @@ final class Application implements ApplicationInterface
 
     public function scheduleMeeting(
         ScheduleMeetup $scheduleMeetup
-    ): int
+    ): MeetupId
     {
         // form validation happened?
 
         // TODO check if organizerId refers to an organizer
         // TODO check many more things, and throw exceptions
 
+        $meetupId = $this->meetupRepository->nextIdentity();
         $meetup = Meetup::schedule(
+            $meetupId,
             UserId::fromString($scheduleMeetup->getOrganizerId()),
             $scheduleMeetup->getName(),
             $scheduleMeetup->getDescription(),
             $scheduleMeetup->getScheduledFor()
         );
 
-        return $this->meetupRepository->save($meetup);
+        $this->meetupRepository->save($meetup);
+
+        return $meetupId;
     }
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array

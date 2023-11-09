@@ -3,6 +3,7 @@
 namespace MeetupOrganizing\Entity;
 
 use Doctrine\DBAL\Connection;
+use Ramsey\Uuid\Uuid;
 
 class MeetupRepositorySql implements MeetupRepository
 {
@@ -13,10 +14,13 @@ class MeetupRepositorySql implements MeetupRepository
         $this->connection = $connection;
     }
 
-    public function save(Meetup $entity): int
+    public function save(Meetup $entity): void
     {
         $this->connection->insert('meetups', $entity->toRecord());
+    }
 
-        return (int)$this->connection->lastInsertId();
+    public function nextIdentity(): MeetupId
+    {
+        return MeetupId::fromString(Uuid::uuid4()->toString());
     }
 }

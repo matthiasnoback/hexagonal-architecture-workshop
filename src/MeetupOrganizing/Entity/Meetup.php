@@ -19,13 +19,15 @@ class Meetup
 
     private bool $wasCancelled;
 
-    private function __construct(UserId $organizerId, string $name, string $description, string $scheduledFor, bool $wasCancelled)
+    private MeetupId $meetupId;
+
+    private function __construct(MeetupId $meetupId, UserId $organizerId, string $name, string $description, string $scheduledFor, bool $wasCancelled)
     {
         Assertion::notBlank($name);
         Assertion::notBlank($description);
         Assertion::notBlank($scheduledFor);
 
-        // checks? not sure
+        $this->meetupId = $meetupId;
         $this->organizerId = $organizerId;
         $this->name = $name;
         $this->description = $description;
@@ -33,12 +35,12 @@ class Meetup
         $this->wasCancelled = $wasCancelled;
     }
 
-    public static function schedule(UserId $organizerId, string $name, string $description, string $scheduledFor): self
+    public static function schedule(MeetupId $meetupId, UserId $organizerId, string $name, string $description, string $scheduledFor): self
     {
         // checks for "scheduling"
         // date should be in the future
 
-        return new self($organizerId, $name, $description, $scheduledFor, false);
+        return new self($meetupId, $organizerId, $name, $description, $scheduledFor, false);
     }
 
     /**
@@ -47,6 +49,7 @@ class Meetup
     public function toRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,

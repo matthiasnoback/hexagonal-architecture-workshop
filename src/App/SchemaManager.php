@@ -51,9 +51,7 @@ final class SchemaManager
         $accountsTable->addUniqueIndex(['emailAddress']);
 
         $meetupsTable = $schema->createTable('meetups');
-        $meetupsTable->addColumn('meetupId', 'integer', [
-            'autoincrement' => true,
-        ]);
+        $meetupsTable->addColumn('meetupId', 'string');
         $meetupsTable->addColumn('organizerId', 'string');
         $meetupsTable->addColumn('name', 'string');
         $meetupsTable->addColumn('description', 'string');
