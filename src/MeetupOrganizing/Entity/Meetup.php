@@ -2,8 +2,6 @@
 
 namespace MeetupOrganizing\Entity;
 
-use Assert\Assertion;
-
 final class Meetup
 {
     private string $organizerId;
@@ -58,7 +56,22 @@ final class Meetup
         );
     }
 
-    public function asRecord(): array
+    public static function fromRecord(array $record): self
+    {
+        return new self(
+            MeetupId::fromString($record['meetupId']),
+            $record['organizerId'],
+            $record['name'],
+            $record['description'],
+            ScheduledDate::fromString($record['scheduledFor']),
+            (bool) $record['wasCancelled'],
+        );
+    }
+
+    /**
+     * @return array<string,string|int>
+     */
+    public function toRecord(): array
     {
         return [
             'meetupId' => $this->meetupId->asString(),
@@ -73,5 +86,12 @@ final class Meetup
     public function meetupId(): MeetupId
     {
         return $this->meetupId;
+    }
+
+    public function cancel(): void
+    {
+        // TODO validation
+
+        $this->wasCancelled = true;
     }
 }
