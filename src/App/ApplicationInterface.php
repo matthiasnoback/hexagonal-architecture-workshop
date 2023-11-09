@@ -35,4 +35,6 @@ interface ApplicationInterface
      * @return array<Invoice>
      */
     public function listInvoices(string $organizerId): array;
+
+    public function cancelMeetup(string $meetupId, string $userId): void;
 }

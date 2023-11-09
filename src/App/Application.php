@@ -190,4 +190,18 @@ final class Application implements ApplicationInterface
             $records
         );
     }
+
+    public function cancelMeetup(string $meetupId, string $userId): void
+    {
+        $this->connection->update(
+            'meetups',
+            [
+                'wasCancelled' => 1,
+            ],
+            [
+                'meetupId' => $meetupId,
+                'organizerId' => $userId,
+            ]
+        );
+    }
 }
