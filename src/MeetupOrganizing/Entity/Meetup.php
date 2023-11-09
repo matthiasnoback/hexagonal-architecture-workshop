@@ -43,6 +43,18 @@ class Meetup
         return new self($meetupId, $organizerId, $name, $description, $scheduledFor, false);
     }
 
+    public static function fromRecord(array $record): self
+    {
+        return new self(
+            MeetupId::fromString($record['meetupId']),
+            UserId::fromString($record['organizerId']),
+            $record['name'],
+            $record['description'],
+            $record['scheduledFor'],
+            (bool) $record['wasCancelled'],
+        );
+    }
+
     /**
      * @return array<string,string|int>
      */
@@ -56,5 +68,17 @@ class Meetup
             'scheduledFor' => $this->scheduledFor,
             'wasCancelled' => (int) $this->wasCancelled,
         ];
+    }
+
+    public function meetupId(): MeetupId
+    {
+        return $this->meetupId;
+    }
+
+    public function cancel(): void
+    {
+        // TODO validation
+
+        $this->wasCancelled = true;
     }
 }

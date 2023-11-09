@@ -193,15 +193,13 @@ final class Application implements ApplicationInterface
 
     public function cancelMeetup(string $meetupId, string $userId): void
     {
-        $this->connection->update(
-            'meetups',
-            [
-                'wasCancelled' => 1,
-            ],
-            [
-                'meetupId' => $meetupId,
-                'organizerId' => $userId,
-            ]
-        );
+        // load
+        $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
+
+        // modify
+        $meetup->cancel();
+
+        // save
+        $this->meetupRepository->save($meetup);
     }
 }
