@@ -13,7 +13,7 @@ final class SignUp
         private readonly string $emailAddress,
         private readonly string $userType,
     ) {
-        // throw exception
+        // throw exception? NO
     }
 
     public function name(): string

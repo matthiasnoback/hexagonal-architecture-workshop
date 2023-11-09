@@ -2,6 +2,7 @@
 
 namespace AppTest;
 
+use App\ScheduleMeetup;
 use Billing\ViewModel\Invoice;
 use MeetupOrganizing\Application\SignUp;
 
@@ -13,8 +14,12 @@ class InvoicingHexagonalTest extends AbstractApplicationTest
             new SignUp('Organizer', 'organizer@gmail.com', 'Organizer')
         );
 
-        $this->application->scheduleMeeting($organizerId, 'Meetup 1', 'Description', '2022-01-10 20:00');
-        $this->application->scheduleMeeting($organizerId, 'Meetup 2', 'Description', '2022-01-17 20:00');
+        $this->application->scheduleMeeting(
+            new ScheduleMeetup($organizerId, 'Meetup 1', 'Description', '2022-01-10 20:00')
+        );
+        $this->application->scheduleMeeting(
+            new ScheduleMeetup($organizerId, 'Meetup 2', 'Description', '2022-01-17 20:00')
+        );
 
         // create invoice for organizer and month
         $invoiceId = $this->application->createInvoice(2022, 1, $organizerId);
