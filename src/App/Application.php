@@ -8,7 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
-use Billing\Meetup;
+use Billing\Meetup as BillingMeetup;
 use Billing\ViewModel\Invoice;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
@@ -17,6 +17,7 @@ use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -31,7 +32,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher         $eventDispatcher,
         private readonly Connection              $connection,
         private readonly RsvpRepository          $rsvpRepository,
-        private readonly Meetup          $meetupOrganizing,
+        private readonly BillingMeetup           $meetupOrganizing,
     )
     {
     }
@@ -113,6 +114,14 @@ final class Application implements ApplicationInterface
 
         // TODO check if organizerId refers to an organizer
         // TODO check many more things, and throw exceptions
+
+        $meetup = Meetup::schedule(
+            UserId::fromString($scheduleMeetup->getOrganizerId()),
+            $scheduleMeetup->getName(),
+            $scheduleMeetup->getDescription(),
+            $scheduleMeetup->getScheduledFor()
+        );
+
         $record = [
             'organizerId' => $scheduleMeetup->getOrganizerId(),
             'name' => $scheduleMeetup->getName(),
