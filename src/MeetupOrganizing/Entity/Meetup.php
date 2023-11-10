@@ -84,7 +84,21 @@ class Meetup
 
     public function reschedule(ScheduledDate $scheduleFor, UserId $userId): void
     {
-        Assertion::true($userId->equals($this->organizerId));
+        // assertions: for the arguments on their own
+        // ...
+
+        // runtime checks
+        if (!$userId->equals($this->organizerId)) {
+            throw CanNotRescheduleMeetup::becauseCurrentUserIsNotTheOrganizer();
+        }
+
+        if ($this->wasCancelled) {
+            throw CanNotRescheduleMeetup::becauseItWasCancelled();
+        }
+
+        if ($this->scheduledFor->isInThePast()) {
+            throw CanNotRescheduleMeetup::becauseItAlreadyTookPlace();
+        }
 
         $this->scheduledFor = $scheduleFor;
     }
