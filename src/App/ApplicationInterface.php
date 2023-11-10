@@ -37,4 +37,6 @@ interface ApplicationInterface
     public function listInvoices(string $organizerId): array;
 
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    public function rescheduleMeetup(string $meetupId, string $scheduleFor, string $organizerId): void;
 }

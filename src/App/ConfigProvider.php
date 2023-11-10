@@ -92,7 +92,7 @@ class ConfigProvider
                     $container->get(RouterInterface::class)
                 ),
                 RescheduleMeetupHandler::class => fn (ContainerInterface $container) => new RescheduleMeetupHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(ResponseFactory::class),

@@ -202,4 +202,13 @@ final class Application implements ApplicationInterface
         // save
         $this->meetupRepository->save($meetup);
     }
+
+    public function rescheduleMeetup(string $meetupId, string $scheduleFor, string $organizerId): void
+    {
+        $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
+
+        $meetup->reschedule($scheduleFor, UserId::fromString($organizerId));
+
+        $this->meetupRepository->save($meetup);
+    }
 }
