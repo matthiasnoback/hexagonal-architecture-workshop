@@ -164,7 +164,9 @@ class ConfigProvider
                     $container->get(RsvpRepository::class),
                     $container->get(Meetup::class),
                     $container->get(MeetupRepository::class),
+                    $container->get(ClockProvider::class),
                 ),
+                ClockProvider::class => fn () => new SystemClockProvider(),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class

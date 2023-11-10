@@ -26,7 +26,6 @@ final class ListMeetupsHandler implements RequestHandlerInterface
         return new HtmlResponse(
             $this->renderer->render('app::list-meetups.html.twig', [
                 'meetups' => $this->application->listUpcomingMeetups(
-                    $_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now',
                     $showPastMeetups
                 ),
                 'showPastMeetups' => $showPastMeetups,

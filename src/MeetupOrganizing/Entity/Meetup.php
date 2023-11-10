@@ -35,12 +35,12 @@ class Meetup
         $this->wasCancelled = $wasCancelled;
     }
 
-    public static function schedule(MeetupId $meetupId, UserId $organizerId, string $name, string $description, ScheduledDate $scheduledFor): self
+    public static function schedule(MeetupId $meetupId, UserId $organizerId, string $name, string $description, ScheduledDate $scheduledFor, \DateTimeImmutable $now): self
     {
         // checks for "scheduling"
         // date should be in the future
 
-        if ($scheduledFor->isInThePast()) {
+        if ($scheduledFor->isInThePast($now)) {
             throw CanNotScheduleMeetup::becauseTheDateIsInThePast();
         }
 
@@ -86,7 +86,7 @@ class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(ScheduledDate $scheduleFor, UserId $userId): void
+    public function reschedule(ScheduledDate $scheduleFor, UserId $userId, \DateTimeImmutable $now): void
     {
         // assertions: for the arguments on their own
         // ...
@@ -100,7 +100,7 @@ class Meetup
             throw CanNotRescheduleMeetup::becauseItWasCancelled();
         }
 
-        if ($this->scheduledFor->isInThePast()) {
+        if ($this->scheduledFor->isInThePast($now)) {
             throw CanNotRescheduleMeetup::becauseItAlreadyTookPlace();
         }
 

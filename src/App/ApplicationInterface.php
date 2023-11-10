@@ -27,7 +27,7 @@ interface ApplicationInterface
     /**
      * @return array<MeetupForList>
      */
-    public function listUpcomingMeetups(string $now, bool $showPastMeetups): array;
+    public function listUpcomingMeetups(bool $showPastMeetups): array;
 
     public function createInvoice(int $year, int $month, string $organizerId): ?int;
 

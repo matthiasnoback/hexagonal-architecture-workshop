@@ -39,6 +39,7 @@ final class Application implements ApplicationInterface
         private readonly RsvpRepository          $rsvpRepository,
         private readonly BillingMeetup           $meetupOrganizing,
         private readonly MeetupRepository           $meetupRepository,
+        private readonly ClockProvider           $clockProvider,
     )
     {
     }
@@ -131,7 +132,8 @@ final class Application implements ApplicationInterface
             UserId::fromString($scheduleMeetup->getOrganizerId()),
             $scheduleMeetup->getName(),
             $scheduleMeetup->getDescription(),
-            ScheduledDate::createWithFormat($scheduleMeetup->getScheduledFor())
+            ScheduledDate::createWithFormat($scheduleMeetup->getScheduledFor()),
+            $this->clockProvider->now()
         );
 
         $this->meetupRepository->save($meetup);
@@ -139,9 +141,9 @@ final class Application implements ApplicationInterface
         return $meetupId;
     }
 
-    public function listUpcomingMeetups(string $now, bool $showPastMeetups): array
+    public function listUpcomingMeetups(bool $showPastMeetups): array
     {
-        $now = new DateTimeImmutable($now);
+        $now = $this->clockProvider->now();
 
         $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
         $parameters = [];
@@ -214,7 +216,11 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule(ScheduledDate::createWithFormat($scheduleFor), UserId::fromString($organizerId));
+        $meetup->reschedule(
+            ScheduledDate::createWithFormat($scheduleFor),
+            UserId::fromString($organizerId),
+            $this->clockProvider->now()
+        );
 
         $this->meetupRepository->save($meetup);
     }
