@@ -82,20 +82,10 @@ class Meetup
         $this->wasCancelled = true;
     }
 
-    public function getScheduledFor(): string
-    {
-        return $this->scheduledFor;
-    }
-
     public function reschedule(string $scheduleFor, UserId $userId): void
     {
         Assertion::true($userId->equals($this->organizerId));
 
         $this->scheduledFor = $scheduleFor;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 }
