@@ -83,4 +83,9 @@ final class User
     {
         return $this->userType;
     }
+
+    public function isOrganizer(): bool
+    {
+        return $this->userTypeIs(UserType::Organizer);
+    }
 }

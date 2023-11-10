@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Entity\CouldNotFindUser;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
@@ -15,6 +16,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
+use MeetupOrganizing\Entity\CanNotScheduleMeetup;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
@@ -116,7 +118,11 @@ final class Application implements ApplicationInterface
     {
         // form validation happened?
 
-        // TODO check if organizerId refers to an organizer
+        $user = $this->userRepository->getById(UserId::fromString($scheduleMeetup->getOrganizerId()));
+        if (!$user->isOrganizer()) {
+            throw CanNotScheduleMeetup::becauseUserIsNotAnOrganizer();
+        }
+
         // TODO check many more things, and throw exceptions
 
         $meetupId = $this->meetupRepository->nextIdentity();

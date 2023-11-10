@@ -15,14 +15,14 @@ class InvoicingHexagonalTest extends AbstractApplicationTest
         );
 
         $this->application->scheduleMeeting(
-            new ScheduleMeetup($organizerId, 'Meetup 1', 'Description', '2022-01-10 20:00')
+            new ScheduleMeetup($organizerId, 'Meetup 1', 'Description', '2023-11-10 20:00')
         );
         $this->application->scheduleMeeting(
-            new ScheduleMeetup($organizerId, 'Meetup 2', 'Description', '2022-01-17 20:00')
+            new ScheduleMeetup($organizerId, 'Meetup 2', 'Description', '2023-11-17 20:00')
         );
 
         // create invoice for organizer and month
-        $invoiceId = $this->application->createInvoice(2022, 1, $organizerId);
+        $invoiceId = $this->application->createInvoice(2023, 11, $organizerId);
         self::assertNotNull($invoiceId);
 
         // assert created invoice has amount of 10 euros

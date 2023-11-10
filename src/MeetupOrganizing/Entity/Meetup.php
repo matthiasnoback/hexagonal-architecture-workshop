@@ -40,6 +40,10 @@ class Meetup
         // checks for "scheduling"
         // date should be in the future
 
+        if ($scheduledFor->isInThePast()) {
+            throw CanNotScheduleMeetup::becauseTheDateIsInThePast();
+        }
+
         return new self($meetupId, $organizerId, $name, $description, $scheduledFor, false);
     }
 
