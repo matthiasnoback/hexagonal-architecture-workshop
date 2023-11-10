@@ -28,4 +28,6 @@ interface ApplicationInterface
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array;
 
     public function cancelMeetup(string $meetupId, string $userId): void;
+
+    public function rescheduleMeetup(string $meetupId, string $scheduleFor, string $organizerId): void;
 }
