@@ -15,13 +15,13 @@ class Meetup
 
     private string $name;
     private string $description;
-    private string $scheduledFor;
+    private ScheduledDate $scheduledFor;
 
     private bool $wasCancelled;
 
     private MeetupId $meetupId;
 
-    private function __construct(MeetupId $meetupId, UserId $organizerId, string $name, string $description, string $scheduledFor, bool $wasCancelled)
+    private function __construct(MeetupId $meetupId, UserId $organizerId, string $name, string $description, ScheduledDate $scheduledFor, bool $wasCancelled)
     {
         Assertion::notBlank($name);
         Assertion::notBlank($description);
@@ -35,7 +35,7 @@ class Meetup
         $this->wasCancelled = $wasCancelled;
     }
 
-    public static function schedule(MeetupId $meetupId, UserId $organizerId, string $name, string $description, string $scheduledFor): self
+    public static function schedule(MeetupId $meetupId, UserId $organizerId, string $name, string $description, ScheduledDate $scheduledFor): self
     {
         // checks for "scheduling"
         // date should be in the future
@@ -50,7 +50,7 @@ class Meetup
             UserId::fromString($record['organizerId']),
             $record['name'],
             $record['description'],
-            $record['scheduledFor'],
+            ScheduledDate::createWithFormat($record['scheduledFor']),
             (bool) $record['wasCancelled'],
         );
     }
@@ -65,7 +65,7 @@ class Meetup
             'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledFor,
+            'scheduledFor' => $this->scheduledFor->toString(),
             'wasCancelled' => (int) $this->wasCancelled,
         ];
     }
@@ -82,7 +82,7 @@ class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(string $scheduleFor, UserId $userId): void
+    public function reschedule(ScheduledDate $scheduleFor, UserId $userId): void
     {
         Assertion::true($userId->equals($this->organizerId));
 

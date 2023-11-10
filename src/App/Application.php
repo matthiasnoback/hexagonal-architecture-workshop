@@ -23,6 +23,7 @@ use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -124,7 +125,7 @@ final class Application implements ApplicationInterface
             UserId::fromString($scheduleMeetup->getOrganizerId()),
             $scheduleMeetup->getName(),
             $scheduleMeetup->getDescription(),
-            $scheduleMeetup->getScheduledFor()
+            ScheduledDate::createWithFormat($scheduleMeetup->getScheduledFor())
         );
 
         $this->meetupRepository->save($meetup);
@@ -207,7 +208,7 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule($scheduleFor, UserId::fromString($organizerId));
+        $meetup->reschedule(ScheduledDate::createWithFormat($scheduleFor), UserId::fromString($organizerId));
 
         $this->meetupRepository->save($meetup);
     }
