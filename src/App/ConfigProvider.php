@@ -27,6 +27,7 @@ use Billing\Handler\ListOrganizersHandler;
 use Billing\Meetup;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\MeetupRepositorySql;
+use MeetupOrganizing\IncreaseAttendees;
 use MeetupOrganizing\MethodsForBilling;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
@@ -65,7 +66,10 @@ class ConfigProvider
             ],
             'project_root_dir' => realpath(__DIR__ . '/../../'),
             'event_listeners' => [
-                UserHasRsvpd::class => [[AddFlashMessage::class, 'whenUserHasRsvped']],
+                UserHasRsvpd::class => [
+                    [AddFlashMessage::class, 'whenUserHasRsvped'],
+                    [IncreaseAttendees::class, 'whenUserHasRsvped']
+                ],
                 UserHasSignedUp::class => [[PublishExternalEvent::class, 'whenUserHasSignedUp']],
             ],
         ];
@@ -76,6 +80,9 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
+                IncreaseAttendees::class => fn (ContainerInterface $container) => new IncreaseAttendees(
+                    $container->get(Connection::class),
+                ),
                 ScheduleMeetupHandler::class => fn (ContainerInterface $container) => new ScheduleMeetupHandler(
                     $container->get(Session::class),
                     $container->get(TemplateRendererInterface::class),

@@ -14,6 +14,8 @@ class MeetupForList
         private string $scheduledFor,
 
         private string $organizerId,
+
+        private int $numberOfAttendees,
     )
     {
     }
@@ -26,7 +28,8 @@ class MeetupForList
             $meetupRecord['meetupId'],
             self::getStringFromKey($meetupRecord, 'name'),
             $meetupRecord['scheduledFor'],
-            $meetupRecord['organizerId']
+            $meetupRecord['organizerId'],
+            $meetupRecord['numberOfAttendees'],
         );
     }
 
@@ -56,5 +59,10 @@ class MeetupForList
     public function getOrganizerId(): string
     {
         return $this->organizerId;
+    }
+
+    public function getNumberOfAttendees(): int
+    {
+        return $this->numberOfAttendees;
     }
 }
