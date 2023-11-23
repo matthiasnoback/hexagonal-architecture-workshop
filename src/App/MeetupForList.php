@@ -21,7 +21,6 @@ class MeetupForList
     public static function createFromRecord(array $meetupRecord): self
     {
         Assertion::keyExists($meetupRecord, 'meetupId');
-        Assertion::integer($meetupRecord['meetupId']);
 
         return new self(
             (string) $meetupRecord['meetupId'],

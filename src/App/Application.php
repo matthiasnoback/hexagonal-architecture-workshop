@@ -16,6 +16,7 @@ use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
 use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\Rsvp;
@@ -23,6 +24,7 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use Ramsey\Uuid\Uuid;
 
 final class Application implements ApplicationInterface
 {
@@ -108,7 +110,7 @@ final class Application implements ApplicationInterface
 
     public function scheduleMeeting(
         ScheduleMeeting $command
-    ): int
+    ): string
     {
         // form validation happened?
 
@@ -134,14 +136,19 @@ final class Application implements ApplicationInterface
         // who deals with the model?
         // can we decouple from our own model?
 
+        $meetupId = $this->meetupRepository->nextId();
+
         $meetup = Meetup::schedule(
+            $meetupId,
             $command->organizerId(),
             $command->name(),
             $command->description(),
             $command->scheduledFor(),
         );
 
-        return $this->meetupRepository->save($meetup);
+        $this->meetupRepository->save($meetup);
+
+        return $meetupId->asString();
     }
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array

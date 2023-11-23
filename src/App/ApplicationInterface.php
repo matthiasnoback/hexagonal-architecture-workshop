@@ -20,7 +20,7 @@ interface ApplicationInterface
 
     public function scheduleMeeting(
         ScheduleMeeting $command
-    ): int;
+    ): string;
 
     /**
      * @return array<MeetupForList>

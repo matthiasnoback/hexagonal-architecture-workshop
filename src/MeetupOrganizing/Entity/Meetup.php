@@ -11,13 +11,15 @@ final class Meetup
     private string $description;
     private string $scheduledFor;
     private bool $wasCancelled;
+    private MeetupId $meetupId;
 
     private function __construct(
-        string $organizerId,
-        string $name,
-        string $description,
-        string $scheduledFor,
-        bool   $wasCancelled
+        MeetupId $meetupId,
+        string   $organizerId,
+        string   $name,
+        string   $description,
+        string   $scheduledFor,
+        bool     $wasCancelled
     )
     {
         if ($organizerId === '') {
@@ -33,6 +35,7 @@ final class Meetup
             throw new \InvalidArgumentException();
         }
 
+        $this->meetupId = $meetupId;
         $this->organizerId = $organizerId;
         $this->name = $name;
         $this->description = $description;
@@ -40,12 +43,16 @@ final class Meetup
         $this->wasCancelled = $wasCancelled;
     }
 
-    public static function schedule(string $organizerId,
-                                    string $name,
-                                    string $description,
-                                    string $scheduledFor): self
+    public static function schedule(
+        MeetupId $meetupId,
+        string   $organizerId,
+        string   $name,
+        string   $description,
+        string   $scheduledFor
+    ): self
     {
         return new self(
+            $meetupId,
             $organizerId,
             $name,
             $description,
@@ -57,11 +64,17 @@ final class Meetup
     public function asRecord(): array
     {
         return [
+            'meetupId' => $this->meetupId->asString(),
             'organizerId' => $this->organizerId,
             'name' => $this->name,
             'description' => $this->description,
             'scheduledFor' => $this->scheduledFor,
-            'wasCancelled' => (int) $this->wasCancelled,
+            'wasCancelled' => (int)$this->wasCancelled,
         ];
+    }
+
+    public function meetupId(): MeetupId
+    {
+        return $this->meetupId;
     }
 }
