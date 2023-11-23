@@ -103,10 +103,7 @@ final class Application implements ApplicationInterface
     }
 
     public function scheduleMeeting(
-        string $organizerId,
-        string $name,
-        string $description,
-        string $scheduledFor
+        ScheduleMeeting $command
     ): int
     {
         // form validation happened?
@@ -114,10 +111,10 @@ final class Application implements ApplicationInterface
         // TODO check if organizerId refers to an organizer
         // TODO check many more things, and throw exceptions
         $record = [
-            'organizerId' => $organizerId,
-            'name' => $name,
-            'description' => $description,
-            'scheduledFor' => $scheduledFor,
+            'organizerId' => $command->organizerId(),
+            'name' => $command->name(),
+            'description' => $command->description(),
+            'scheduledFor' => $command->scheduledFor(),
             'wasCancelled' => 0,
         ];
         $this->connection->insert('meetups', $record);

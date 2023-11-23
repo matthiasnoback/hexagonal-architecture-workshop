@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\ApplicationInterface;
+use App\ScheduleMeeting;
 use App\Session;
 use Assert\Assert;
 use DateTimeImmutable;
@@ -61,12 +62,14 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 Assert::that($user)->notNull('You need to be logged in');
 
                 $meetupId = $this->application->scheduleMeeting(
-                    $user
-                        ->userId()
-                        ->asString(),
-                    $formData['name'],
-                    $formData['description'],
-                    $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+                    new ScheduleMeeting(
+                        $user
+                            ->userId()
+                            ->asString(),
+                        $formData['name'],
+                        $formData['description'],
+                        $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime']
+                    )
                 );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
