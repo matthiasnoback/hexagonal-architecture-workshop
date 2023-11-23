@@ -25,6 +25,8 @@ use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
 use Billing\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
+use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\MethodsForBilling;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
@@ -161,12 +163,16 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
+                    $container->get(MeetupRepository::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class
                 )),
                 UserRepository::class => fn (ContainerInterface $container) => new UserRepositoryUsingDbal(
+                    $container->get(Connection::class)
+                ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal(
                     $container->get(Connection::class)
                 ),
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepositoryUsingDbal(

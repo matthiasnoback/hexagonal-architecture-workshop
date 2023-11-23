@@ -15,6 +15,9 @@ use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\Entity\CouldNotFindMeetup;
 use MeetupOrganizing\Entity\CouldNotFindRsvp;
+use MeetupOrganizing\Entity\Meetup;
+use MeetupOrganizing\Entity\MeetupRepository;
+use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
@@ -29,6 +32,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher         $eventDispatcher,
         private readonly Connection              $connection,
         private readonly RsvpRepository          $rsvpRepository,
+        private readonly MeetupRepository        $meetupRepository,
     )
     {
     }
@@ -110,16 +114,34 @@ final class Application implements ApplicationInterface
 
         // TODO check if organizerId refers to an organizer
         // TODO check many more things, and throw exceptions
-        $record = [
-            'organizerId' => $command->organizerId(),
-            'name' => $command->name(),
-            'description' => $command->description(),
-            'scheduledFor' => $command->scheduledFor(),
-            'wasCancelled' => 0,
-        ];
-        $this->connection->insert('meetups', $record);
 
-        return (int)$this->connection->lastInsertId();
+        // Domain: behind the port
+        // Application: ports: port methods + command DTOs
+        // Infrastructure: adapters
+        // The Dependency Rule
+
+        // Commands:
+        // create entity
+        // save entity
+        // return id
+
+        //Or:
+
+        // load entity
+        // modify entity
+        // save entity
+
+        // who deals with the model?
+        // can we decouple from our own model?
+
+        $meetup = Meetup::schedule(
+            $command->organizerId(),
+            $command->name(),
+            $command->description(),
+            $command->scheduledFor(),
+        );
+
+        return $this->meetupRepository->save($meetup);
     }
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array
