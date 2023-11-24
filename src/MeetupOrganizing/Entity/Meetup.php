@@ -2,11 +2,12 @@
 
 namespace MeetupOrganizing\Entity;
 
+use App\Entity\UserId;
 use Assert\Assertion;
 
 final class Meetup
 {
-    private string $organizerId;
+    private UserId $organizerId;
     private string $name;
     private string $description;
     private ScheduledDate $scheduledFor;
@@ -15,16 +16,13 @@ final class Meetup
 
     private function __construct(
         MeetupId      $meetupId,
-        string        $organizerId,
+        UserId        $organizerId,
         string        $name,
         string        $description,
         ScheduledDate $scheduledFor,
         bool          $wasCancelled
     )
     {
-        if ($organizerId === '') {
-            throw new \InvalidArgumentException();
-        }
         if ($name === '') {
             throw new \InvalidArgumentException();
         }
@@ -42,7 +40,7 @@ final class Meetup
 
     public static function schedule(
         MeetupId      $meetupId,
-        string        $organizerId,
+        UserId        $organizerId,
         string        $name,
         string        $description,
         ScheduledDate $scheduledFor
@@ -62,7 +60,7 @@ final class Meetup
     {
         return new self(
             MeetupId::fromString($record['meetupId']),
-            $record['organizerId'],
+            UserId::fromString($record['organizerId']),
             $record['name'],
             $record['description'],
             ScheduledDate::fromString($record['scheduledFor']),
@@ -77,7 +75,7 @@ final class Meetup
     {
         return [
             'meetupId' => $this->meetupId->asString(),
-            'organizerId' => $this->organizerId,
+            'organizerId' => $this->organizerId->asString(),
             'name' => $this->name,
             'description' => $this->description,
             'scheduledFor' => $this->scheduledFor->toString(),
@@ -97,9 +95,9 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(ScheduledDate $scheduleFor, string $userId): void
+    public function reschedule(ScheduledDate $scheduleFor, UserId $userId): void
     {
-        Assertion::true($userId === $this->organizerId);
+        Assertion::true($userId->equals($this->organizerId));
 
         if ($this->wasCancelled) {
             throw CouldNotRescheduleMeetup::becauseTheMeetupWasCancelled();

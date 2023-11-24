@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Entity\CouldNotFindUser;
 use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
@@ -135,11 +136,13 @@ final class Application implements ApplicationInterface
         // who deals with the model?
         // can we decouple from our own model?
 
+        $organizer = $this->userRepository->getById(UserId::fromString($command->organizerId()));
+
         $meetupId = $this->meetupRepository->nextId();
 
         $meetup = Meetup::schedule(
             $meetupId,
-            $command->organizerId(),
+            $organizer->userId(),
             $command->name(),
             $command->description(),
             ScheduledDate::fromString($command->scheduledFor()),
@@ -188,7 +191,7 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), $organizerId);
+        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($organizerId));
 
         $this->meetupRepository->save($meetup);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Entity\CouldNotFindUser;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
@@ -18,6 +19,9 @@ interface ApplicationInterface
 
     public function cancelRsvp(string $meetupId, string $userId): void;
 
+    /**
+     * @throws CouldNotFindUser
+     */
     public function scheduleMeeting(
         ScheduleMeeting $command
     ): string;
