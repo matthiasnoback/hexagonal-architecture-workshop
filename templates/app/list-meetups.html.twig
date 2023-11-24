@@ -28,6 +28,7 @@
                 </h3>
             </div>
             <div class="card-body">
+                <p>Attendees: {{ meetup.attendees }}</p>
                 <p>
                     {{ meetup.scheduledFor|date() }}
                     {% if session.isLoggedInUser(meetup.organizerId) %}

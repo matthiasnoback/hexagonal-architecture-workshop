@@ -59,6 +59,10 @@ final class SchemaManager
         $meetupsTable->addColumn('wasCancelled', 'integer', [
             'default' => 0,
         ]);
+        // projected value:
+        $meetupsTable->addColumn('attendeesNumber', 'integer', [
+            'default' => 0,
+        ]);
         $meetupsTable->setPrimaryKey(['meetupId']);
 
         $invoicesTable = $schema->createTable('invoices');
