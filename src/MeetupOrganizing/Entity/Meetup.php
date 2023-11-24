@@ -2,6 +2,8 @@
 
 namespace MeetupOrganizing\Entity;
 
+use Assert\Assertion;
+
 final class Meetup
 {
     private string $organizerId;
@@ -95,14 +97,9 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function getScheduledFor(): string
+    public function reschedule(ScheduledDate $scheduleFor, string $userId): void
     {
-        return $this->scheduledFor;
-    }
-
-    public function reschedule(string $scheduleFor, UserId $userId): void
-    {
-        Assertion::true($userId->equals($this->organizerId));
+        Assertion::true($userId === $this->organizerId);
 
         $this->scheduledFor = $scheduleFor;
     }

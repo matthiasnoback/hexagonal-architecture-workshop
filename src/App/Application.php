@@ -18,14 +18,12 @@ use MeetupOrganizing\Entity\CouldNotFindRsvp;
 use MeetupOrganizing\Entity\Meetup;
 use MeetupOrganizing\Entity\MeetupId;
 use MeetupOrganizing\Entity\MeetupRepository;
-use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
-use Ramsey\Uuid\Uuid;
 
 final class Application implements ApplicationInterface
 {
@@ -190,7 +188,7 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule($scheduleFor, UserId::fromString($organizerId));
+        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), $organizerId);
 
         $this->meetupRepository->save($meetup);
     }
