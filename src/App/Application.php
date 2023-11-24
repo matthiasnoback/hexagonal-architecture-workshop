@@ -22,6 +22,7 @@ use MeetupOrganizing\Entity\MeetupRepositoryUsingDbal;
 use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
+use MeetupOrganizing\Entity\ScheduledDate;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Ramsey\Uuid\Uuid;
@@ -143,7 +144,7 @@ final class Application implements ApplicationInterface
             $command->organizerId(),
             $command->name(),
             $command->description(),
-            $command->scheduledFor(),
+            ScheduledDate::fromString($command->scheduledFor()),
         );
 
         $this->meetupRepository->save($meetup);

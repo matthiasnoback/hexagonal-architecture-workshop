@@ -9,17 +9,17 @@ final class Meetup
     private string $organizerId;
     private string $name;
     private string $description;
-    private string $scheduledFor;
+    private ScheduledDate $scheduledFor;
     private bool $wasCancelled;
     private MeetupId $meetupId;
 
     private function __construct(
-        MeetupId $meetupId,
-        string   $organizerId,
-        string   $name,
-        string   $description,
-        string   $scheduledFor,
-        bool     $wasCancelled
+        MeetupId      $meetupId,
+        string        $organizerId,
+        string        $name,
+        string        $description,
+        ScheduledDate $scheduledFor,
+        bool          $wasCancelled
     )
     {
         if ($organizerId === '') {
@@ -29,9 +29,6 @@ final class Meetup
             throw new \InvalidArgumentException();
         }
         if ($description === '') {
-            throw new \InvalidArgumentException();
-        }
-        if ($scheduledFor === '') {
             throw new \InvalidArgumentException();
         }
 
@@ -44,11 +41,11 @@ final class Meetup
     }
 
     public static function schedule(
-        MeetupId $meetupId,
-        string   $organizerId,
-        string   $name,
-        string   $description,
-        string   $scheduledFor
+        MeetupId      $meetupId,
+        string        $organizerId,
+        string        $name,
+        string        $description,
+        ScheduledDate $scheduledFor
     ): self
     {
         return new self(
@@ -68,7 +65,7 @@ final class Meetup
             'organizerId' => $this->organizerId,
             'name' => $this->name,
             'description' => $this->description,
-            'scheduledFor' => $this->scheduledFor,
+            'scheduledFor' => $this->scheduledFor->toString(),
             'wasCancelled' => (int)$this->wasCancelled,
         ];
     }
