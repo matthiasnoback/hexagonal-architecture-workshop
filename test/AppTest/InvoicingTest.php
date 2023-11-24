@@ -14,6 +14,7 @@ final class InvoicingTest extends AbstractBrowserTest
         $this->signUp('Administrator', 'administrator@gmail.com', 'Administrator');
 
         $this->login('organizer@gmail.com');
+        $this->setServerTime('2022-01-01');
         $this->scheduleMeetup('Meetup 1', 'Description', '2022-01-10', '20:00');
         $this->scheduleMeetup('Meetup 2', 'Description', '2022-01-17', '20:00');
         $this->logout();

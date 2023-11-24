@@ -28,8 +28,8 @@ final class ScheduledDate
         return $this->dateTime->format('Y-m-d H:i');
     }
 
-    public function hasPassed(): bool
+    public function hasPassed(\DateTimeInterface $now): bool
     {
-        return $this->dateTime < new DateTimeImmutable('now');
+        return $this->dateTime < $now;
     }
 }

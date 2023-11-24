@@ -12,6 +12,9 @@ return [
             ExternalEventPublisher::class => fn (ContainerInterface $container) => new SynchronousExternalEventPublisher(
                 $container->get('external_event_consumers')
             ),
+            \App\Clock::class => fn (ContainerInterface $container) => new \App\FakeClock(
+                $_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now'
+            )
         ],
     ],
 ];

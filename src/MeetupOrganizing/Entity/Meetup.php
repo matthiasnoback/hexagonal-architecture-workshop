@@ -43,9 +43,14 @@ final class Meetup
         UserId        $organizerId,
         string        $name,
         string        $description,
-        ScheduledDate $scheduledFor
+        ScheduledDate $scheduledFor,
+        \DateTimeInterface $now,
     ): self
     {
+        if ($scheduledFor->hasPassed($now)) {
+            throw CouldNotScheduleMeetup::becauseTheDateIsInThePast();
+        }
+
         return new self(
             $meetupId,
             $organizerId,
@@ -95,7 +100,7 @@ final class Meetup
         $this->wasCancelled = true;
     }
 
-    public function reschedule(ScheduledDate $scheduleFor, UserId $userId): void
+    public function reschedule(ScheduledDate $scheduleFor, UserId $userId, \DateTimeInterface $now): void
     {
         Assertion::true($userId->equals($this->organizerId));
 
@@ -103,7 +108,7 @@ final class Meetup
             throw CouldNotRescheduleMeetup::becauseTheMeetupWasCancelled();
         }
 
-        if ($this->scheduledFor->hasPassed()) {
+        if ($this->scheduledFor->hasPassed($now)) {
             throw CouldNotRescheduleMeetup::becauseTheMeetupAlreadyTookPlace();
         }
 

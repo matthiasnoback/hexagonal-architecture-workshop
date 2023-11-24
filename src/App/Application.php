@@ -35,6 +35,7 @@ final class Application implements ApplicationInterface
         private readonly Connection              $connection,
         private readonly RsvpRepository          $rsvpRepository,
         private readonly MeetupRepository        $meetupRepository,
+        private readonly Clock        $clock,
     )
     {
     }
@@ -136,6 +137,7 @@ final class Application implements ApplicationInterface
         // who deals with the model?
         // can we decouple from our own model?
 
+        // TODO organizerExists()
         $organizer = $this->userRepository->getById(UserId::fromString($command->organizerId()));
 
         $meetupId = $this->meetupRepository->nextId();
@@ -146,6 +148,7 @@ final class Application implements ApplicationInterface
             $command->name(),
             $command->description(),
             ScheduledDate::fromString($command->scheduledFor()),
+            $this->clock->now(),
         );
 
         $this->meetupRepository->save($meetup);
@@ -191,7 +194,11 @@ final class Application implements ApplicationInterface
     {
         $meetup = $this->meetupRepository->getById(MeetupId::fromString($meetupId));
 
-        $meetup->reschedule(ScheduledDate::fromString($scheduleFor), UserId::fromString($organizerId));
+        $meetup->reschedule(
+            ScheduledDate::fromString($scheduleFor),
+            UserId::fromString($organizerId),
+            $this->clock->now(),
+        );
 
         $this->meetupRepository->save($meetup);
     }
