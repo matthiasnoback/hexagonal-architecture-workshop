@@ -5,6 +5,11 @@ namespace MeetupOrganizing\Entity;
 use App\Entity\UserId;
 use Assert\Assertion;
 
+/**
+ * This is *the* write model for meetups
+ *
+ * Object type: Entity
+ */
 final class Meetup
 {
     private UserId $organizerId;

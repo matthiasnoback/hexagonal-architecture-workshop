@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace MeetupOrganizing\ViewModel;
 
+/**
+ * This is *a* view model
+ *
+ * object type: DTO
+ */
 final class MeetupDetails
 {
     /**

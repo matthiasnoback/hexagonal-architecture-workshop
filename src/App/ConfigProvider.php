@@ -45,6 +45,9 @@ use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\UpdateNumberOfAttendees;
+use MeetupOrganizing\ViewModel\CachedListMeetupsRepository;
+use MeetupOrganizing\ViewModel\ListMeetupsRepository;
+use MeetupOrganizing\ViewModel\ListMeetupsRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
@@ -172,8 +175,16 @@ class ConfigProvider
                     $container->get(RsvpRepository::class),
                     $container->get(MeetupRepository::class),
                     $container->get(Clock::class),
+                    $container->get(ListMeetupsRepository::class),
                 ),
                 Clock::class => fn (ContainerInterface $container) => new SystemClock(),
+                ListMeetupsRepository::class => fn (ContainerInterface $container) =>
+                    new CachedListMeetupsRepository(
+                        new ListMeetupsRepositoryUsingDbal(
+                            $container->get(Clock::class),
+                            $container->get(Connection::class),
+                        )
+                    ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(
                     UserRepository::class

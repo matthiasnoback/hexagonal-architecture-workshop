@@ -23,6 +23,7 @@ use MeetupOrganizing\Entity\Rsvp;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\Entity\ScheduledDate;
+use MeetupOrganizing\ViewModel\ListMeetupsRepository;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 
@@ -36,6 +37,7 @@ final class Application implements ApplicationInterface
         private readonly RsvpRepository          $rsvpRepository,
         private readonly MeetupRepository        $meetupRepository,
         private readonly Clock        $clock,
+        private readonly ListMeetupsRepository $listMeetupsRepository,
     )
     {
     }
@@ -158,24 +160,7 @@ final class Application implements ApplicationInterface
 
     public function listUpcomingMeetups(string $now, bool $showPastMeetups): array
     {
-        $now = new DateTimeImmutable($now);
-
-        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
-        $parameters = [];
-
-        if (!$showPastMeetups) {
-            $query .= ' AND scheduledFor >= ?';
-            $parameters[] = $now->format('Y-m-d H:i');
-        }
-
-        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
-
-        $meetupLists = [];
-        foreach ($meetups as $meetupRecord) {
-            $meetupLists[] = MeetupForList::createFromRecord($meetupRecord);
-        }
-
-        return $meetupLists;
+        return $this->listMeetupsRepository->listMeetups($showPastMeetups);
     }
 
     public function cancelMeetup(string $meetupId, string $userId): void
