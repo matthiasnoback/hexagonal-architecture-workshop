@@ -105,6 +105,10 @@ final class Meetup
             throw CouldNotRescheduleMeetup::becauseTheMeetupWasCancelled();
         }
 
+        if ($this->scheduledFor->hasPassed()) {
+            throw CouldNotRescheduleMeetup::becauseTheMeetupAlreadyTookPlace();
+        }
+
         $this->scheduledFor = $scheduleFor;
     }
 

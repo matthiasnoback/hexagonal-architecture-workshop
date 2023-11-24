@@ -27,4 +27,9 @@ final class ScheduledDate
     {
         return $this->dateTime->format('Y-m-d H:i');
     }
+
+    public function hasPassed(): bool
+    {
+        return $this->dateTime < new DateTimeImmutable('now');
+    }
 }

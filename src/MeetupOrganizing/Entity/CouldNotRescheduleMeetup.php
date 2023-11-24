@@ -8,4 +8,9 @@ class CouldNotRescheduleMeetup extends \RuntimeException
     {
         return new self();
     }
+
+    public static function becauseTheMeetupAlreadyTookPlace(): self
+    {
+        return new self();
+    }
 }
