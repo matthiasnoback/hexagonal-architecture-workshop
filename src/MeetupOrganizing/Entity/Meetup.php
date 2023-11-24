@@ -101,6 +101,10 @@ final class Meetup
     {
         Assertion::true($userId === $this->organizerId);
 
+        if ($this->wasCancelled) {
+            throw CouldNotRescheduleMeetup::becauseTheMeetupWasCancelled();
+        }
+
         $this->scheduledFor = $scheduleFor;
     }
 
