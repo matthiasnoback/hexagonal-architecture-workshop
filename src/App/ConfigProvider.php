@@ -135,15 +135,14 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 ListInvoicesHandler::class => fn (ContainerInterface $container) => new ListInvoicesHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
-                    $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(MeetupsForBilling::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 MeetupsForBilling::class => fn (ContainerInterface $container) => new MeetupsForBillingImplementation(
                     $container->get(Connection::class),
@@ -161,6 +160,7 @@ class ConfigProvider
                     $container->get(EventDispatcher::class),
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
+                    $container->get(MeetupsForBilling::class),
                 ),
                 EventDispatcher::class => EventDispatcherFactory::class,
                 Session::class => fn (ContainerInterface $container) => new Session($container->get(

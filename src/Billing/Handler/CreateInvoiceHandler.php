@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
+use App\ApplicationInterface;
 use App\Session;
 use Assert\Assert;
 use Billing\MeetupsForBilling;
@@ -20,11 +21,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class CreateInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection                $connection,
         private readonly Session                   $session,
         private readonly RouterInterface           $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly MeetupsForBilling         $meetupOrganizing,
+        private readonly ApplicationInterface $application,
     ) {
     }
 
@@ -49,25 +49,15 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             $organizerId = $formData['organizerId'];
             Assert::that($organizerId)->string();
 
-            // TODO introduce abstraction, define what we want to know
-            $numberOfMeetups = $this->meetupOrganizing->numberOfMeetupsActuallyHosted(
-                $organizerId,
-                (int) $month,
-                (int) $year
-            );
 
-            if ($numberOfMeetups > 0) {
-                $invoiceAmount = $numberOfMeetups * 5;
-
-                $this->connection->insert('invoices', [
-                    'organizerId' => $organizerId,
-                    'amount' => number_format($invoiceAmount, 2),
-                    'year' => $year,
-                    'month' => $month,
-                ]);
-
+            try {
+                $this->application->createInvoice(
+                    $organizerId,
+                    (int) $month,
+                    (int) $year
+                );
                 $this->session->addSuccessFlash('Invoice created');
-            } else {
+            } catch (NothingToInvoice $exception) {
                 $this->session->addErrorFlash('No need to create an invoice');
             }
 
