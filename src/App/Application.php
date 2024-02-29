@@ -108,6 +108,7 @@ final class Application implements ApplicationInterface
     ): int
     {
         // improve checks
+        // TODO check: date in the future
 
         $record = [
             'organizerId' => $command->organizerId,
