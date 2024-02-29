@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use Assert\Assertion;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -98,5 +99,27 @@ final class Application implements ApplicationInterface
         $this->rsvpRepository->save($rsvp);
 
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
+    }
+
+    public function scheduleMeetup(
+        string $organizerId,
+        string $name,
+        string $description,
+        string $scheduledFor
+    ): int
+    {
+        $record = [
+            'organizerId' => $organizerId,
+            'name' => $name,
+            'description' => $description,
+            'scheduledFor' => $scheduledFor,
+            'wasCancelled' => 0,
+        ];
+        $this->connection->insert('meetups', $record);
+
+        $id = $this->connection->lastInsertId();
+        Assertion::integerish($id);
+
+        return (int) $id;
     }
 }
