@@ -21,6 +21,7 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 final class Application implements ApplicationInterface
 {
@@ -121,5 +122,26 @@ final class Application implements ApplicationInterface
         Assertion::integerish($id);
 
         return (int) $id;
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        // not good from a security perspective!
+        $now = new \DateTimeImmutable($_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now');
+
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $now->format('Y-m-d H:i');
+        }
+
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+
+        return array_map(
+            [MeetupForList::class, 'fromRecord'],
+            $meetups
+        );
     }
 }
