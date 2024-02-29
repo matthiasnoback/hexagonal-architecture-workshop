@@ -10,6 +10,7 @@ use Assert\Assert;
 use DateTimeImmutable;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
+use MeetupOrganizing\Application\ScheduleMeetup;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -68,10 +69,12 @@ final class ScheduleMeetupHandler implements RequestHandlerInterface
                 $scheduledFor = $formData['scheduleForDate'] . ' ' . $formData['scheduleForTime'];
 
                 $meetupId = $this->application->scheduleMeetup(
-                    $organizerId,
-                    $name,
-                    $description,
-                    $scheduledFor
+                    new ScheduleMeetup(
+                        $organizerId,
+                        $name,
+                        $description,
+                        $scheduledFor
+                    )
                 );
 
                 $this->session->addSuccessFlash('Your meetup was scheduled successfully');
