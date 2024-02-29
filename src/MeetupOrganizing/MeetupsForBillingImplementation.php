@@ -5,11 +5,11 @@ namespace MeetupOrganizing;
 
 use Assert\Assert;
 use Assert\Assertion;
-use Billing\MeetupOrganizingApiForBilling;
+use Billing\MeetupsForBilling;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 
-final class MeetupOrganizingApiForBillingImplementation implements MeetupOrganizingApiForBilling
+final class MeetupsForBillingImplementation implements MeetupsForBilling
 {
     public function __construct(
         private readonly Connection $connection

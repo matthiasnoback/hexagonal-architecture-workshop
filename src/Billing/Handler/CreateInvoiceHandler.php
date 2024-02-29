@@ -6,7 +6,7 @@ namespace Billing\Handler;
 
 use App\Session;
 use Assert\Assert;
-use Billing\MeetupOrganizingApiForBilling;
+use Billing\MeetupsForBilling;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
@@ -20,11 +20,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class CreateInvoiceHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private readonly Connection $connection,
-        private readonly Session $session,
-        private readonly RouterInterface $router,
+        private readonly Connection                $connection,
+        private readonly Session                   $session,
+        private readonly RouterInterface           $router,
         private readonly TemplateRendererInterface $renderer,
-        private readonly MeetupOrganizingApiForBilling $meetupOrganizing,
+        private readonly MeetupsForBilling         $meetupOrganizing,
     ) {
     }
 

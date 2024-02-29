@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Billing;
 
-interface MeetupOrganizingApiForBilling
+interface MeetupsForBilling
 {
     public function numberOfMeetupsActuallyHosted(
         string $organizerId,
