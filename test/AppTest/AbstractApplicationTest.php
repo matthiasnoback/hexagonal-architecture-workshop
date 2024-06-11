@@ -13,12 +13,15 @@ abstract class AbstractApplicationTest extends TestCase
 {
     protected ApplicationInterface $application;
 
+    protected ContainerInterface $container;
+
     protected function setUp(): void
     {
         $_ENV['APPLICATION_ENV'] = 'application_testing';
 
         /** @var ContainerInterface $container */
         $container = require 'config/container.php';
+        $this->container = $container;
 
         /** @var SchemaManager $schemaManager */
         $schemaManager = $container->get(SchemaManager::class);

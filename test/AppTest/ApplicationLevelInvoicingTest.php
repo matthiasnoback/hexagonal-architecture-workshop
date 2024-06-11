@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AppTest;
 
+use Billing\FakeMeetupRepository;
+use Billing\MeetupRepository;
 use MeetupOrganizing\Application\SignUp;
 
 final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
@@ -12,8 +14,10 @@ final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
     {
         $organizerId = $this->application->signUp(new SignUp('Organizer', 'organizer@gmail.com', 'Organizer'));
 
-        $this->application->scheduleMeetup($organizerId, 'Meetup 1', 'Description', '2023-01-10 20:00');
-        $this->application->scheduleMeetup($organizerId, 'Meetup 2', 'Description', '2023-01-17 20:00');
+        // This organizer has scheduled 2 meetups in January 2023
+        /** @var FakeMeetupRepository $meetupRepository */
+        $meetupRepository = $this->container->get(MeetupRepository::class);
+        $meetupRepository->setCount($organizerId, 2);
 
         $invoiceId = $this->application->createInvoice($organizerId, 2023, 1);
 
