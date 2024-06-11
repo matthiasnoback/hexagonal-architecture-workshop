@@ -100,7 +100,7 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
 
-    public function scheduleMeetup(string $organizerId, string $name, string $description, string $dateTime): int
+    public function scheduleMeetup(string $organizerId, string $name, string $description, string $dateTime): string
     {
         $record = [
             'organizerId' => $organizerId,
@@ -111,6 +111,9 @@ final class Application implements ApplicationInterface
         ];
         $this->connection->insert('meetups', $record);
 
-        return (int) $this->connection->lastInsertId();
+        $result = $this->connection->lastInsertId();
+        Assert::that($result)->string();
+
+        return $result;
     }
 }

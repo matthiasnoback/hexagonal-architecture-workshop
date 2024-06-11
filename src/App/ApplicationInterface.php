@@ -23,5 +23,5 @@ interface ApplicationInterface
         string $name,
         string $description,
         string $dateTime
-    ): int;
+    ): string;
 }
