@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Billing\Handler;
 
-use App\MeetupRepository;
+use Billing\MeetupRepository;
 use App\Session;
 use Assert\Assert;
 use DateTimeImmutable;

@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace App;
+namespace MeetupOrganizing;
 
+use App\Mapping;
 use Assert\Assert;
+use Billing\MeetupRepository;
 use DateTimeInterface;
 use Doctrine\DBAL\Connection;
 
