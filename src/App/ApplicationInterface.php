@@ -24,4 +24,9 @@ interface ApplicationInterface
         string $description,
         string $dateTime
     ): string;
+
+    /**
+     * @return list<Meetup>
+     */
+    public function listMeetups(bool $showPastMeetups): array;
 }

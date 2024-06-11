@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -115,5 +116,30 @@ final class Application implements ApplicationInterface
         Assert::that($result)->string();
 
         return $result;
+    }
+
+    public function listMeetups(bool $showPastMeetups): array
+    {
+        $now = new DateTimeImmutable($_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now');
+
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $now->format('Y-m-d H:i');
+        }
+
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+
+        return array_map(
+            fn(array $record) => new Meetup(
+                Mapping::getString($record, 'meetupId'),
+                Mapping::getString($record, 'name'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getString($record, 'scheduledFor'),
+            ),
+            $meetups
+        );
     }
 }
