@@ -17,8 +17,8 @@ final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
 
         // @TODO let the organizer schedule a meetup (see InvoicingTest for sample data)
         // @TODO let the organizer schedule another meetup (see InvoicingTest for sample data)
-        // @TODO create an invoice for the organizer for January 2022
+        // @TODO create an invoice for the organizer for January 2023
         // @TODO list the invoices for the organizer
-        // @TODO assert that the only invoice is an invoice for January 2022 with an amount of 10.00
+        // @TODO assert that the only invoice is an invoice for January 2023 with an amount of 10.00
     }
 }
