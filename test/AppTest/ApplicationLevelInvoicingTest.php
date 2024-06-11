@@ -24,8 +24,5 @@ final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
 
         self::assertEquals($organizerId, $invoicesForOrganizer[0]->organizerId());
         self::assertEquals('10.00', $invoicesForOrganizer[0]->amount());
-
-        // @TODO list the invoices for the organizer
-        // @TODO assert that the only invoice is an invoice for January 2023 with an amount of 10.00
     }
 }
