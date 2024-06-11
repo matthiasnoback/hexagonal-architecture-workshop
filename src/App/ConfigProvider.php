@@ -140,7 +140,11 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(MeetupRepository::class),
+                ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingSharedDatabase(
+                    $container->get(Connection::class)
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
