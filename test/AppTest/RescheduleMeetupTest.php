@@ -11,13 +11,13 @@ final class RescheduleMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2026-10-10', '20:00');
 
-        $this->rescheduleMeetup('Coding Dojo', '2026-04-27', '19:00');
+        $this->rescheduleMeetup('Coding Dojo', '2027-04-27', '19:00');
 
         $this->listMeetupsPage()
             ->upcomingMeetup('Coding Dojo')
             ->readMore($this->browser)
-            ->assertScheduledFor('April 27, 2026 19:00');
+            ->assertScheduledFor('April 27, 2027 19:00');
     }
 }
