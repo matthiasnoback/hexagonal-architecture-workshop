@@ -11,7 +11,7 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2026-10-10', '20:00');
 
         $this->flashMessagesShouldContain('Your meetup was scheduled successfully');
 
@@ -29,7 +29,7 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetupProducesFormError('', 'Some description', '2024-10-10', '20:00', 'Provide a name');
+        $this->scheduleMeetupProducesFormError('', 'Some description', '2026-10-10', '20:00', 'Provide a name');
     }
 
     public function testDescriptionShouldNotBeEmpty(): void
@@ -37,6 +37,6 @@ final class ScheduleMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetupProducesFormError('Some name', '', '2024-10-10', '20:00', 'Provide a description');
+        $this->scheduleMeetupProducesFormError('Some name', '', '2026-10-10', '20:00', 'Provide a description');
     }
 }

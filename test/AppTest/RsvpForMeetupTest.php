@@ -11,7 +11,7 @@ final class RsvpForMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2026-10-10', '20:00');
 
         $this->logout();
 
@@ -30,7 +30,7 @@ final class RsvpForMeetupTest extends AbstractBrowserTest
         $this->signUp('Organizer', 'organizer@gmail.com', 'Organizer');
         $this->login('organizer@gmail.com');
 
-        $this->scheduleMeetup('Coding Dojo', 'Some description', '2024-10-10', '20:00');
+        $this->scheduleMeetup('Coding Dojo', 'Some description', '2026-10-10', '20:00');
 
         $this->logout();
 
