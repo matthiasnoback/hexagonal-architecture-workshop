@@ -95,7 +95,7 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class),
                 ),
                 ListMeetupsHandler::class => fn (ContainerInterface $container) => new ListMeetupsHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 LoginHandler::class => fn (ContainerInterface $container) => new LoginHandler(
@@ -164,9 +164,7 @@ class ConfigProvider
                     $container->get(Connection::class)
                 ),
                 RsvpRepository::class => fn (ContainerInterface $container) => new RsvpRepositoryUsingDbal(
-                    $container->get(
-                    Connection::class
-                )
+                    $container->get(Connection::class)
                 ),
                 MeetupDetailsRepository::class => fn (ContainerInterface $container) => new MeetupDetailsRepository(
                     $container->get(Connection::class)

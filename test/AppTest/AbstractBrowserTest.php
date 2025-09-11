@@ -52,8 +52,13 @@ abstract class AbstractBrowserTest extends TestCase
             ->scheduleMeetup($this->browser, $name, $description, $date, $time);
     }
 
-    protected function scheduleMeetupProducesFormError(string $name, string $description, string $date, string $time, string $expectedError): void
-    {
+    protected function scheduleMeetupProducesFormError(
+        string $name,
+        string $description,
+        string $date,
+        string $time,
+        string $expectedError
+    ): void {
         (new ScheduleMeetupPage($this->browser->request('GET', '/schedule-meetup')))
             ->scheduleMeetupUnsuccessfully($this->browser, $name, $description, $date, $time)
             ->assertFormErrorsContains($expectedError);
@@ -137,13 +142,6 @@ abstract class AbstractBrowserTest extends TestCase
         self::assertNotContains($attendeeName, $this->meetupDetails($meetupName) ->attendees());
     }
 
-    private function meetupDetails(string $meetupName): PageObject\MeetupDetailsPage
-    {
-        return $this->listMeetupsPage()
-            ->upcomingMeetup($meetupName)
-            ->readMore($this->browser);
-    }
-
     protected function setServerTime(string $dateTime): void
     {
         self::assertInstanceOf(HttpBrowser::class, self::$httpBrowserClient);
@@ -152,5 +150,12 @@ abstract class AbstractBrowserTest extends TestCase
             'HTTP_X_CURRENT_TIME',
             (new DateTimeImmutable($dateTime))->format(DateTimeInterface::ATOM)
         );
+    }
+
+    private function meetupDetails(string $meetupName): PageObject\MeetupDetailsPage
+    {
+        return $this->listMeetupsPage()
+            ->upcomingMeetup($meetupName)
+            ->readMore($this->browser);
     }
 }

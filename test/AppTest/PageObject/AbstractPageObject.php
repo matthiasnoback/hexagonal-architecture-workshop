@@ -28,7 +28,7 @@ abstract class AbstractPageObject
         }
 
         return array_map(
-            fn(DOMNode $node) => new static(new Crawler($node, $filter->getUri())),
+            fn (DOMNode $node) => new static(new Crawler($node, $filter->getUri())),
             iterator_to_array($filter)
         );
     }

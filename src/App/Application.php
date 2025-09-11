@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserId;
 use App\Entity\UserRepository;
 use Assert\Assert;
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 use MeetupOrganizing\Application\RsvpForMeetup;
@@ -19,6 +20,7 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupListElement;
 
 final class Application implements ApplicationInterface
 {
@@ -100,8 +102,13 @@ final class Application implements ApplicationInterface
         $this->eventDispatcher->dispatch(new RsvpWasCancelled($rsvp->rsvpId()));
     }
 
-    public function scheduleMeetup(string $organizerId, string $name, string $description, string $scheduleForDate, string $scheduleForTime): int
-    {
+    public function scheduleMeetup(
+        string $organizerId,
+        string $name,
+        string $description,
+        string $scheduleForDate,
+        string $scheduleForTime
+    ): int {
         $record = [
             'organizerId' => $organizerId,
             'name' => $name,
@@ -112,5 +119,26 @@ final class Application implements ApplicationInterface
         $this->connection->insert('meetups', $record);
 
         return (int) $this->connection->lastInsertId();
+    }
+
+    public function listMeetups(?DateTimeImmutable $startingDate = null): array
+    {
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if ($startingDate !== null) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $startingDate->format('Y-m-d H:i');
+        }
+
+        return array_map(
+            fn (array $record) => new MeetupListElement(
+                Mapping::getString($record, 'meetupId'),
+                Mapping::getString($record, 'scheduledFor'),
+                Mapping::getString($record, 'organizerId'),
+                Mapping::getString($record, 'name'),
+            ),
+            $this->connection->fetchAllAssociative($query, $parameters)
+        );
     }
 }

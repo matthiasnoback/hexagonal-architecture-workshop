@@ -53,9 +53,6 @@ final class ScheduleMeetupPage extends AbstractPageObject
             throw new LogicException('No form errors found');
         }
 
-        Assert::assertStringContainsString(
-            $expectedError,
-            $feedback->text()
-        );
+        Assert::assertStringContainsString($expectedError, $feedback->text());
     }
 }
