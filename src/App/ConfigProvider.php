@@ -20,6 +20,7 @@ use App\Handler\LogoutHandler;
 use App\Handler\SignUpHandler;
 use App\Handler\SwitchUserHandler;
 use App\Twig\SessionExtension;
+use Billing\GetBillableMeetupCount;
 use Billing\Handler\CreateInvoiceHandler;
 use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
@@ -39,6 +40,7 @@ use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\GetBillableMeetupCountFromTable;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
@@ -138,9 +140,15 @@ class ConfigProvider
                 ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
                     $container->get(Connection::class),
+                    $container->get(GetBillableMeetupCount::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class)
+                ),
+                GetBillableMeetupCount::class => fn (ContainerInterface $container) => new GetBillableMeetupCountFromTable(
+                    $container->get(
+                    Connection::class
+                )
                 ),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
