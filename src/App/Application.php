@@ -19,16 +19,18 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 final class Application implements ApplicationInterface
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
+        private readonly UserRepository          $userRepository,
         private readonly MeetupDetailsRepository $meetupDetailsRepository,
-        private readonly EventDispatcher $eventDispatcher,
-        private readonly Connection $connection,
-        private readonly RsvpRepository $rsvpRepository,
-    ) {
+        private readonly EventDispatcher         $eventDispatcher,
+        private readonly Connection              $connection,
+        private readonly RsvpRepository          $rsvpRepository,
+    )
+    {
     }
 
     public function signUp(SignUp $command): string
@@ -111,6 +113,24 @@ final class Application implements ApplicationInterface
         ];
         $this->connection->insert('meetups', $record);
 
-        return (int) $this->connection->lastInsertId();
+        return (int)$this->connection->lastInsertId();
+    }
+
+    public function listMeetups(bool $showPastMeetups, \DateTimeImmutable $now): array
+    {
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $now->format('Y-m-d H:i');
+        }
+
+        return array_map(fn(array $record) => new MeetupForList(
+            Mapping::getString($record, 'meetupId'),
+            Mapping::getString($record, 'name'),
+            Mapping::getString($record, 'scheduledFor'),
+            Mapping::getString($record, 'organizerId'),
+        ), $this->connection->fetchAllAssociative($query, $parameters));
     }
 }

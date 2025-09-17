@@ -7,6 +7,7 @@ namespace App;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 interface ApplicationInterface
 {
@@ -23,4 +24,9 @@ interface ApplicationInterface
                                    string $description,
                                    string $scheduleForDate,
                                    string $scheduleForTime): int;
+
+    /**
+     * @return array<MeetupForList>
+     */
+    public function listMeetups(bool $showPastMeetups, \DateTimeImmutable $now): array;
 }
