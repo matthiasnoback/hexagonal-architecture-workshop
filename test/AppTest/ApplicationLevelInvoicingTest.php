@@ -12,13 +12,14 @@ final class ApplicationLevelInvoicingTest extends AbstractApplicationTest
     {
         $organizerId = $this->application->signUp(new SignUp('Organizer', 'organizer@gmail.com', 'Organizer'));
 
-        // @TODO remove useless assertion
-        self::assertIsString($organizerId);
+        $this->application->scheduleMeetup($organizerId, 'Meetup 1', 'Description', '2025-01-10', '20:00');
+        $this->application->scheduleMeetup($organizerId, 'Meetup 2', 'Description', '2025-01-17', '20:00');
 
-        // @TODO let the organizer schedule a meetup (see InvoicingTest for sample data)
-        // @TODO let the organizer schedule another meetup (see InvoicingTest for sample data)
-        // @TODO create an invoice for the organizer for January 2025
-        // @TODO list the invoices for the organizer
-        // @TODO assert that the only invoice is an invoice for January 2025 with an amount of 10.00
+        self::assertTrue($this->application->createInvoice($organizerId, 2025, 1));
+
+        $invoices = $this->application->listInvoices($organizerId);
+        self::assertCount(1, $invoices);
+        self::assertSame('1/2025', $invoices[0]->period());
+        self::assertSame('10.00', $invoices[0]->amount());
     }
 }

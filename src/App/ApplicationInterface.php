@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use Billing\ViewModel\Invoice;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
@@ -29,4 +30,11 @@ interface ApplicationInterface
      * @return array<MeetupForList>
      */
     public function listMeetups(bool $showPastMeetups, \DateTimeImmutable $now): array;
+
+    public function createInvoice(string $organizerId, int $year, int $month): bool;
+
+    /**
+     * @return array<Invoice>
+     */
+    public function listInvoices(string $organizerId): array;
 }
