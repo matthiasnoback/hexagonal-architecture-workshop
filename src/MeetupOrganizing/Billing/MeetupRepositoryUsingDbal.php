@@ -1,8 +1,9 @@
 <?php
 
-namespace Billing\Handler;
+namespace MeetupOrganizing\Billing;
 
 use Assert\Assert;
+use Billing\Handler\MeetupRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 

@@ -25,7 +25,7 @@ use Billing\Handler\DeleteInvoiceHandler;
 use Billing\Handler\ListInvoicesHandler;
 use Billing\Handler\ListOrganizersHandler;
 use Billing\Handler\MeetupRepository;
-use Billing\Handler\MeetupRepositoryUsingDbal;
+use MeetupOrganizing\Billing\MeetupRepositoryUsingDbal;
 use Billing\Projections\OrganizerProjection;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
