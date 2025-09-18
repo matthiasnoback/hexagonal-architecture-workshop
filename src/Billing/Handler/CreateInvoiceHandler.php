@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Billing\Handler;
 
 use App\ApplicationInterface;
+use App\Clock;
 use App\Session;
 use Assert\Assert;
-use DateTimeImmutable;
-use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Mezzio\Router\RouterInterface;
@@ -24,6 +23,7 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
         private readonly Session $session,
         private readonly RouterInterface $router,
         private readonly TemplateRendererInterface $renderer,
+        private readonly Clock $clock,
     ) {
     }
 
@@ -59,9 +59,10 @@ final class CreateInvoiceHandler implements RequestHandlerInterface
             ]));
         }
 
+        $year = (int) $this->clock->getCurrentTime()->format('Y');
         return new HtmlResponse($this->renderer->render('billing::create-invoice.html.twig', [
             'formData' => $formData,
-            'years' => range(date('Y') - 1, date('Y')),
+            'years' => range($year - 1, $year),
             'months' => range(1, 12),
         ]));
     }

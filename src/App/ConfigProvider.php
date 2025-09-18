@@ -143,7 +143,9 @@ class ConfigProvider
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
+                    $container->get(Clock::class),
                 ),
+                Clock::class => fn (ContainerInterface $container) => new ActualClock(),
                 MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryUsingDbal(
                     $container->get(Connection::class)
                 ),
