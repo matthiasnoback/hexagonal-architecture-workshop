@@ -11,6 +11,9 @@ interface UserRepository
     public function save(User $user): void;
 
 
+    /**
+     * @throws CouldNotFindUser
+     */
     public function getById(UserId $id): User;
 
     public function getByEmailAddress(string $emailAddress): User;

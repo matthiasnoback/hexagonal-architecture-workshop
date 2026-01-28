@@ -36,7 +36,10 @@ final class UserRepositoryUsingDbal implements UserRepository
             throw CouldNotFindUser::withId($id);
         }
 
-        return User::fromDatabaseRecord($record);
+        $user = User::fromDatabaseRecord($record);
+        Assert::that($id->equals($user->userId()))->true();
+
+        return $user;
     }
 
     public function getByEmailAddress(string $emailAddress): User
