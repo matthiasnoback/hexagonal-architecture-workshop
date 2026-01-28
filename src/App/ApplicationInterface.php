@@ -9,6 +9,7 @@ use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
 use MeetupOrganizing\ViewModel\MeetupDetails;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 interface ApplicationInterface
 {
@@ -24,4 +25,9 @@ interface ApplicationInterface
      * @throws CouldNotFindUser
      */
     public function scheduleMeetup(ScheduleMeetup $command): int;
+
+    /**
+     * @return list<array<mixed>>
+     */
+    public function meetups(bool $showPastMeetups, string $now): array;
 }

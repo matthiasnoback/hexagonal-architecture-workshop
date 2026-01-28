@@ -116,4 +116,20 @@ final class Application implements ApplicationInterface
 
         return (int) $this->connection->lastInsertId();
     }
+
+    public function meetups(bool $showPastMeetups, string $now): array
+    {
+        $now = new \DateTimeImmutable($now);
+        $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
+        $parameters = [];
+
+        if (!$showPastMeetups) {
+            $query .= ' AND scheduledFor >= ?';
+            $parameters[] = $now->format('Y-m-d H:i');
+        }
+
+        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
+
+        return $meetups;
+    }
 }
