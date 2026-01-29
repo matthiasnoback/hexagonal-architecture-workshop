@@ -29,6 +29,7 @@ use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\HttpFactory;
 use Http\Adapter\Guzzle7\Client;
 use Laminas\Diactoros\ResponseFactory;
+use MeetupOrganizing\Api\MeetupRepository;
 use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\UserHasRsvpd;
 use MeetupOrganizing\Handler\ApiCountMeetupsHandler;
@@ -39,6 +40,7 @@ use MeetupOrganizing\Handler\MeetupDetailsHandler;
 use MeetupOrganizing\Handler\RescheduleMeetupHandler;
 use MeetupOrganizing\Handler\RsvpForMeetupHandler;
 use MeetupOrganizing\Handler\ScheduleMeetupHandler;
+use MeetupOrganizing\Infrastructure\MeetupRepositoryImplementation;
 use MeetupOrganizing\Infrastructure\RsvpRepositoryUsingDbal;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
 use Mezzio\Router\RouterInterface;
@@ -140,8 +142,10 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
-                    $container->get(TemplateRendererInterface::class)
+                    $container->get(TemplateRendererInterface::class),
+                    $container->get(MeetupRepository::class),
                 ),
+                MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryImplementation($container->get(Connection::class)),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
                     $container->get(Connection::class),
                     $container->get(RouterInterface::class),
