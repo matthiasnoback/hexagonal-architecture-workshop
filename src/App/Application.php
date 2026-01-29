@@ -20,6 +20,7 @@ use MeetupOrganizing\Entity\RsvpRepository;
 use MeetupOrganizing\Entity\RsvpWasCancelled;
 use MeetupOrganizing\ViewModel\MeetupDetails;
 use MeetupOrganizing\ViewModel\MeetupDetailsRepository;
+use MeetupOrganizing\ViewModel\MeetupForList;
 
 final class Application implements ApplicationInterface
 {
@@ -128,8 +129,7 @@ final class Application implements ApplicationInterface
             $parameters[] = $now->format('Y-m-d H:i');
         }
 
-        $meetups = $this->connection->fetchAllAssociative($query, $parameters);
-
-        return $meetups;
+        return array_map([MeetupForList::class, 'fromDatabaseRecord'],
+            $this->connection->fetchAllAssociative($query, $parameters));
     }
 }

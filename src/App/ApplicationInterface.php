@@ -27,7 +27,7 @@ interface ApplicationInterface
     public function scheduleMeetup(ScheduleMeetup $command): int;
 
     /**
-     * @return list<array<mixed>>
+     * @return list<MeetupForList>
      */
     public function meetups(bool $showPastMeetups, string $now): array;
 }
