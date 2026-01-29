@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\CouldNotFindUser;
+use Billing\ViewModel\Invoice;
 use MeetupOrganizing\Application\RsvpForMeetup;
 use MeetupOrganizing\Application\ScheduleMeetup;
 use MeetupOrganizing\Application\SignUp;
@@ -30,4 +31,11 @@ interface ApplicationInterface
      * @return list<MeetupForList>
      */
     public function meetups(bool $showPastMeetups): array;
+
+    public function createInvoice(string $organizerId, int $year, int $month): bool;
+
+    /**
+     * @return list<Invoice>
+     */
+    public function listInvoices(string $organizerId): array;
 }

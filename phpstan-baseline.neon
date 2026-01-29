@@ -20,3 +20,13 @@ parameters:
 			count: 1
 			path: src/App/ExternalEvents/ExternalEventConsumersFactory.php
 
+		-
+			message: "#^Cannot access offset int on mixed\\.$#"
+			count: 3
+			path: test/AppTest/MeetupRepositoryForTesting.php
+
+		-
+			message: "#^Method AppTest\\\\MeetupRepositoryForTesting\\:\\:countMeetups\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: test/AppTest/MeetupRepositoryForTesting.php
+

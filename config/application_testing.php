@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\ExternalEvents\ExternalEventPublisher;
 use App\ExternalEvents\SynchronousExternalEventPublisher;
+use AppTest\MeetupRepositoryForTesting;
 use Psr\Container\ContainerInterface;
 
 return [
@@ -13,6 +14,7 @@ return [
                 $container->get('external_event_consumers')
             ),
             // TODO define application test-specific factories here, which will override earlier service definitions
+            \MeetupOrganizing\Api\MeetupRepository::class => fn () => new MeetupRepositoryForTesting()
         ],
     ],
 ];

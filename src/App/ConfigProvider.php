@@ -135,15 +135,14 @@ class ConfigProvider
                     $container->get(TemplateRendererInterface::class)
                 ),
                 ListInvoicesHandler::class => fn (ContainerInterface $container) => new ListInvoicesHandler(
-                    $container->get(Connection::class),
+                    $container->get(ApplicationInterface::class),
                     $container->get(TemplateRendererInterface::class)
                 ),
                 CreateInvoiceHandler::class => fn (ContainerInterface $container) => new CreateInvoiceHandler(
-                    $container->get(Connection::class),
                     $container->get(Session::class),
                     $container->get(RouterInterface::class),
                     $container->get(TemplateRendererInterface::class),
-                    $container->get(MeetupRepository::class),
+                    $container->get(ApplicationInterface::class),
                 ),
                 MeetupRepository::class => fn (ContainerInterface $container) => new MeetupRepositoryImplementation($container->get(Connection::class)),
                 DeleteInvoiceHandler::class => fn (ContainerInterface $container) => new DeleteInvoiceHandler(
@@ -160,6 +159,7 @@ class ConfigProvider
                     $container->get(Connection::class),
                     $container->get(RsvpRepository::class),
                     $container->get(ClockInterface::class),
+                    $container->get(MeetupRepository::class),
                 ),
                 ClockInterface::class => fn () => new ProductionClock(),
                 EventDispatcher::class => EventDispatcherFactory::class,
