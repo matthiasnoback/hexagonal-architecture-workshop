@@ -29,5 +29,5 @@ interface ApplicationInterface
     /**
      * @return list<MeetupForList>
      */
-    public function meetups(bool $showPastMeetups, string $now): array;
+    public function meetups(bool $showPastMeetups): array;
 }

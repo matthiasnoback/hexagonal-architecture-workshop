@@ -30,6 +30,7 @@ final class Application implements ApplicationInterface
         private readonly EventDispatcher $eventDispatcher,
         private readonly Connection $connection,
         private readonly RsvpRepository $rsvpRepository,
+        private readonly ClockInterface $clock,
     ) {
     }
 
@@ -118,15 +119,14 @@ final class Application implements ApplicationInterface
         return (int) $this->connection->lastInsertId();
     }
 
-    public function meetups(bool $showPastMeetups, string $now): array
+    public function meetups(bool $showPastMeetups): array
     {
-        $now = new \DateTimeImmutable($now);
         $query = 'SELECT m.* FROM meetups m WHERE m.wasCancelled = 0';
         $parameters = [];
 
         if (!$showPastMeetups) {
             $query .= ' AND scheduledFor >= ?';
-            $parameters[] = $now->format('Y-m-d H:i');
+            $parameters[] = $this->clock->now()->format('Y-m-d H:i');
         }
 
         return array_map([MeetupForList::class, 'fromDatabaseRecord'],

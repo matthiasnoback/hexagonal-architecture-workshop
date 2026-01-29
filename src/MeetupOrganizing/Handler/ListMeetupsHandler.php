@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace MeetupOrganizing\Handler;
 
 use App\ApplicationInterface;
-use DateTimeImmutable;
-use Doctrine\DBAL\Connection;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -23,13 +21,11 @@ final class ListMeetupsHandler implements RequestHandlerInterface
 
     public function handle(Request $request): ResponseInterface
     {
-        $now = $_SERVER['HTTP_X_CURRENT_TIME'] ?? 'now';
-
         $showPastMeetups = ($request->getQueryParams()['showPastMeetups'] ?? 'no') === 'yes';
 
         return new HtmlResponse(
             $this->renderer->render('app::list-meetups.html.twig', [
-                'meetups' => $this->application->meetups($showPastMeetups, $now),
+                'meetups' => $this->application->meetups($showPastMeetups),
                 'showPastMeetups' => $showPastMeetups,
             ])
         );
